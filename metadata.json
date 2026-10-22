@@ -1,0 +1,10 @@
+{
+  "name": "My Interactive Portfolio",
+  "description": "An interactive portfolio for Hoang Minh Cao, showcasing his professional summary, projects, work experience, and education through a modern, card-based interface.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

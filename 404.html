@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cao Minh Hoang - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --color-brand-purple: #A855F7;
+        --color-dark-bg: #0F172A;
+        --color-card-bg: #1E293B;
+        --color-border-color: #334155;
+        --color-text-primary: #F1F5F9;
+        --color-text-secondary: #94A3B8;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px;
+      }
+      .theme-synthwave {
+        --color-brand-purple: #F92672; /* Neon Pink */
+        --color-dark-bg: #272822; /* Monokai Background */
+        --color-card-bg: #3E3D32; /* Monokai Gutter */
+        --color-border-color: #75715E; /* Monokai Comment */
+        --color-text-primary: #F8F8F2; /* Monokai Foreground */
+        --color-text-secondary: #AE81FF; /* Neon Purple */
+        font-family: 'Orbitron', sans-serif;
+        font-size: 17px;
+        letter-spacing: 0.05em;
+      }
+      body {
+        background-color: var(--color-dark-bg);
+        color: var(--color-text-primary);
+        transition: background-color 0.5s ease, color 0.5s ease, font-family 0.5s ease;
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              orbitron: ['Orbitron', 'sans-serif'],
+            },
+            colors: {
+              'brand-purple': 'var(--color-brand-purple)',
+              'dark-bg': 'var(--color-dark-bg)',
+              'card-bg': 'var(--color-card-bg)',
+              'border-color': 'var(--color-border-color)',
+              'text-primary': 'var(--color-text-primary)',
+              'text-secondary': 'var(--color-text-secondary)',
+            }
+          }
+        }
+      }
+    </script>
+</head>
+  <body class="bg-dark-bg">
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
