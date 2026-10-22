@@ -262,8 +262,8 @@ export const App: React.FC = () => {
           <div className="flex items-center gap-2 text-[11px]">
             <span>Hanoi, Vietnam</span>
             <span aria-hidden="true">·</span>
-            <a href="mailto:hoangminh1618@gmail.com" className="hover:text-[#F8FAFC] transition-colors">
-              hoangminh1618@gmail.com
+            <a href="mailto:hoangcaominh27@gmail.com" className="hover:text-[#F8FAFC] transition-colors">
+              hoangcaominh27@gmail.com
             </a>
             <span aria-hidden="true">·</span>
             <span className="text-[#8B5CF6]">Deployed on Vercel</span>

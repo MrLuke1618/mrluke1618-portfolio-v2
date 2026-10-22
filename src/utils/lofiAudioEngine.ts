@@ -102,17 +102,21 @@ class LoFiAudioEngine {
 
   private initContext() {
     if (this.ctx) return;
-    const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    this.ctx = new AudioCtxClass();
+    if (typeof window === 'undefined') return;
 
-    // Master Gain
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
+    try {
+      const AudioCtxClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtxClass) return;
+      this.ctx = new AudioCtxClass();
 
-    // Analyser Node for visualizer and Three.js audio reactivity
-    this.analyser = this.ctx.createAnalyser();
-    this.analyser.fftSize = 64;
-    this.analyser.smoothingTimeConstant = 0.8;
+      // Master Gain
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
+
+      // Analyser Node for visualizer and audio reactivity
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 64;
+      this.analyser.smoothingTimeConstant = 0.8;
 
     // Filter Node (Warm Lowpass)
     this.mainFilter = this.ctx.createBiquadFilter();
@@ -141,6 +145,9 @@ class LoFiAudioEngine {
 
     // Setup Vinyl Crackle Loop
     this.setupVinylLoop();
+    } catch {
+      this.ctx = null;
+    }
   }
 
   // Create procedural analog vinyl crackle buffer

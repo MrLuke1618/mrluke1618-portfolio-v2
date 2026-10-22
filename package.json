@@ -6,7 +6,7 @@
   "homepage": "https://MrLuke1618.github.io/my-interactive-portfolio",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && node -e \"require('fs').copyFileSync('dist/index.html', 'dist/404.html')\"",
+    "build": "tsc && vite build && node -e \"import('node:fs').then(fs => fs.copyFileSync('dist/index.html', 'dist/404.html')).catch(() => {})\"",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
     "predeploy": "npm run build",

@@ -18,7 +18,7 @@ export const TavernTerminalZone: React.FC<TavernTerminalZoneProps> = ({
   const [msgName, setMsgName] = useState('');
   const [msgBody, setMsgBody] = useState('');
 
-  const emailAddress = 'hoangminh1618@gmail.com';
+  const emailAddress = 'hoangcaominh27@gmail.com';
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(emailAddress);

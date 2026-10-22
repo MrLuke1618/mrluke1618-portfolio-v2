@@ -43,6 +43,7 @@ Be articulate, concise, and helpful.
 `;
 
 export function getBYOApiKey(): string | null {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return null;
   try {
     return localStorage.getItem(LOCAL_STORAGE_KEY);
   } catch {
@@ -51,6 +52,7 @@ export function getBYOApiKey(): string | null {
 }
 
 export function setBYOApiKey(key: string): void {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
   try {
     localStorage.setItem(LOCAL_STORAGE_KEY, key.trim());
   } catch {
@@ -59,6 +61,7 @@ export function setBYOApiKey(key: string): void {
 }
 
 export function clearBYOApiKey(): void {
+  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
   try {
     localStorage.removeItem(LOCAL_STORAGE_KEY);
   } catch {
