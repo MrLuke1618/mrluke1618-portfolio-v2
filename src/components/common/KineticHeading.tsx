@@ -62,20 +62,19 @@ export const KineticHeading: React.FC<KineticHeadingProps> = ({
           const springLift = isNearHover ? -Math.max(0, 7 - distFromHover * 3) : 0;
           const springRotate = isNearHover && hoveredIdx !== null ? (index - hoveredIdx) * 3.5 : 0;
 
-          // Reveal stagger
-          const revealDelay = index * staggerMs;
+          // Reveal stagger delay
+          const delayMs = hoveredIdx === null ? `${index * staggerMs}ms` : '0ms';
 
           return (
             <span
               key={index}
               onMouseEnter={() => setHoveredIdx(index)}
               style={{
-                transitionDelay: hoveredIdx === null ? `${revealDelay}ms` : '0ms',
                 transform: isRevealed
                   ? `translate3d(0, ${springLift}px, 0) rotate(${springRotate}deg)`
                   : 'translate3d(0, 18px, 0) rotate(4deg)',
                 opacity: isRevealed ? 1 : 0,
-                transition: 'transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 320ms ease-out',
+                transition: `transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1) ${delayMs}, opacity 320ms ease-out ${delayMs}`,
                 willChange: 'transform, opacity'
               }}
               className="inline-block transition-colors duration-200 cursor-default hover:text-[#8B5CF6]"
