@@ -109,6 +109,7 @@ export const App: React.FC = () => {
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
         activeZone={activeZone}
+        onSelectZone={handleSelectZone}
         onOpenAIDrawer={() => setIsAIDrawerOpen(true)}
       />
 
@@ -169,7 +170,7 @@ export const App: React.FC = () => {
             </section>
 
             {/* Active Exploration Zone View */}
-            <section aria-label="Active Exploration Zone" className="scroll-mt-20">
+            <section id="active-zone-view" aria-label="Active Exploration Zone" className="scroll-mt-24">
               {activeZone === 'vault' && (
                 <VideoVaultZone
                   onOpenCard={handleOpenCard}

@@ -96,6 +96,30 @@ export const GAME_ZONES: GameZone[] = [
       'Bộ tổng hợp âm thanh Web Audio API này được lập trình thế nào?',
       'Khả năng nhận dự án hoặc làm việc toàn thời gian của bạn?'
     ]
+  },
+  {
+    id: 'shipyard',
+    titleEn: 'AntiGravity & Code Shipyard',
+    titleVi: 'Trạm Vũ Trụ AntiGravity & Code',
+    subtitleEn: 'Remote Orbital Outpost: Autonomous Git Pipelines, Claude Code & Codex',
+    subtitleVi: 'Trạm Quỹ Đạo Xa: Quy trình Git Tự Động, Claude Code & Codex',
+    iconName: 'Orbit',
+    color: 'from-violet-500 to-indigo-950',
+    glowColor: '#8B5CF6',
+    mapX: 50,
+    mapY: 10,
+    dialogueIntroEn: 'Docked at the Remote Orbital Shipyard. Review autonomous GitHub synchronization, antigravity.yaml execution manifests, and automated batch video pipelines.',
+    dialogueIntroVi: 'Đã cập bến Trạm Vũ Trụ Quỹ Đạo. Khám phá quy trình đồng bộ hóa GitHub tự động, manifest antigravity.yaml và pipeline dựng video hàng loạt.',
+    recommendedQueriesEn: [
+      'Explain the AntiGravity, Claude Code, and Codex orchestration architecture',
+      'What is antigravity.yaml and how does it automate video rendering?',
+      'How do you run local headless video stitching via CLI?'
+    ],
+    recommendedQueriesVi: [
+      'Giải thích kiến trúc điều phối AntiGravity, Claude Code và Codex',
+      'antigravity.yaml là gì và nó tự động hoá dựng video ra sao?',
+      'Cách bạn chạy render video tự động không cần giao diện qua CLI?'
+    ]
   }
 ];
 

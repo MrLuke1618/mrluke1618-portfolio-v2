@@ -14,6 +14,7 @@ interface TopNavBarProps {
   isMuted: boolean;
   onToggleMute: () => void;
   activeZone: GameZoneId;
+  onSelectZone?: (zone: GameZoneId) => void;
   onOpenAIDrawer?: () => void;
 }
 
@@ -25,9 +26,58 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
   isMuted,
   onToggleMute,
   activeZone,
+  onSelectZone,
   onOpenAIDrawer
 }) => {
   const currentZoneConfig = GAME_ZONES.find(z => z.id === activeZone) || GAME_ZONES[0];
+
+  const navItems: {
+    id: string;
+    labelEn: string;
+    labelVi: string;
+    zoneId?: GameZoneId;
+  }[] = [
+    { id: 'about', labelEn: 'About', labelVi: 'Giới thiệu' },
+    { id: 'featured-works', labelEn: 'Featured Works', labelVi: 'Dự án nổi bật', zoneId: 'vault' },
+    { id: 'experience', labelEn: 'Career & Milestones', labelVi: 'Sự nghiệp & Cột mốc', zoneId: 'academy' },
+    { id: 'superpowers', labelEn: 'Technical Superpowers', labelVi: 'Năng lực cốt lõi', zoneId: 'arcade' },
+    { id: 'contact', labelEn: 'Contact', labelVi: 'Liên hệ', zoneId: 'lounge' }
+  ];
+
+  const handleNavClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
+    e.preventDefault();
+    sound.playBip(740, 0.04);
+
+    if (viewMode === 'game') {
+      if (item.zoneId) {
+        // In Game Mode: Travel to the corresponding station on the 2.5D map
+        onSelectZone?.(item.zoneId);
+
+        // Smoothly scroll down to the active zone inspection HUD
+        setTimeout(() => {
+          const zoneEl = document.getElementById('active-zone-view');
+          if (zoneEl) {
+            zoneEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 80);
+      } else {
+        // "About" biography is situated in Reader Mode: switch and smooth-scroll
+        onSetViewMode('reader');
+        setTimeout(() => {
+          const el = document.getElementById('about');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 120);
+      }
+    } else {
+      // In Reader Mode: Smoothly scroll to the requested section
+      const el = document.getElementById(item.id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#090D16]/90 border-b border-[#1E293B] backdrop-blur-md px-4 sm:px-8 py-3.5 transition-all">
@@ -52,23 +102,28 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
           )}
         </div>
 
-        {/* Zone 2: Navigation Links (Only in Reader Mode on desktop) */}
+        {/* Zone 2: Navigation Links (Fully functional across both Reader & Game Mode) */}
         <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-[#94A3B8]">
-          <a href="#about" className="hover:text-[#F8FAFC] transition-colors whitespace-nowrap">
-            {language === 'en' ? 'About' : 'Giới thiệu'}
-          </a>
-          <a href="#featured-works" className="hover:text-[#F8FAFC] transition-colors whitespace-nowrap">
-            {language === 'en' ? 'Featured Works' : 'Dự án nổi bật'}
-          </a>
-          <a href="#experience" className="hover:text-[#F8FAFC] transition-colors whitespace-nowrap">
-            {language === 'en' ? 'Career & Milestones' : 'Sự nghiệp & Cột mốc'}
-          </a>
-          <a href="#superpowers" className="hover:text-[#F8FAFC] transition-colors whitespace-nowrap">
-            {language === 'en' ? 'Technical Superpowers' : 'Năng lực cốt lõi'}
-          </a>
-          <a href="#contact" className="hover:text-[#F8FAFC] transition-colors whitespace-nowrap">
-            {language === 'en' ? 'Contact' : 'Liên hệ'}
-          </a>
+          {navItems.map((item) => {
+            const isCurrent = viewMode === 'game' && item.zoneId === activeZone;
+
+            return (
+              <button
+                key={item.id}
+                onClick={(e) => handleNavClick(e, item)}
+                className={`transition-colors whitespace-nowrap py-1 relative cursor-pointer ${
+                  isCurrent
+                    ? 'text-[#8B5CF6] font-semibold'
+                    : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+                }`}
+              >
+                <span>{language === 'en' ? item.labelEn : item.labelVi}</span>
+                {isCurrent && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8B5CF6] rounded-full" />
+                )}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Zone 3: Mode Switcher & Primary Actions */}

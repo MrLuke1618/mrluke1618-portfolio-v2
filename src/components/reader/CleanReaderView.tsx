@@ -60,7 +60,7 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
   return (
     <div className="space-y-24">
       {/* 1. Human-First Hero Section */}
-      <section id="about" className="relative pt-6">
+      <section id="about" className="relative pt-6 scroll-mt-24">
         <div className="rounded-3xl border border-[#1E293B] bg-[#131B2E] p-8 sm:p-12 lg:p-14 shadow-2xl">
           <div className="space-y-8">
             {/* Top Status & Fast Travel to Game Mode */}

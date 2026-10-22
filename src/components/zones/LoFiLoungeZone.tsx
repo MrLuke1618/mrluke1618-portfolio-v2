@@ -138,7 +138,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
   };
 
   const handleCycleMood = () => {
-    const moods: LoFiMood[] = ['latenight', 'elevator', 'cyberpunk'];
+    const moods: LoFiMood[] = ['latenight', 'elevator', 'cyberpunk', 'binaural', 'chillhop'];
     const nextIdx = (moods.indexOf(currentMood) + 1) % moods.length;
     handleSelectMood(moods[nextIdx]);
   };
@@ -304,8 +304,8 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
               <label className="text-xs text-[#94A3B8] block font-medium">
                 {language === 'en' ? 'Select Ambient Mood:' : 'Chọn không gian âm thanh:'}
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {(['latenight', 'elevator', 'cyberpunk'] as LoFiMood[]).map((moodKey) => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+                {(['latenight', 'elevator', 'cyberpunk', 'binaural', 'chillhop'] as LoFiMood[]).map((moodKey) => {
                   const cfg = MOOD_CONFIGS[moodKey];
                   const isSelected = currentMood === moodKey;
                   return (
@@ -314,13 +314,13 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                       onClick={() => handleSelectMood(moodKey)}
                       className={`text-left p-3 rounded-xl border transition-all ${
                         isSelected
-                          ? 'bg-[#1E293B] border-[#8B5CF6] text-[#F8FAFC]'
-                          : 'bg-[#090D16] border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC]'
+                          ? 'bg-[#1E293B] border-[#8B5CF6] text-[#F8FAFC] shadow-sm shadow-[#8B5CF6]/20'
+                          : 'bg-[#090D16] border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#1E293B]/80'
                       }`}
                     >
                       <div className="flex items-center justify-between text-xs font-semibold mb-1">
-                        <span>{language === 'en' ? cfg.nameEn.split(' ')[0] : cfg.nameVi.split(' ')[0]}</span>
-                        <span className="text-[10px] text-[#8B5CF6]">{cfg.defaultBpm} BPM</span>
+                        <span className="truncate">{language === 'en' ? cfg.nameEn.split(' ')[0] : cfg.nameVi.split(' ')[0]}</span>
+                        <span className="text-[10px] text-[#8B5CF6] font-mono shrink-0">{cfg.defaultBpm} BPM</span>
                       </div>
                       <div className="text-[11px] text-[#94A3B8] line-clamp-1">
                         {language === 'en' ? cfg.nameEn : cfg.nameVi}

@@ -5,7 +5,7 @@
  * procedural analog vinyl crackle, gentle room reverb, and rhythmic pulses.
  */
 
-export type LoFiMood = 'latenight' | 'elevator' | 'cyberpunk';
+export type LoFiMood = 'latenight' | 'elevator' | 'cyberpunk' | 'binaural' | 'chillhop';
 
 interface MoodConfig {
   id: LoFiMood;
@@ -60,18 +60,50 @@ export const MOOD_CONFIGS: Record<LoFiMood, MoodConfig> = {
   },
   cyberpunk: {
     id: 'cyberpunk',
-    nameEn: 'Cyberpunk Ambient Drift',
-    nameVi: 'Không Gian Số Cyberpunk',
-    defaultBpm: 58,
-    descriptionEn: 'Deep atmospheric sub-bass drones, minor suspended chords, and cavernous space reverb.',
-    descriptionVi: 'Tiếng drone âm trầm sâu thẳm, hợp âm thứ huyền ảo và không gian hồi âm rộng lớn.',
-    filterCutoff: 500,
+    nameEn: 'Cyberpunk Rain & Neon',
+    nameVi: 'Mưa Đêm & Đèn Neon Cyberpunk',
+    defaultBpm: 56,
+    descriptionEn: 'Deep sub-bass atmospheric drones, resonant sweeping filters, and synthesized rain.',
+    descriptionVi: 'Âm bass điện tử dưới mưa, bộ lọc tần số quét chậm và hồi âm không gian số.',
+    filterCutoff: 480,
     // Cm9 -> Abmaj7#11 -> Fm9 -> Gsus4
     chords: [
       [NOTE_FREQ.C3 * 0.5, NOTE_FREQ.C3, NOTE_FREQ.Eb3, NOTE_FREQ.G3, NOTE_FREQ.Bb3, NOTE_FREQ.D4],
       [NOTE_FREQ.Ab3 * 0.5, NOTE_FREQ.Ab3, NOTE_FREQ.C4, NOTE_FREQ.Eb4, NOTE_FREQ.G4, NOTE_FREQ.D4],
       [NOTE_FREQ.F3 * 0.5, NOTE_FREQ.F3, NOTE_FREQ.Ab3, NOTE_FREQ.C4, NOTE_FREQ.Eb4, NOTE_FREQ.G4],
       [NOTE_FREQ.G3 * 0.5, NOTE_FREQ.G3, NOTE_FREQ.C4, NOTE_FREQ.D4, NOTE_FREQ.F4]
+    ]
+  },
+  binaural: {
+    id: 'binaural',
+    nameEn: 'Deep Focus Binaural Beats',
+    nameVi: 'Sóng Não Binaural Tập Trung Sâu',
+    defaultBpm: 52,
+    descriptionEn: 'Dual-frequency binaural focus drone (40Hz Gamma & 10Hz Alpha harmonic balance).',
+    descriptionVi: 'Sóng âm tần số kép kích thích tập trung sâu và giữ nhịp độ làm việc bền bỉ.',
+    filterCutoff: 400,
+    // Low drone pads with slight binaural detune
+    chords: [
+      [NOTE_FREQ.C3 * 0.5, NOTE_FREQ.G3 * 0.5, NOTE_FREQ.C4, NOTE_FREQ.G4],
+      [NOTE_FREQ.Eb3 * 0.5, NOTE_FREQ.Bb3 * 0.5, NOTE_FREQ.Eb4, NOTE_FREQ.Bb4],
+      [NOTE_FREQ.F3 * 0.5, NOTE_FREQ.C3, NOTE_FREQ.F4, NOTE_FREQ.C5 * 0.5],
+      [NOTE_FREQ.G3 * 0.5, NOTE_FREQ.D3, NOTE_FREQ.G4, NOTE_FREQ.D4]
+    ]
+  },
+  chillhop: {
+    id: 'chillhop',
+    nameEn: 'Chillhop Coffeehouse',
+    nameVi: 'Quán Cà Phê Chillhop Chiều Thu',
+    defaultBpm: 76,
+    descriptionEn: 'Dusty tape wobble, warm acoustic guitar-style voicing, and head-nodding bounce.',
+    descriptionVi: 'Tiếng băng cassette ấm áp, hợp âm guitar mộc và nhịp beat thư giãn nhẹ nhàng.',
+    filterCutoff: 950,
+    // Bbmaj7 -> Gm7 -> Cm7 -> F7
+    chords: [
+      [NOTE_FREQ.Bb3 * 0.5, NOTE_FREQ.Bb3, NOTE_FREQ.D4, NOTE_FREQ.F4, NOTE_FREQ.A4],
+      [NOTE_FREQ.G3 * 0.5, NOTE_FREQ.G3, NOTE_FREQ.Bb3, NOTE_FREQ.D4, NOTE_FREQ.F4],
+      [NOTE_FREQ.C3, NOTE_FREQ.Eb4, NOTE_FREQ.G4, NOTE_FREQ.Bb4],
+      [NOTE_FREQ.F3, NOTE_FREQ.A3, NOTE_FREQ.C4, NOTE_FREQ.Eb4]
     ]
   }
 };
