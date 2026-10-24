@@ -351,7 +351,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     max="100"
                     value={vinylLevel}
                     onChange={handleVinylChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-1.5 bg-[#1E293B] rounded-lg"
+                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
                   />
                 </div>
 
@@ -367,7 +367,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     max="110"
                     value={bpm}
                     onChange={handleBpmChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-1.5 bg-[#1E293B] rounded-lg"
+                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
                   />
                 </div>
 
@@ -383,7 +383,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     max="100"
                     value={reverbLevel}
                     onChange={handleReverbChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-1.5 bg-[#1E293B] rounded-lg"
+                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
                   />
                 </div>
 
@@ -399,7 +399,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     max="100"
                     value={volume}
                     onChange={handleVolumeChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-1.5 bg-[#1E293B] rounded-lg"
+                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
                   />
                 </div>
               </div>

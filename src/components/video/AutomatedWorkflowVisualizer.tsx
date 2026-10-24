@@ -316,7 +316,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
               max="28"
               value={crfQuality}
               onChange={(e) => setCrfQuality(Number(e.target.value))}
-              className="w-full accent-[#8B5CF6] mt-2 cursor-pointer"
+              className="w-full accent-[#8B5CF6] mt-2 cursor-pointer h-3 sm:h-2 touch-none"
             />
           </div>
 
@@ -331,7 +331,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
               max="-6"
               value={audioDucking}
               onChange={(e) => setAudioDucking(Number(e.target.value))}
-              className="w-full accent-[#8B5CF6] mt-2 cursor-pointer"
+              className="w-full accent-[#8B5CF6] mt-2 cursor-pointer h-3 sm:h-2 touch-none"
             />
           </div>
         </div>

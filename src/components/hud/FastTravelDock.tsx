@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { GameZoneId } from '../../types/game';
 import { GAME_ZONES } from '../../constants/gameData';
 import { sound } from '../../constants/soundEffects';
-import { Video, Cpu, Gamepad2, GraduationCap, Radio, Compass, Headphones } from 'lucide-react';
+import { Video, Cpu, Gamepad2, GraduationCap, Radio, Compass, Headphones, Orbit } from 'lucide-react';
 
 interface FastTravelDockProps {
   activeZone: GameZoneId;
@@ -37,17 +37,18 @@ export const FastTravelDock: React.FC<FastTravelDockProps> = ({
       case 'GraduationCap': return <GraduationCap className="w-4 h-4" />;
       case 'Radio': return <Radio className="w-4 h-4" />;
       case 'Headphones': return <Headphones className="w-4 h-4" />;
+      case 'Orbit': return <Orbit className="w-4 h-4" />;
       default: return <Compass className="w-4 h-4" />;
     }
   };
 
   return (
-    <div className="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-full px-2 pointer-events-auto">
+    <div className="fixed bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 z-40 max-w-[calc(100vw-1rem)] px-1 sm:px-2 pointer-events-auto">
       <nav 
-        className="flex items-center gap-1 sm:gap-2 p-1.5 sm:p-2 rounded-2xl bg-[#131B2E]/95 border border-[#1E293B] backdrop-blur-xl shadow-2xl"
+        className="flex items-center gap-1 sm:gap-2 p-1 sm:p-2 rounded-2xl bg-[#131B2E]/95 border border-[#1E293B] backdrop-blur-xl shadow-2xl overflow-x-auto scrollbar-none max-w-full"
         aria-label="Zone Fast Travel"
       >
-        <div className="hidden md:flex items-center gap-1.5 px-2 text-[10px] font-mono text-[#94A3B8] border-r border-[#1E293B] pr-3">
+        <div className="hidden lg:flex items-center gap-1.5 px-2 text-[10px] font-mono text-[#94A3B8] border-r border-[#1E293B] pr-3 shrink-0">
           <Compass className="w-3.5 h-3.5 text-[#8B5CF6]" />
           <span>FAST TRAVEL:</span>
         </div>
@@ -61,7 +62,7 @@ export const FastTravelDock: React.FC<FastTravelDockProps> = ({
                 onSelectZone(zone.id);
                 sound.playTeleport();
               }}
-              className={`relative flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-mono transition-all duration-200 ${
+              className={`relative shrink-0 flex items-center justify-center gap-1 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-xs font-mono transition-all duration-200 min-h-[36px] sm:min-h-[40px] ${
                 isActive
                   ? 'bg-[#8B5CF6] text-white font-semibold shadow-md shadow-[#8B5CF6]/30'
                   : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#090D16] border border-transparent hover:border-[#1E293B]'

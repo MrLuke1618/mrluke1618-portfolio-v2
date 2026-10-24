@@ -22,8 +22,8 @@ export const EasterEggModal: React.FC<EasterEggModalProps> = ({ snippet, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-3xl max-h-[85vh] flex flex-col rounded-2xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden font-mono text-xs text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-3xl max-h-[92vh] flex flex-col rounded-2xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden font-mono text-xs text-[#F8FAFC]">
         {/* Terminal Title Bar */}
         <div className="flex items-center justify-between px-4 py-3 bg-[#090D16] border-b border-[#1E293B] text-[#94A3B8]">
           <div className="flex items-center gap-2">

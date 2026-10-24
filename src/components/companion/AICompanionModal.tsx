@@ -53,15 +53,15 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
 
   const suggestedQueries = language === 'en' ? [
     'How does your automated video pipeline work?',
+    'Tell me about the 10-Game Retro Arcade Planet',
+    'What is the AntiGravity & Code Shipyard outpost?',
     'How did you grow Lotus Media to 72,000 subscribers?',
-    'What AI web tools and apps has Hoang built?',
-    'Tell me about his Master’s degree at Dublin City University',
     'How can I get in touch with Hoang for a project?'
   ] : [
     'Quy trình tự động hóa sản xuất video hoạt động như thế nào?',
+    'Giới thiệu về Hành Tinh 10 Game Retro Arcade',
+    'Trạm Vũ Trụ AntiGravity & Code Shipyard là gì?',
     'Bạn đã phát triển Lotus Media lên 72.000 người đăng ký thế nào?',
-    'Các công cụ và ứng dụng AI Hoàng đã tự xây dựng?',
-    'Chia sẻ về bằng Thạc sĩ tại Dublin City University',
     'Làm thế nào để liên hệ và hợp tác với Hoàng?'
   ];
 
@@ -162,12 +162,12 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
         <button
           onClick={handleOpen}
           aria-label="Open AI Assistant"
-          className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-[#131B2E] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] shadow-2xl transition-all duration-200 group"
+          className="fixed bottom-20 right-3 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-[#131B2E] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] shadow-2xl transition-all duration-200 group active:scale-95"
         >
-          <div className="w-6 h-6 rounded-lg bg-[#8B5CF6]/15 flex items-center justify-center text-[#8B5CF6] group-hover:scale-110 transition-transform">
-            <Bot className="w-4 h-4" />
+          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#8B5CF6]/15 flex items-center justify-center text-[#8B5CF6] group-hover:scale-110 transition-transform">
+            <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
-          <span className="text-xs font-semibold tracking-tight">
+          <span className="text-[11px] sm:text-xs font-semibold tracking-tight">
             {language === 'en' ? 'Ask AI about Hoang' : 'Hỏi AI về Hoàng'}
           </span>
           {isKeyUnlocked && (
@@ -182,7 +182,7 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="AI Assistant Drawer"
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] h-[580px] max-h-[85vh] flex flex-col rounded-3xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden animate-fadeIn"
+          className="fixed inset-x-2 bottom-2 sm:inset-auto sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-[420px] h-[82vh] sm:h-[580px] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden animate-fadeIn"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E293B] bg-[#090D16]">
@@ -257,7 +257,7 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
                   value={inputKey}
                   onChange={(e) => setInputKey(e.target.value)}
                   placeholder="AIzaSy..."
-                  className="flex-1 px-3 py-1.5 rounded-lg bg-[#131B2E] border border-[#1E293B] focus:border-[#8B5CF6] text-[#F8FAFC] text-xs font-mono outline-none"
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-[#131B2E] border border-[#1E293B] focus:border-[#8B5CF6] text-[#F8FAFC] text-base sm:text-xs font-mono outline-none"
                 />
                 <button
                   onClick={handleSaveKey}
@@ -352,7 +352,7 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
                   ? (language === 'en' ? 'Ask anything (code, scripts, prompts)...' : 'Hỏi bất kỳ điều gì (code, kịch bản, prompt)...')
                   : (language === 'en' ? 'Ask about Hoang’s background...' : 'Hỏi về kinh nghiệm của Hoàng...')
               }
-              className="flex-1 bg-[#131B2E] border border-[#1E293B] focus:border-[#8B5CF6] text-[#F8FAFC] placeholder-[#94A3B8]/60 text-xs rounded-xl px-3.5 py-2.5 outline-none transition-colors"
+              className="flex-1 bg-[#131B2E] border border-[#1E293B] focus:border-[#8B5CF6] text-[#F8FAFC] placeholder-[#94A3B8]/60 text-base sm:text-xs rounded-xl px-3.5 py-2.5 outline-none transition-colors"
             />
             <button
               type="submit"

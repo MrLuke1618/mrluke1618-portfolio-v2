@@ -19,13 +19,12 @@ Hoang Cao Minh's Profile:
   - Avada Commerce (Content Creator & AI Tool Builder): Engineered internal AI growth tools, including the Shopify Growth Video Idea Generator and Customer Review Summarizer.
   - TB Group (Video Editor & News Writer): Edited 400+ articles and directed 4K commercial videos and TVCs.
   - Cryptoday (Content Creator & Tech Writer): Published 1,000+ tech and crypto market analyses.
-- Original Works & Deployed Demos:
-  1. Shopify Growth Video Idea Generator (AI tool for e-commerce video hooks)
-  2. Content Compass (AI trend aggregator & content strategy tool)
-  3. IELTS Sniper Simulator (Gamified test-prep simulator on Google Cloud Run for ADHD students)
-  4. Cinematic AI Reel (VEO3, Kling, Higgsfield generations with character consistency)
-  5. The Sailboat (DCU Major Project WebGL with Three.js & real-time audio)
-  6. Official Comprehensive Work Portfolio (Google Doc with deep case studies)
+- Interactive Star System Architecture:
+  1. Motion & Video Suite: 10+ Kinetic Typography presets (MrBeast Pop, Trailer Slam, Luma Glitch, Neon Cyber Bounce), Python + Hyperframes (heygen-com/hyperframes) + Concat (jub0t/concat) automated rendering blueprints, and 4-LUT timeline simulator.
+  2. Distant Planet Beta (Retro Arcade Planet): 10 fully playable browser games (Neural-Snake, Memory Core, Cyber-Pong, Neon-Tetris, Pixel-Jump, Cipher-Break, Grid-Racer, Reactor-Core, Void-Breaker, Tic-Tac-Quantum) featuring live Kinetic Motion Video Thumbnails and retro cabinet emulators.
+  3. Distant Planet Alpha (AntiGravity & Code Shipyard): Remote orbital outpost housing Claude Code, Codex, and autonomous antigravity.yaml execution manifests for headless video assembly.
+  4. Career Tower: DCU Master's Honours, skill tree, and 6+ years verified multimedia milestones.
+  5. Lo-Fi Audio Lounge: 5 procedural ambient genres (Late Night, Retro Elevator, Cyberpunk Rain, Binaural Beats, Chillhop) with live remix sliders (Vinyl, BPM, Reverb).
 - Technical Toolchain Proficiencies:
   - Python & AntiGravity IDE workflows for video automation
   - Automated video pipelines (leveraging Hyperframes & concat for programmatic rendering)
@@ -101,12 +100,20 @@ const FALLBACK_KNOWLEDGE: Record<string, { en: string; vi: string }> = {
     vi: "Bạn có thể liên hệ trực tiếp với Hoàng qua email hoangcaominh27@gmail.com, hoặc xem qua GitHub (MrLuke1618) và tài liệu hồ sơ năng lực chi tiết trên Google Docs."
   },
   lofi: {
-    en: "The Lo-Fi player uses the browser's Web Audio API for zero-dependency procedural audio synthesis—generating chill chords, vinyl warmth, and reverb paired with a Pomodoro focus timer.",
-    vi: "Trình phát Lo-Fi sử dụng trực tiếp Web Audio API của trình duyệt để tổng hợp âm thanh thời gian thực—tạo hợp âm piano thư giãn, tiếng đĩa than và không gian kèm đồng hồ Pomodoro."
+    en: "The Lo-Fi player uses the browser's Web Audio API for zero-dependency procedural audio synthesis—generating 5 chill genres (Late Night, Retro Elevator, Cyberpunk Rain, Binaural Beats, Chillhop) with live vinyl, BPM, and reverb remix sliders.",
+    vi: "Trình phát Lo-Fi sử dụng trực tiếp Web Audio API của trình duyệt với 5 thể loại âm thanh (Late Night, Retro Elevator, Cyberpunk Rain, Binaural Beats, Chillhop) kèm thanh gạt chỉnh tiếng đĩa than, BPM và reverb."
+  },
+  arcade: {
+    en: "Distant Planet Beta hosts our 10-Game Retro Arcade Planet with playable browser games: Neural-Snake, Memory Core, Cyber-Pong, Neon-Tetris, Pixel-Jump, Cipher-Break, Grid-Racer, Reactor-Core, Void-Breaker, and Tic-Tac-Quantum—each with live Kinetic Motion Video Thumbnails.",
+    vi: "Hành tinh Beta quy tụ 10 tựa game Retro Arcade: Neural-Snake, Memory Core, Cyber-Pong, Neon-Tetris, Pixel-Jump, Cipher-Break, Grid-Racer, Reactor-Core, Void-Breaker và Tic-Tac-Quantum—mỗi game đều có thumbnail video kinetic chuyển động trực tiếp."
+  },
+  shipyard: {
+    en: "Distant Planet Alpha houses the AntiGravity & Code Shipyard—an orbital outpost orchestrating Claude Code, Codex, and headless video rendering automation via antigravity.yaml execution manifests.",
+    vi: "Hành tinh Alpha là Trạm Vũ Trụ AntiGravity & Code Shipyard—trạm quỹ đạo xa vận hành Claude Code, Codex và quy trình dựng video tự động qua file cấu hình antigravity.yaml."
   },
   general: {
-    en: "Hello! I can answer any questions about Hoang Cao Minh's video editing portfolio (72k Lotus Media subscribers), DCU Master's degree, AI web tools, and technical automation stack. You can also connect your own Gemini API key for general coding & text prompts!",
-    vi: "Xin chào! Tôi có thể giải đáp mọi thắc mắc về năng lực dựng video của Hoàng (72k người đăng ký Lotus Media), bằng Thạc sĩ DCU, các công cụ AI và quy trình tự động hóa. Bạn cũng có thể nhập API Key cá nhân để mở khóa toàn bộ tính năng!"
+    en: "Hello! I can answer any questions about Hoang Cao Minh's video editing portfolio (72k Lotus Media subscribers), DCU Master's degree, AI web tools, 10 arcade games, and technical automation stack. You can also connect your own Gemini API key for general coding & text prompts!",
+    vi: "Xin chào! Tôi có thể giải đáp mọi thắc mắc về năng lực dựng video của Hoàng (72k người đăng ký Lotus Media), bằng Thạc sĩ DCU, 10 tựa game arcade và quy trình tự động hóa. Bạn cũng có thể nhập API Key cá nhân để mở khóa toàn bộ tính năng!"
   }
 };
 
@@ -208,6 +215,12 @@ export async function askAICompanion(
   }
   if (queryLower.includes('lofi') || queryLower.includes('music') || queryLower.includes('audio') || queryLower.includes('âm thanh') || queryLower.includes('nhạc') || queryLower.includes('pomodoro')) {
     return language === 'en' ? FALLBACK_KNOWLEDGE.lofi.en : FALLBACK_KNOWLEDGE.lofi.vi;
+  }
+  if (queryLower.includes('arcade') || queryLower.includes('game') || queryLower.includes('snake') || queryLower.includes('tetris') || queryLower.includes('pong') || queryLower.includes('trò chơi')) {
+    return language === 'en' ? FALLBACK_KNOWLEDGE.arcade.en : FALLBACK_KNOWLEDGE.arcade.vi;
+  }
+  if (queryLower.includes('shipyard') || queryLower.includes('antigravity') || queryLower.includes('claude') || queryLower.includes('codex') || queryLower.includes('yaml') || queryLower.includes('vũ trụ')) {
+    return language === 'en' ? FALLBACK_KNOWLEDGE.shipyard.en : FALLBACK_KNOWLEDGE.shipyard.vi;
   }
 
   return language === 'en' ? FALLBACK_KNOWLEDGE.general.en : FALLBACK_KNOWLEDGE.general.vi;

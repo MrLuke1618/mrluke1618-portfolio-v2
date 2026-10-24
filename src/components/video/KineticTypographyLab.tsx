@@ -215,10 +215,10 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={handleCopyCss}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors active:scale-95"
           >
             {copiedCss ? <Check className="w-3.5 h-3.5 text-[#8B5CF6]" /> : <Copy className="w-3.5 h-3.5 text-[#8B5CF6]" />}
             <span>{copiedCss ? (language === 'en' ? 'Copied CSS!' : 'Đã sao chép!') : (language === 'en' ? 'Copy CSS Keyframes' : 'Sao chép CSS')}</span>
@@ -226,7 +226,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
 
           <button
             onClick={handleReplay}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-sm shadow-violet-500/20"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-sm shadow-violet-500/20 active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>{language === 'en' ? 'Replay Physics' : 'Chạy lại'}</span>
@@ -280,7 +280,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            className="w-full px-3 py-1.5 rounded-lg bg-[#131B2E] border border-[#1E293B] text-xs text-[#F8FAFC] focus:outline-none focus:border-[#8B5CF6]"
+            className="w-full px-3 py-2 rounded-lg bg-[#131B2E] border border-[#1E293B] text-base sm:text-xs text-[#F8FAFC] focus:outline-none focus:border-[#8B5CF6]"
             placeholder="Type custom text..."
           />
         </div>
@@ -298,7 +298,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
             step="0.1"
             value={springTension}
             onChange={(e) => setSpringTension(parseFloat(e.target.value))}
-            className="w-full accent-[#8B5CF6] mt-2 cursor-pointer"
+            className="w-full accent-[#8B5CF6] mt-2 cursor-pointer h-3 sm:h-2 touch-none"
           />
         </div>
       </div>

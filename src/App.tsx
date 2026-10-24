@@ -26,6 +26,7 @@ import { VideoVaultZone } from './components/zones/VideoVaultZone';
 import { ArcadeProjectZone } from './components/zones/ArcadeProjectZone';
 import { AcademyTowerZone } from './components/zones/AcademyTowerZone';
 import { LoFiLoungeZone } from './components/zones/LoFiLoungeZone';
+import { AntiGravityShipyardZone } from './components/zones/AntiGravityShipyardZone';
 
 import { ArrowUp } from 'lucide-react';
 
@@ -195,6 +196,12 @@ export const App: React.FC = () => {
                   language={language}
                 />
               )}
+              {activeZone === 'shipyard' && (
+                <AntiGravityShipyardZone
+                  language={language}
+                  onOpenEasterEgg={handleOpenEasterEgg}
+                />
+              )}
             </section>
           </div>
         )}
@@ -246,7 +253,7 @@ export const App: React.FC = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             sound.playBip(900, 0.05);
           }}
-          className="fixed bottom-24 right-6 z-30 p-2.5 rounded-full bg-[#131B2E] border border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#8B5CF6] shadow-xl transition-all"
+          className="fixed bottom-32 sm:bottom-24 right-4 sm:right-6 z-30 p-2.5 rounded-full bg-[#131B2E] border border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#8B5CF6] shadow-xl transition-all active:scale-95"
           title="Scroll to Top"
           aria-label="Scroll to top"
         >

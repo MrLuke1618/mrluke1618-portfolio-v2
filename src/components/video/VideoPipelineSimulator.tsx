@@ -10,8 +10,7 @@ import {
   CheckCircle2, 
   FastForward, 
   Cpu,
-  Palette,
-  Sparkles
+  Palette
 } from 'lucide-react';
 
 interface VideoPipelineSimulatorProps {
@@ -216,11 +215,13 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
       </div>
 
       {/* Color Grading LUT Switcher & FX Controls */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs">
-        <div className="flex items-center gap-2">
-          <Palette className="w-4 h-4 text-[#8B5CF6]" />
-          <span className="font-mono text-[11px] text-[#94A3B8]">COLOR GRADE LUT:</span>
-          <div className="flex items-center gap-1.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 text-[#8B5CF6]">
+            <Palette className="w-4 h-4 shrink-0" />
+            <span className="font-mono text-[11px] text-[#94A3B8]">COLOR GRADE LUT:</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1.5">
             {[
               { id: 'cyber_neon', label: 'Cyber Neon' },
               { id: 'teal_orange', label: 'Teal & Orange' },
@@ -233,7 +234,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
                   setColorGrade(lut.id as ColorGradePreset);
                   sound.playBip(700, 0.04);
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all active:scale-95 ${
                   colorGrade === lut.id
                     ? 'bg-[#8B5CF6] text-white font-semibold'
                     : 'bg-[#131B2E] text-[#94A3B8] hover:text-[#F8FAFC]'
@@ -246,10 +247,10 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
         </div>
 
         {/* FX Toggles */}
-        <div className="flex items-center gap-2 font-mono text-[11px]">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
           <button
             onClick={() => setEnableFilmGrain(!enableFilmGrain)}
-            className={`px-2 py-1 rounded border transition-colors ${
+            className={`px-2.5 py-1 rounded-lg border transition-colors active:scale-95 ${
               enableFilmGrain
                 ? 'bg-[#8B5CF6]/20 border-[#8B5CF6] text-[#8B5CF6]'
                 : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
@@ -259,7 +260,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
           </button>
           <button
             onClick={() => setEnableVignette(!enableVignette)}
-            className={`px-2 py-1 rounded border transition-colors ${
+            className={`px-2.5 py-1 rounded-lg border transition-colors active:scale-95 ${
               enableVignette
                 ? 'bg-[#8B5CF6]/20 border-[#8B5CF6] text-[#8B5CF6]'
                 : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
@@ -271,7 +272,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
       </div>
 
       {/* Stepper Milestone Navigator */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
         {PIPELINE_STEPS_DATA.map((step, idx) => {
           const isDone = completedSteps.includes(step.id);
           const isCurrent = activeStepIdx === idx;

@@ -32,13 +32,13 @@ interface StarParticle {
   alpha: number;
 }
 
-// Star System Coordinates: Core Sector + Distant Orbital Station
+// Star System Coordinates: Core Sector + Distant Orbital Planets Alpha & Beta
 const ZONE_WORLD_COORDS: Record<GameZoneId, { wx: number; wy: number }> = {
-  vault: { wx: -60, wy: -60 },     // Core Sector NW: Motion & Video Suite
-  arcade: { wx: 60, wy: -60 },     // Core Sector NE: Project Showcase & Systems
-  academy: { wx: -60, wy: 60 },    // Core Sector SW: Career & Education Tower
-  lounge: { wx: 60, wy: 60 },      // Core Sector SE: Lo-Fi Lounge & Contact Hub
-  shipyard: { wx: 0, wy: -175 }    // Distant Deep-Space Sector: AntiGravity Orbital Shipyard
+  vault: { wx: -60, wy: -40 },     // Core Sector NW: Motion & Video Suite
+  arcade: { wx: 165, wy: 0 },      // Distant Planet Beta: 10-Game Retro Arcade Planet
+  academy: { wx: -60, wy: 50 },    // Core Sector SW: Career & Education Tower
+  lounge: { wx: 50, wy: 50 },      // Core Sector SE: Lo-Fi Lounge & Contact Hub
+  shipyard: { wx: 0, wy: -175 }    // Distant Planet Alpha: AntiGravity Orbital Shipyard
 };
 
 export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
@@ -166,13 +166,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     };
   }, [nearZone, onSelectZone]);
 
-  // Canvas Click / Tap to Travel
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const processScreenTap = useCallback((clickScreenX: number, clickScreenY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const clickScreenX = e.clientX - rect.left;
-    const clickScreenY = e.clientY - rect.top;
 
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
@@ -184,8 +180,8 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
     const world = unprojectIso(isoOffsetX, isoOffsetY);
 
-    // Clamp to map bounds (covers deep space northern sector)
-    const clampedWx = Math.max(-130, Math.min(130, world.wx));
+    // Clamp to map bounds (covers deep space northern & eastern sectors)
+    const clampedWx = Math.max(-130, Math.min(210, world.wx));
     const clampedWy = Math.max(-210, Math.min(130, world.wy));
 
     // Check if clicked close to a station footprint
@@ -207,6 +203,24 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     } else {
       targetRef.current = { wx: clampedWx, wy: clampedWy };
       sound.playBip(620, 0.04);
+    }
+  }, [onSelectZone, projectIso, triggerWarpJump, unprojectIso]);
+
+  // Canvas Click / Tap to Travel
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    processScreenTap(e.clientX - rect.left, e.clientY - rect.top);
+  };
+
+  // Canvas Touch to Travel
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length > 0) {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      processScreenTap(e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top);
     }
   };
 
@@ -479,10 +493,10 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
         if (isWarping) {
           // Elongated warp streaks
-          const streakLen = 35 * camera.zoom;
+          const streakLen = 25 * camera.zoom;
           ctx.beginPath();
           ctx.moveTo(sScreen.x, sScreen.y);
-          ctx.lineTo(sScreen.x - player.vx * 0.15, sScreen.y - player.vy * 0.15);
+          ctx.lineTo(sScreen.x - (player.vx || 2) * streakLen * 0.08, sScreen.y - (player.vy || 2) * streakLen * 0.08);
           ctx.strokeStyle = 'rgba(139, 92, 246, 0.7)';
           ctx.lineWidth = 1.8;
           ctx.stroke();
@@ -525,22 +539,30 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       ctx.restore();
 
       // ------------------------------------------------------------------------
-      // RENDER PASS 4: Glowing Flight Corridor to Distant Shipyard
+      // RENDER PASS 4: Glowing Flight Corridors to Distant Planets Alpha & Beta
       // ------------------------------------------------------------------------
       ctx.save();
       ctx.lineWidth = 1.5;
       ctx.strokeStyle = 'rgba(139, 92, 246, 0.35)';
       ctx.setLineDash([8, 8]);
 
-      // Long-range hyperlane highway connecting Nexus to Shipyard
+      // Hyperlane 1: Nexus to Distant Planet Alpha (Shipyard at 0, -175)
       const nexusScreen = toScreen(0, 0);
       ctx.beginPath();
       ctx.moveTo(nexusScreen.x, nexusScreen.y);
       ctx.lineTo(shipyardScreen.x, shipyardScreen.y);
       ctx.stroke();
+
+      // Hyperlane 2: Nexus to Distant Planet Beta (Arcade at 165, 0)
+      const arcadeCoords = ZONE_WORLD_COORDS.arcade;
+      const arcadeScreen = toScreen(arcadeCoords.wx, arcadeCoords.wy);
+      ctx.beginPath();
+      ctx.moveTo(nexusScreen.x, nexusScreen.y);
+      ctx.lineTo(arcadeScreen.x, arcadeScreen.y);
+      ctx.stroke();
       ctx.setLineDash([]);
 
-      // Flight corridor beacon markers along the highway
+      // Flight corridor beacon markers along Planet Alpha highway
       for (let t = 0.25; t <= 0.75; t += 0.25) {
         const beaconWx = 0 * (1 - t) + shipyardCoords.wx * t;
         const beaconWy = 0 * (1 - t) + shipyardCoords.wy * t;
@@ -552,10 +574,23 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         ctx.shadowBlur = 6;
         ctx.fill();
       }
+
+      // Flight corridor beacon markers along Planet Beta highway
+      for (let t = 0.25; t <= 0.75; t += 0.25) {
+        const beaconWx = 0 * (1 - t) + arcadeCoords.wx * t;
+        const beaconWy = 0 * (1 - t) + arcadeCoords.wy * t;
+        const bScreen = toScreen(beaconWx, beaconWy);
+        ctx.beginPath();
+        ctx.arc(bScreen.x, bScreen.y, 3 * camera.zoom, 0, Math.PI * 2);
+        ctx.fillStyle = '#8B5CF6';
+        ctx.shadowColor = '#8B5CF6';
+        ctx.shadowBlur = 6;
+        ctx.fill();
+      }
       ctx.restore();
 
       // ------------------------------------------------------------------------
-      // RENDER PASS 5: Core Sector Circuit Connections
+      // RENDER PASS 5: Core Sector Circuit Triangle Connections
       // ------------------------------------------------------------------------
       ctx.save();
       ctx.lineWidth = 1.5;
@@ -563,10 +598,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       ctx.setLineDash([6, 6]);
 
       const connections: [GameZoneId, GameZoneId][] = [
-        ['vault', 'arcade'],
-        ['arcade', 'lounge'],
-        ['lounge', 'academy'],
-        ['academy', 'vault']
+        ['vault', 'academy'],
+        ['academy', 'lounge'],
+        ['lounge', 'vault']
       ];
 
       for (const [z1, z2] of connections) {
@@ -598,11 +632,13 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       for (const zone of GAME_ZONES) {
         const coords = ZONE_WORLD_COORDS[zone.id];
         const isHovered = nearZone === zone.id;
-        const isShipyard = zone.id === 'shipyard';
+        const isPlanetAlpha = zone.id === 'shipyard';
+        const isPlanetBeta = zone.id === 'arcade';
+        const isDistantPlanet = isPlanetAlpha || isPlanetBeta;
         const pulse = Math.sin(currentTime * 0.003 + coords.wx) * 0.15 + 0.85;
 
         // Base Plinth Shadow
-        const baseRadius = isShipyard ? 32 : 24;
+        const baseRadius = isDistantPlanet ? 32 : 24;
         drawIsoDiamond(coords.wx, coords.wy, baseRadius, 0, 'rgba(9, 13, 22, 0.8)', undefined);
 
         // Lower Plinth Tier
@@ -619,12 +655,12 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         // Raised Glassmorphic Tier
         const plinthFill = isHovered
           ? 'rgba(139, 92, 246, 0.24)'
-          : isShipyard
+          : isDistantPlanet
           ? 'rgba(19, 27, 46, 0.95)'
           : 'rgba(19, 27, 46, 0.85)';
         const plinthBorder = isHovered
           ? '#8B5CF6'
-          : isShipyard
+          : isDistantPlanet
           ? 'rgba(139, 92, 246, 0.65)'
           : 'rgba(139, 92, 246, 0.4)';
 
@@ -634,13 +670,13 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         const topScreen = toScreen(coords.wx, coords.wy, 10);
         ctx.save();
         ctx.beginPath();
-        ctx.arc(topScreen.x, topScreen.y, (isShipyard ? 22 : 16) * camera.zoom * pulse, 0, Math.PI * 2);
+        ctx.arc(topScreen.x, topScreen.y, (isDistantPlanet ? 22 : 16) * camera.zoom * pulse, 0, Math.PI * 2);
         ctx.strokeStyle = isHovered ? 'rgba(139, 92, 246, 0.85)' : 'rgba(139, 92, 246, 0.3)';
         ctx.lineWidth = isHovered ? 2 : 1;
         ctx.stroke();
 
-        // Shipyard Rotating Orbital Defense Ring
-        if (isShipyard) {
+        // Planet Alpha: Rotating Orbital Defense Ring
+        if (isPlanetAlpha) {
           const orbitAngle = currentTime * 0.002;
           ctx.beginPath();
           ctx.ellipse(topScreen.x, topScreen.y, 34 * camera.zoom, 14 * camera.zoom, orbitAngle, 0, Math.PI * 2);
@@ -649,8 +685,20 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           ctx.stroke();
         }
 
+        // Planet Beta: Retro Arcade Planetary Halo Ring
+        if (isPlanetBeta) {
+          const orbitAngle = -currentTime * 0.0018;
+          ctx.beginPath();
+          ctx.ellipse(topScreen.x, topScreen.y, 36 * camera.zoom, 15 * camera.zoom, orbitAngle, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(139, 92, 246, 0.6)';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+
         // Corner HUD Brackets
-        const bracketSize = (isShipyard ? 18 : 14) * camera.zoom;
+        const bracketSize = (isDistantPlanet ? 18 : 14) * camera.zoom;
         ctx.strokeStyle = isHovered ? '#8B5CF6' : '#94A3B8';
         ctx.lineWidth = 1.5;
 
@@ -689,7 +737,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         ctx.fillText(
           language === 'en' ? zone.titleEn : zone.titleVi,
           topScreen.x,
-          topScreen.y + (isShipyard ? 34 : 28) * camera.zoom
+          topScreen.y + (isDistantPlanet ? 34 : 28) * camera.zoom
         );
 
         // Proximity Activation HUD Prompt
@@ -824,39 +872,44 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[500px] sm:h-[560px] md:h-[620px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#090D16] select-none"
+      className="relative w-full h-[360px] sm:h-[460px] md:h-[540px] lg:h-[620px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#090D16] select-none touch-none"
     >
       {/* Interactive 2.5D Star System Canvas */}
       <canvas
         ref={canvasRef}
         onClick={handleCanvasClick}
+        onTouchStart={handleTouchStart}
         className="w-full h-full cursor-crosshair block"
         aria-label="2.5D Star System Map Canvas"
       />
 
       {/* Top HUD Overlay: Controls & Warp Status */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-xs font-mono text-[#F8FAFC]">
-          <Crosshair className="w-3.5 h-3.5 text-[#8B5CF6]" />
-          <span>
+      <div className="absolute top-2 sm:top-4 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-between pointer-events-none gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-[11px] sm:text-xs font-mono text-[#F8FAFC] truncate">
+          <Crosshair className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
+          <span className="hidden sm:inline">
             {language === 'en'
-              ? 'STAR SYSTEM: WASD / ARROWS / CLICK TO TRAVEL'
+              ? 'STAR SYSTEM: WASD / ARROWS / TAP TO TRAVEL'
               : 'HỆ THỐNG SAO: WASD / MŨI TÊN / CHẠM ĐỂ DI CHUYỂN'}
+          </span>
+          <span className="sm:hidden">
+            {language === 'en' ? 'TAP TO TRAVEL' : 'CHẠM DI CHUYỂN'}
           </span>
         </div>
 
         {isWarpingUi ? (
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#8B5CF6] text-white text-xs font-mono font-bold backdrop-blur animate-pulse shadow-lg shadow-violet-500/40">
-            <Zap className="w-3.5 h-3.5" />
-            <span>{language === 'en' ? 'HYPERSPACE WARP JUMP ENGAGED' : 'ĐANG NHẢY BƯỚC KHÔNG GIAN'}</span>
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-lg bg-[#8B5CF6] text-white text-[11px] sm:text-xs font-mono font-bold backdrop-blur animate-pulse shadow-lg shadow-violet-500/40 shrink-0">
+            <Zap className="w-3.5 h-3.5 shrink-0" />
+            <span className="hidden sm:inline">{language === 'en' ? 'WARP JUMP ENGAGED' : 'ĐANG NHẢY BƯỚC KHÔNG GIAN'}</span>
+            <span className="sm:hidden">WARP...</span>
           </div>
         ) : nearZone ? (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-xs font-mono text-[#F8FAFC] backdrop-blur animate-pulse">
-            <span className="w-2 h-2 rounded-full bg-[#8B5CF6]" />
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#8B5CF6]/20 border border-[#8B5CF6]/50 text-[11px] sm:text-xs font-mono text-[#F8FAFC] backdrop-blur animate-pulse shrink-0">
+            <span className="w-2 h-2 rounded-full bg-[#8B5CF6] shrink-0" />
             <span>
               {language === 'en'
-                ? 'PRESS [E] TO INSPECT STATION'
-                : 'NHẤN [E] ĐỂ VÀO TRẠM'}
+                ? 'PRESS [E] OR TAP'
+                : 'NHẤN [E] HOẶC CHẠM'}
             </span>
           </div>
         ) : null}
@@ -870,7 +923,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       )}
 
       {/* Bottom Fast-Travel Star System Bar */}
-      <div className="absolute bottom-4 left-4 right-4 flex flex-wrap items-center justify-center gap-2 pointer-events-auto">
+      <div className="absolute bottom-2 sm:bottom-4 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto scrollbar-none pointer-events-auto py-1">
         {GAME_ZONES.map((zone) => {
           const isCurrent = activeZone === zone.id;
           const isClose = nearZone === zone.id;
@@ -884,7 +937,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
                 triggerWarpJump(coords.wx, coords.wy, zone.id);
                 onSelectZone(zone.id);
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl text-xs font-medium transition-all ${
+              className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-medium transition-all ${
                 isCurrent || isClose
                   ? 'bg-[#8B5CF6] text-white shadow-lg shadow-violet-500/20 border border-violet-400'
                   : isShipyard

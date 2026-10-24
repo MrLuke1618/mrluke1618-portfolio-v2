@@ -303,9 +303,9 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
               <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
               <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
               <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
-              <span className="ml-2">terminal — bash</span>
+              <span className="ml-2 hidden xs:inline">terminal — bash</span>
             </span>
-            <span>$ {activeCli.cmd}</span>
+            <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-none text-right">$ {activeCli.cmd}</span>
           </div>
 
           <div className="space-y-1.5 pt-1 text-[11px]">

@@ -11,7 +11,12 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
   const [isPlaying, setIsPlaying] = useState<boolean>(lofiAudioEngine.getIsPlaying());
   const [currentMood, setCurrentMood] = useState<LoFiMood>(lofiAudioEngine.getMood());
   const [volume, setVolume] = useState<number>(lofiAudioEngine.getMasterVolume());
-  const [isCollapsed, setIsCollapsed] = useState<boolean>(false);
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 768;
+    }
+    return false;
+  });
   const [showPomodoro, setShowPomodoro] = useState<boolean>(false);
 
   // Pomodoro state: 25 minutes default
@@ -73,7 +78,7 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
   // Collapsed Minimalist Pill State
   if (isCollapsed) {
     return (
-      <div className="fixed bottom-4 left-6 z-40">
+      <div className="fixed bottom-16 sm:bottom-4 left-3 sm:left-6 z-40">
         <button
           onClick={() => {
             setIsCollapsed(false);
@@ -98,7 +103,7 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
   return (
     <aside
       aria-label="Lo-Fi Audio Player"
-      className="fixed bottom-4 left-4 right-4 sm:left-6 sm:right-auto sm:max-w-xl z-40 bg-[#131B2E]/95 backdrop-blur-md border border-[#1E293B] rounded-2xl p-3 sm:px-4 sm:py-3 shadow-2xl transition-all"
+      className="fixed bottom-16 sm:bottom-4 left-3 right-3 sm:left-6 sm:right-auto sm:max-w-xl z-40 bg-[#131B2E]/95 backdrop-blur-md border border-[#1E293B] rounded-2xl p-3 sm:px-4 sm:py-3 shadow-2xl transition-all"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Left: Play Button & Track Info */}

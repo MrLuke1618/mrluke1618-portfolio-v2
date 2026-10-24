@@ -32,10 +32,10 @@ export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-xl flex flex-col rounded-2xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden text-[#F8FAFC]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-xl max-h-[92vh] flex flex-col rounded-2xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-y-auto text-[#F8FAFC]">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 bg-[#090D16]/60 border-b border-[#1E293B]">
+        <div className="sticky top-0 z-10 flex items-center justify-between p-4 sm:p-5 bg-[#090D16]/95 backdrop-blur-md border-b border-[#1E293B]">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl bg-[#131B2E] border border-[#1E293B]">
               {getCardIcon(card.type)}

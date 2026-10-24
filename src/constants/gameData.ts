@@ -27,26 +27,26 @@ export const GAME_ZONES: GameZone[] = [
   },
   {
     id: 'arcade',
-    titleEn: 'Project Showcase & Systems',
-    titleVi: 'Kho Dự Án & Kỹ Thuật',
-    subtitleEn: 'AI Web Apps, Shopify Tools & Rust Systems Engineering',
-    subtitleVi: 'Ứng dụng AI, Công cụ Shopify & Lập trình Hệ thống Rust',
+    titleEn: 'Planet Beta: Retro Arcade & Systems',
+    titleVi: 'Hành Tinh Beta: Retro Arcade & Hệ Thống',
+    subtitleEn: '10 Iconic Browser Games, Kinetic Motion Thumbnails & Deployed Web Apps',
+    subtitleVi: '10 Tựa Game Kinh Điển, Thumbnail Video Kinetic & Ứng Dụng Thực Tế',
     iconName: 'Gamepad2',
     color: 'from-violet-600 to-slate-900',
     glowColor: '#8B5CF6',
-    mapX: 76,
-    mapY: 34,
-    dialogueIntroEn: 'Explore live deployed apps (Shopify Generator, Content Compass, IELTS Sniper) alongside high-performance Rust CLI tooling.',
-    dialogueIntroVi: 'Khám phá các ứng dụng thực tế (Shopify Generator, Content Compass, IELTS Sniper) cùng các công cụ dòng lệnh Rust hiệu năng cao.',
+    mapX: 82,
+    mapY: 50,
+    dialogueIntroEn: 'Welcome to Distant Planet Beta: The Retro Arcade Hub. Play all 10 browser games with live kinetic video motion graphics, inspect source mechanics, or launch live production web apps.',
+    dialogueIntroVi: 'Chào mừng tới Hành tinh Beta: Trung tâm Retro Arcade. Trải nghiệm 10 tựa game với chuyển động kinetic video, hướng dẫn tương tác và các ứng dụng web thực tế.',
     recommendedQueriesEn: [
+      'Tell me about the 10-Game Retro Arcade Planet',
       'Tell me about the Shopify Growth Video Idea Generator',
-      'What is Content Compass and how does it analyze trends?',
-      'What is your experience with Rust systems and CLI tools?'
+      'What is Content Compass and how does it analyze trends?'
     ],
     recommendedQueriesVi: [
+      'Giới thiệu về Hành Tinh 10 Game Retro Arcade',
       'Giới thiệu công cụ Shopify Growth Video Idea Generator',
-      'Ứng dụng Content Compass phân tích xu hướng thế nào?',
-      'Kinh nghiệm của bạn với ngôn ngữ lập trình Rust và công cụ CLI?'
+      'Ứng dụng Content Compass phân tích xu hướng thế nào?'
     ]
   },
   {
