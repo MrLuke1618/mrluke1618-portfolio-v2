@@ -70,13 +70,25 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [highlightZone, setHighlightZone] = useState<boolean>(false);
+
   const handleToggleMute = () => {
     const newMuteState = sound.toggleMute();
     setIsMuted(newMuteState);
   };
 
-  const handleSelectZone = (zoneId: GameZoneId) => {
+  const handleSelectZone = (zoneId: GameZoneId, shouldScroll = false) => {
     setActiveZone(zoneId);
+    if (shouldScroll) {
+      setHighlightZone(true);
+      setTimeout(() => {
+        const el = document.getElementById('active-zone-view');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 60);
+      setTimeout(() => setHighlightZone(false), 2400);
+    }
   };
 
   const handleOpenCard = (card: TradingCardItem) => {
@@ -171,7 +183,13 @@ export const App: React.FC = () => {
             </section>
 
             {/* Active Exploration Zone View */}
-            <section id="active-zone-view" aria-label="Active Exploration Zone" className="scroll-mt-24">
+            <section
+              id="active-zone-view"
+              aria-label="Active Exploration Zone"
+              className={`scroll-mt-24 transition-all duration-500 rounded-3xl ${
+                highlightZone ? 'ring-4 ring-[#8B5CF6]/80 shadow-[0_0_40px_rgba(139,92,246,0.35)] p-1' : ''
+              }`}
+            >
               {activeZone === 'vault' && (
                 <VideoVaultZone
                   onOpenCard={handleOpenCard}

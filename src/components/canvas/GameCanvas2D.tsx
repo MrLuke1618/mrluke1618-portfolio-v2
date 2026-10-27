@@ -7,7 +7,7 @@ import { Video, Gamepad2, GraduationCap, Headphones, Crosshair, Orbit, Zap } fro
 
 interface GameCanvas2DProps {
   activeZone: GameZoneId;
-  onSelectZone: (zoneId: GameZoneId) => void;
+  onSelectZone: (zoneId: GameZoneId, shouldScroll?: boolean) => void;
   onOpenEasterEgg: (snippetId: string) => void;
   language: 'en' | 'vi';
 }
@@ -48,6 +48,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const joystickBaseRef = useRef<HTMLDivElement>(null);
 
   // Avatar physics state in World Coordinates
   const playerRef = useRef<{ wx: number; wy: number; vx: number; vy: number; angle: number }>({
@@ -79,6 +80,24 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   const [travelMessage, setTravelMessage] = useState<string>('');
   const [isWarpingUi, setIsWarpingUi] = useState<boolean>(false);
 
+  // Mobile / Tablet Touch Controls State
+  const [controlMode, setControlMode] = useState<'touch' | 'keyboard'>('keyboard');
+  const joystickActive = useRef<boolean>(false);
+  const joystickTouchId = useRef<number | null>(null);
+  const joystickVector = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [knobOffset, setKnobOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const isBoostActive = useRef<boolean>(false);
+
+  // Auto-detect touch capable device on mount
+  useEffect(() => {
+    const isTouch =
+      typeof window !== 'undefined' &&
+      ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth < 1024);
+    if (isTouch) {
+      setControlMode('touch');
+    }
+  }, []);
+
   // Isometric Projection Math (30-degree isometric plane)
   const ISO_COS = Math.cos(Math.PI / 6); // ~0.866
   const ISO_SIN = Math.sin(Math.PI / 6); // 0.5
@@ -101,7 +120,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     const player = playerRef.current;
     const dist = Math.hypot(destWx - player.wx, destWy - player.wy);
 
-    // If long range travel (especially to/from distant shipyard)
+    // If long range travel (especially to/from distant shipyard or arcade)
     if (dist > 85) {
       warpRef.current.isWarping = true;
       warpRef.current.warpProgress = 0;
@@ -136,7 +155,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     }
   }, [activeZone, triggerWarpJump]);
 
-  // Keyboard navigation listener (WASD + Arrow Keys + Space/E to enter)
+  // Keyboard navigation listener (WASD + Arrow Keys + Space/E to enter station)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName?.toLowerCase();
@@ -145,11 +164,11 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       const key = e.key.toLowerCase();
       keysPressed.current[key] = true;
 
-      // Interaction key [E] or Spacebar to enter near zone
+      // Interaction key [E] or Spacebar to enter near zone and smoothly scroll to hub
       if ((key === 'e' || key === ' ') && nearZone) {
         e.preventDefault();
-        onSelectZone(nearZone);
-        sound.playBip(880, 0.08);
+        onSelectZone(nearZone, true);
+        sound.playLevelUp();
       }
     };
 
@@ -166,6 +185,100 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     };
   }, [nearZone, onSelectZone]);
 
+  // Touch analog stick coordinate processing
+  const updateJoystick = useCallback((clientX: number, clientY: number) => {
+    const base = joystickBaseRef.current;
+    if (!base) return;
+    const rect = base.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const rawDx = clientX - centerX;
+    const rawDy = clientY - centerY;
+    const maxRadius = 36;
+    const dist = Math.hypot(rawDx, rawDy);
+    const clampedDist = Math.min(maxRadius, dist);
+    const angle = Math.atan2(rawDy, rawDx);
+    const clampedX = Math.cos(angle) * clampedDist;
+    const clampedY = Math.sin(angle) * clampedDist;
+
+    setKnobOffset({ x: clampedX, y: clampedY });
+    joystickVector.current = {
+      x: clampedX / maxRadius,
+      y: clampedY / maxRadius
+    };
+  }, []);
+
+  const handleJoystickTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    if (e.targetTouches.length > 0 && joystickTouchId.current === null) {
+      const touch = e.targetTouches[0];
+      joystickTouchId.current = touch.identifier;
+      joystickActive.current = true;
+      updateJoystick(touch.clientX, touch.clientY);
+    }
+  };
+
+  const handleJoystickTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    for (let i = 0; i < e.targetTouches.length; i++) {
+      if (e.targetTouches[i].identifier === joystickTouchId.current) {
+        updateJoystick(e.targetTouches[i].clientX, e.targetTouches[i].clientY);
+        break;
+      }
+    }
+  };
+
+  const handleJoystickTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    for (let i = 0; i < e.changedTouches.length; i++) {
+      if (e.changedTouches[i].identifier === joystickTouchId.current) {
+        joystickTouchId.current = null;
+        joystickActive.current = false;
+        joystickVector.current = { x: 0, y: 0 };
+        setKnobOffset({ x: 0, y: 0 });
+        break;
+      }
+    }
+  };
+
+  const handleJoystickMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+    joystickActive.current = true;
+    updateJoystick(e.clientX, e.clientY);
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      updateJoystick(moveEvent.clientX, moveEvent.clientY);
+    };
+
+    const onMouseUp = () => {
+      joystickActive.current = false;
+      joystickVector.current = { x: 0, y: 0 };
+      setKnobOffset({ x: 0, y: 0 });
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  // Right-hand action button trigger (Enter station or Boost)
+  const handleActionButton = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (nearZone) {
+      onSelectZone(nearZone, true);
+      sound.playLevelUp();
+    } else {
+      // Warp Boost in open space
+      isBoostActive.current = true;
+      sound.playTeleport();
+      setTimeout(() => {
+        isBoostActive.current = false;
+      }, 600);
+    }
+  };
+
   const processScreenTap = useCallback((clickScreenX: number, clickScreenY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -181,15 +294,15 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     const world = unprojectIso(isoOffsetX, isoOffsetY);
 
     // Clamp to map bounds (covers deep space northern & eastern sectors)
-    const clampedWx = Math.max(-130, Math.min(210, world.wx));
-    const clampedWy = Math.max(-210, Math.min(130, world.wy));
+    const clampedWx = Math.max(-140, Math.min(210, world.wx));
+    const clampedWy = Math.max(-220, Math.min(140, world.wy));
 
     // Check if clicked close to a station footprint
     let targetZone: GameZoneId | null = null;
     for (const zone of GAME_ZONES) {
       const coords = ZONE_WORLD_COORDS[zone.id];
       const dist = Math.hypot(clampedWx - coords.wx, clampedWy - coords.wy);
-      if (dist < 26) {
+      if (dist < 28) {
         targetZone = zone.id;
         break;
       }
@@ -199,7 +312,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       const coords = ZONE_WORLD_COORDS[targetZone];
       triggerWarpJump(coords.wx, coords.wy, targetZone);
       targetRef.current = { wx: coords.wx, wy: coords.wy };
-      onSelectZone(targetZone);
+      onSelectZone(targetZone, true);
     } else {
       targetRef.current = { wx: clampedWx, wy: clampedWy };
       sound.playBip(620, 0.04);
@@ -287,34 +400,40 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       const isWarping = warpRef.current.isWarping;
       const warpSpeedMult = isWarping ? 3.8 : 1.0;
 
-      // 1. Process Keyboard Input (WASD / Arrows)
-      let inputWx = 0;
-      let inputWy = 0;
+      // 1. Process Directional Input (WASD / Arrows + Virtual Joystick)
+      let screenDx = 0;
+      let screenDy = 0;
       const k = keysPressed.current;
 
-      if (k['w'] || k['arrowup']) {
-        inputWx -= 1;
-        inputWy -= 1;
-      }
-      if (k['s'] || k['arrowdown']) {
-        inputWx += 1;
-        inputWy += 1;
-      }
-      if (k['a'] || k['arrowleft']) {
-        inputWx -= 1;
-        inputWy += 1;
-      }
-      if (k['d'] || k['arrowright']) {
-        inputWx += 1;
-        inputWy += 1;
+      if (k['w'] || k['arrowup']) screenDy -= 1;
+      if (k['s'] || k['arrowdown']) screenDy += 1;
+      if (k['a'] || k['arrowleft']) screenDx -= 1;
+      if (k['d'] || k['arrowright']) screenDx += 1;
+
+      // Add touch joystick vector
+      if (joystickActive.current) {
+        screenDx += joystickVector.current.x;
+        screenDy += joystickVector.current.y;
       }
 
-      if (inputWx !== 0 || inputWy !== 0) {
+      const hasDirectionInput = Math.hypot(screenDx, screenDy) > 0.05;
+
+      if (hasDirectionInput) {
         targetRef.current = null;
-        const len = Math.hypot(inputWx, inputWy);
-        const speed = 80 * warpSpeedMult;
-        player.vx = (inputWx / len) * speed;
-        player.vy = (inputWy / len) * speed;
+        const len = Math.hypot(screenDx, screenDy);
+        const normScreenX = screenDx / Math.max(1, len);
+        const normScreenY = screenDy / Math.max(1, len);
+
+        // Invert 30-degree isometric projection to convert screen direction to world isometric delta:
+        // isoX = (wx - wy) * ISO_COS  =>  (wx - wy) = normScreenX / ISO_COS
+        // isoY = (wx + wy) * ISO_SIN  =>  (wx + wy) = normScreenY / ISO_SIN
+        const inputWx = (normScreenX / ISO_COS + normScreenY / ISO_SIN) / 2;
+        const inputWy = (normScreenY / ISO_SIN - normScreenX / ISO_COS) / 2;
+
+        const boostMult = isBoostActive.current ? 2.2 : 1.0;
+        const speed = 90 * warpSpeedMult * boostMult;
+        player.vx = inputWx * speed;
+        player.vy = inputWy * speed;
       } else if (targetRef.current) {
         // Navigate toward target
         const dx = targetRef.current.wx - player.wx;
@@ -339,9 +458,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         player.vy *= Math.pow(0.005, dt);
       }
 
-      // Update Player World Position
-      player.wx = Math.max(-125, Math.min(125, player.wx + player.vx * dt));
-      player.wy = Math.max(-205, Math.min(125, player.wy + player.vy * dt));
+      // Update Player World Position with EXPANDED star system boundary
+      player.wx = Math.max(-140, Math.min(210, player.wx + player.vx * dt));
+      player.wy = Math.max(-220, Math.min(140, player.wy + player.vy * dt));
 
       const isMoving = Math.hypot(player.vx, player.vy) > 1.0;
 
@@ -884,17 +1003,59 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       />
 
       {/* Top HUD Overlay: Controls & Warp Status */}
-      <div className="absolute top-2 sm:top-4 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-between pointer-events-none gap-2">
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-[11px] sm:text-xs font-mono text-[#F8FAFC] truncate">
+      <div className="absolute top-2 sm:top-4 left-2 right-2 sm:left-4 sm:right-4 flex flex-wrap items-center justify-between pointer-events-none gap-2 z-30">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-[11px] sm:text-xs font-mono text-[#F8FAFC]">
           <Crosshair className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
-          <span className="hidden sm:inline">
-            {language === 'en'
-              ? 'STAR SYSTEM: WASD / ARROWS / TAP TO TRAVEL'
-              : 'HỆ THỐNG SAO: WASD / MŨI TÊN / CHẠM ĐỂ DI CHUYỂN'}
-          </span>
-          <span className="sm:hidden">
-            {language === 'en' ? 'TAP TO TRAVEL' : 'CHẠM DI CHUYỂN'}
-          </span>
+          {controlMode === 'touch' ? (
+            <span>
+              {language === 'en'
+                ? 'TOUCH FLIGHT: DRAG JOYSTICK TO FLY'
+                : 'ĐIỀU KHIỂN CHẠM: KÉO CẦN ĐỂ BAY'}
+            </span>
+          ) : (
+            <span className="hidden sm:inline">
+              {language === 'en'
+                ? 'BROWSER MODE: WASD / ARROWS TO FLY · [E] ENTER'
+                : 'CHẾ ĐỘ TRÌNH DUYỆT: WASD ĐỂ BAY · [E] VÀO TRẠM'}
+            </span>
+          )}
+          {controlMode === 'keyboard' && (
+            <span className="sm:hidden">
+              {language === 'en' ? 'WASD / ARROWS' : 'PHÍM WASD'}
+            </span>
+          )}
+        </div>
+
+        {/* Controls Switcher Badge (Auto-Detected with Manual Override) */}
+        <div className="flex items-center gap-1 bg-[#131B2E]/90 border border-[#1E293B] rounded-lg p-0.5 pointer-events-auto">
+          <button
+            onClick={() => {
+              setControlMode('touch');
+              sound.playTerminalClick();
+            }}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+              controlMode === 'touch'
+                ? 'bg-[#8B5CF6] text-white font-bold shadow-sm'
+                : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+            }`}
+            title="Switch to Mobile/Tablet Touch Flight Controls"
+          >
+            Touch Stick
+          </button>
+          <button
+            onClick={() => {
+              setControlMode('keyboard');
+              sound.playTerminalClick();
+            }}
+            className={`px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+              controlMode === 'keyboard'
+                ? 'bg-[#8B5CF6] text-white font-bold shadow-sm'
+                : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+            }`}
+            title="Switch to Keyboard WASD Flight Controls"
+          >
+            WASD
+          </button>
         </div>
 
         {isWarpingUi ? (
@@ -908,8 +1069,8 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
             <span className="w-2 h-2 rounded-full bg-[#8B5CF6] shrink-0" />
             <span>
               {language === 'en'
-                ? 'PRESS [E] OR TAP'
-                : 'NHẤN [E] HOẶC CHẠM'}
+                ? (controlMode === 'touch' ? 'TAP ACTION TO ENTER' : 'PRESS [E] TO ENTER')
+                : (controlMode === 'touch' ? 'CHẠM NÚT ĐỂ VÀO' : 'NHẤN [E] ĐỂ VÀO')}
             </span>
           </div>
         ) : null}
@@ -917,13 +1078,70 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
       {/* Dynamic Travel Notification */}
       {travelMessage && (
-        <div className="absolute top-14 left-1/2 -translate-x-1/2 pointer-events-none px-3.5 py-1 rounded bg-[#131B2E]/95 border border-[#8B5CF6]/40 text-xs text-[#8B5CF6] font-mono shadow-xl">
+        <div className="absolute top-14 left-1/2 -translate-x-1/2 pointer-events-none px-3.5 py-1 rounded bg-[#131B2E]/95 border border-[#8B5CF6]/40 text-xs text-[#8B5CF6] font-mono shadow-xl z-20">
           {travelMessage}
         </div>
       )}
 
+      {/* MOBILE / TABLET TOUCH CONTROL DECK (Virtual Analog Joystick + Action Button) */}
+      {controlMode === 'touch' && (
+        <div className="absolute inset-x-0 bottom-14 sm:bottom-16 px-4 flex items-end justify-between pointer-events-none z-20">
+          {/* Left Virtual Analog Joystick */}
+          <div
+            ref={joystickBaseRef}
+            onTouchStart={handleJoystickTouchStart}
+            onTouchMove={handleJoystickTouchMove}
+            onTouchEnd={handleJoystickTouchEnd}
+            onTouchCancel={handleJoystickTouchEnd}
+            onMouseDown={handleJoystickMouseDown}
+            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#8B5CF6]/60 bg-[#131B2E]/85 backdrop-blur-md relative flex items-center justify-center shadow-2xl shadow-violet-500/25 pointer-events-auto touch-none select-none active:border-[#8B5CF6]"
+            aria-label="Flight Joystick"
+          >
+            {/* Crosshair guide lines */}
+            <div className="absolute inset-x-3 top-1/2 h-px bg-[#8B5CF6]/20 pointer-events-none" />
+            <div className="absolute inset-y-3 left-1/2 w-px bg-[#8B5CF6]/20 pointer-events-none" />
+
+            {/* Cardinal direction labels */}
+            <span className="absolute top-1 text-[8px] font-mono text-[#94A3B8]/60 pointer-events-none">▲</span>
+            <span className="absolute bottom-1 text-[8px] font-mono text-[#94A3B8]/60 pointer-events-none">▼</span>
+            <span className="absolute left-1 text-[8px] font-mono text-[#94A3B8]/60 pointer-events-none">◀</span>
+            <span className="absolute right-1 text-[8px] font-mono text-[#94A3B8]/60 pointer-events-none">▶</span>
+
+            {/* Draggable Analog Stick Knob */}
+            <div
+              style={{
+                transform: `translate(${knobOffset.x}px, ${knobOffset.y}px)`
+              }}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#8B5CF6] border-2 border-white shadow-[0_0_15px_#8B5CF6] pointer-events-none flex items-center justify-center transition-transform duration-75"
+            >
+              <div className="w-2.5 h-2.5 rounded-full bg-white/80" />
+            </div>
+          </div>
+
+          {/* Right Tactile Action Button */}
+          <button
+            onClick={handleActionButton}
+            onTouchStart={handleActionButton}
+            className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex flex-col items-center justify-center font-mono font-bold transition-all duration-150 active:scale-90 shadow-2xl pointer-events-auto select-none ${
+              nearZone
+                ? 'bg-[#8B5CF6] border-2 border-white text-white shadow-[0_0_25px_#8B5CF6] animate-pulse ring-4 ring-[#8B5CF6]/40'
+                : 'bg-[#131B2E]/90 border border-[#8B5CF6]/50 text-[#8B5CF6] hover:bg-[#1E293B]'
+            }`}
+            aria-label={nearZone ? 'Enter Orbital Station' : 'Warp Thruster Boost'}
+          >
+            <Zap className={`w-5 h-5 ${nearZone ? 'fill-current' : ''}`} />
+            <span className="text-[10px] mt-0.5 leading-tight">
+              {nearZone ? (language === 'en' ? 'ENTER' : 'VÀO') : 'BOOST'}
+            </span>
+            <span className="text-[8px] opacity-75 font-mono">
+              {nearZone ? '[E]' : '2X'}
+            </span>
+          </button>
+        </div>
+      )}
+
       {/* Bottom Fast-Travel Star System Bar */}
-      <div className="absolute bottom-2 sm:bottom-4 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto scrollbar-none pointer-events-auto py-1">
+      <div className="absolute bottom-2 sm:bottom-3 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto scrollbar-none pointer-events-auto py-1 z-10">
         {GAME_ZONES.map((zone) => {
           const isCurrent = activeZone === zone.id;
           const isClose = nearZone === zone.id;
@@ -935,7 +1153,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
               onClick={() => {
                 const coords = ZONE_WORLD_COORDS[zone.id];
                 triggerWarpJump(coords.wx, coords.wy, zone.id);
-                onSelectZone(zone.id);
+                onSelectZone(zone.id, true);
               }}
               className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-medium transition-all ${
                 isCurrent || isClose
