@@ -24,13 +24,41 @@ export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card
 
   const getCardIcon = (type: TradingCardItem['type']) => {
     switch (type) {
-      case 'youtube': return <Youtube className="w-5 h-5 text-[#8B5CF6]" />;
+      case 'youtube': return <Youtube className="w-5 h-5 text-rose-400" />;
       case 'doc': return <FileText className="w-5 h-5 text-[#8B5CF6]" />;
       case 'drive': return <FileText className="w-5 h-5 text-[#8B5CF6]" />;
       case 'github': return <FolderGit2 className="w-5 h-5 text-[#8B5CF6]" />;
       default: return <Laptop className="w-5 h-5 text-[#8B5CF6]" />;
     }
   };
+
+  const getYouTubeEmbedInfo = (url: string) => {
+    if (!url) return null;
+    const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/);
+    if (shortsMatch) {
+      return {
+        embedUrl: `https://www.youtube-nocookie.com/embed/${shortsMatch[1]}?autoplay=0&rel=0`,
+        isShorts: true
+      };
+    }
+    const watchMatch = url.match(/[?&]v=([a-zA-Z0-9_-]+)/);
+    if (watchMatch) {
+      return {
+        embedUrl: `https://www.youtube-nocookie.com/embed/${watchMatch[1]}?autoplay=0&rel=0`,
+        isShorts: false
+      };
+    }
+    const playlistMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+    if (playlistMatch) {
+      return {
+        embedUrl: `https://www.youtube-nocookie.com/embed/videoseries?list=${playlistMatch[1]}`,
+        isShorts: false
+      };
+    }
+    return null;
+  };
+
+  const ytInfo = getYouTubeEmbedInfo(card.url);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/75 backdrop-blur-sm animate-fadeIn">
@@ -69,6 +97,21 @@ export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card
 
         {/* Card Body */}
         <div className="p-6 space-y-4">
+          {/* Embedded YouTube Player */}
+          {ytInfo && (
+            <div className="overflow-hidden rounded-xl border border-[#1E293B] bg-[#090D16] flex justify-center shadow-lg p-1">
+              <div className={`w-full ${ytInfo.isShorts ? 'max-w-[280px] sm:max-w-[310px] aspect-[9/16]' : 'aspect-video'}`}>
+                <iframe
+                  src={ytInfo.embedUrl}
+                  title={card.title}
+                  className="w-full h-full rounded-lg"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
+
           <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
             {language === 'en' ? card.descriptionEn : card.descriptionVi}
           </p>
@@ -116,7 +159,11 @@ export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card
             onClick={() => sound.playTeleport()}
             className="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-medium text-xs shadow-md shadow-[#8B5CF6]/30 transition-colors"
           >
-            <span>{language === 'en' ? 'Open Resource' : 'Mở liên kết'}</span>
+            <span>
+              {card.type === 'youtube'
+                ? (language === 'en' ? 'Watch on YouTube' : 'Xem trên YouTube')
+                : (language === 'en' ? 'Open Resource' : 'Mở liên kết')}
+            </span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>

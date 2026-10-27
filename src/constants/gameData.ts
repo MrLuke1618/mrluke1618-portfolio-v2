@@ -378,6 +378,7 @@ export const QUEST_LOG_DATA: QuestItem[] = [
       'Xây dựng quy trình hậu kỳ tinh gọn, kết hợp hài hòa giữa nhịp điệu điện ảnh chuyên nghiệp và các công cụ AI thế hệ mới.'
     ],
     lootLinks: [
+      { name: 'AI HTML Video Showcase (Remotion · Hyperframes)', url: 'https://www.youtube.com/shorts/SfQYA6_Maw4', type: 'youtube' },
       { name: 'AI Video Playlist (VEO3, Kling, Higgsfield)', url: 'https://www.youtube.com/playlist?list=PL8l48rFpYhhaFUDxydFt2tTY55rpb9rWi', type: 'youtube' }
     ]
   },
@@ -454,6 +455,19 @@ export const QUEST_LOG_DATA: QuestItem[] = [
 ];
 
 export const TRADING_CARDS: TradingCardItem[] = [
+  {
+    id: 'card-ai-html-video',
+    title: 'AI HTML Video Showcase (Remotion · Hyperframes · Concat)',
+    categoryEn: 'AI Video Engineering',
+    categoryVi: 'Kỹ Thuật Video AI',
+    type: 'youtube',
+    url: 'https://www.youtube.com/shorts/SfQYA6_Maw4',
+    readTimeEstimate: '1 min video',
+    tags: ['Remotion', 'Hyperframes', 'Concat', 'HTML Video', 'AI Post-Production', 'YouTube Shorts'],
+    descriptionEn: 'Showcase demonstrating programmatic AI HTML video generation combining Remotion, Hyperframes, and Concat stitchers—fusing web technologies, CSS kinetic typography, and automated rendering pipelines.',
+    descriptionVi: 'Video showcase kỹ thuật sản xuất video AI bằng HTML/CSS qua Remotion, Hyperframes và Concat—kết hợp công nghệ web, chuyển động kinetic và quy trình xuất bản tự động.',
+    featured: true
+  },
   {
     id: 'card-shopify-generator',
     title: 'Shopify Growth Video Idea Generator',
