@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TradingCardItem } from '../../types/game';
 import { sound } from '../../constants/soundEffects';
 import { ExternalLink, Copy, Check, X, Clock, Youtube, FileText, FolderGit2, Laptop } from 'lucide-react';
+import { formatReadTime } from '../../utils/readingTime';
 
 interface InteractiveCardModalProps {
   card: TradingCardItem | null;
@@ -48,7 +49,7 @@ export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card
                 <span>·</span>
                 <span className="flex items-center gap-1 text-[11px]">
                   <Clock className="w-3 h-3 text-[#94A3B8]" />
-                  {card.readTimeEstimate}
+                  {formatReadTime(card.readTimeEstimate, language)}
                 </span>
               </div>
               <h3 className="text-base sm:text-lg font-bold text-[#F8FAFC] mt-0.5">

@@ -1038,9 +1038,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
                 ? 'bg-[#8B5CF6] text-white font-bold shadow-sm'
                 : 'text-[#94A3B8] hover:text-[#F8FAFC]'
             }`}
-            title="Switch to Mobile/Tablet Touch Flight Controls"
+            title={language === 'en' ? 'Switch to Mobile/Tablet Touch Flight Controls' : 'Chuyển sang điều khiển cảm ứng'}
           >
-            Touch Stick
+            {language === 'en' ? 'Touch Stick' : 'Cần Ảo'}
           </button>
           <button
             onClick={() => {
@@ -1052,7 +1052,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
                 ? 'bg-[#8B5CF6] text-white font-bold shadow-sm'
                 : 'text-[#94A3B8] hover:text-[#F8FAFC]'
             }`}
-            title="Switch to Keyboard WASD Flight Controls"
+            title={language === 'en' ? 'Switch to Keyboard WASD Flight Controls' : 'Chuyển sang phím WASD'}
           >
             WASD
           </button>
@@ -1131,7 +1131,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           >
             <Zap className={`w-5 h-5 ${nearZone ? 'fill-current' : ''}`} />
             <span className="text-[10px] mt-0.5 leading-tight">
-              {nearZone ? (language === 'en' ? 'ENTER' : 'VÀO') : 'BOOST'}
+              {nearZone
+                ? (language === 'en' ? 'ENTER' : 'VÀO')
+                : (language === 'en' ? 'BOOST' : 'TĂNG TỐC')}
             </span>
             <span className="text-[8px] opacity-75 font-mono">
               {nearZone ? '[E]' : '2X'}

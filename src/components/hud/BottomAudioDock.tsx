@@ -92,7 +92,9 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
             <span className={`w-0.5 bg-[#8B5CF6] rounded-full transition-all ${isPlaying ? 'h-3.5 animate-pulse' : 'h-1'}`} />
           </div>
           <span className="text-[11px] text-[#94A3B8]">
-            {isPlaying ? (language === 'en' ? 'Playing Lo-Fi' : 'Đang phát Lo-Fi') : 'Lo-Fi Player'}
+            {isPlaying
+              ? (language === 'en' ? 'Playing Lo-Fi' : 'Đang phát Lo-Fi')
+              : (language === 'en' ? 'Lo-Fi Player' : 'Trình phát Lo-Fi')}
           </span>
           <ChevronUp className="w-3.5 h-3.5 text-[#94A3B8]" />
         </button>
@@ -152,7 +154,11 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
                     : 'text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
-                {m === 'latenight' ? 'Lo-Fi' : m === 'elevator' ? 'Elevator' : 'Ambient'}
+                {m === 'latenight'
+                  ? 'Lo-Fi'
+                  : m === 'elevator'
+                  ? (language === 'en' ? 'Elevator' : 'Thang máy')
+                  : (language === 'en' ? 'Ambient' : 'Không gian')}
               </button>
             ))}
           </div>
@@ -165,7 +171,7 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
                 ? 'bg-[#1E293B] border-[#8B5CF6] text-[#F8FAFC]'
                 : 'bg-[#090D16] border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC]'
             }`}
-            title="Pomodoro Focus Timer"
+            title={language === 'en' ? "Pomodoro Focus Timer" : "Đồng hồ tập trung Pomodoro"}
           >
             <Timer className="w-3.5 h-3.5" />
             {isPomodoroRunning && <span className="tabular-nums font-mono text-[10px]">{formatPomodoroTime(pomodoroSeconds)}</span>}
@@ -199,8 +205,8 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
               sound.playBip(650, 0.04);
             }}
             className="p-1 rounded-lg text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B] transition-colors"
-            title="Collapse Player"
-            aria-label="Collapse Player"
+            title={language === 'en' ? "Collapse Player" : "Thu gọn trình phát"}
+            aria-label={language === 'en' ? "Collapse Player" : "Thu gọn trình phát"}
           >
             <ChevronDown className="w-3.5 h-3.5" />
           </button>
@@ -211,7 +217,9 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
       {showPomodoro && (
         <div className="mt-2.5 pt-2 border-t border-[#1E293B] flex items-center justify-between text-xs font-mono text-[#94A3B8]">
           <div className="flex items-center gap-2">
-            <span className="text-[#F8FAFC] font-semibold">Pomodoro Focus:</span>
+            <span className="text-[#F8FAFC] font-semibold">
+              {language === 'en' ? 'Pomodoro Focus:' : 'Tập trung Pomodoro:'}
+            </span>
             <span className="text-[#F8FAFC] text-sm tabular-nums">{formatPomodoroTime(pomodoroSeconds)}</span>
           </div>
 
@@ -220,7 +228,9 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
               onClick={() => setIsPomodoroRunning(!isPomodoroRunning)}
               className="px-2.5 py-1 rounded bg-[#8B5CF6] text-white font-medium hover:bg-[#7C3AED] text-[11px] transition-colors"
             >
-              {isPomodoroRunning ? 'Pause' : 'Start'}
+              {isPomodoroRunning
+                ? (language === 'en' ? 'Pause' : 'Tạm dừng')
+                : (language === 'en' ? 'Start' : 'Bắt đầu')}
             </button>
             <button
               onClick={() => {
@@ -229,7 +239,7 @@ export const BottomAudioDock: React.FC<BottomAudioDockProps> = ({ language }) =>
               }}
               className="px-2 py-1 rounded bg-[#090D16] border border-[#1E293B] hover:text-[#F8FAFC] text-[11px] transition-colors"
             >
-              Reset
+              {language === 'en' ? 'Reset' : 'Đặt lại'}
             </button>
           </div>
         </div>

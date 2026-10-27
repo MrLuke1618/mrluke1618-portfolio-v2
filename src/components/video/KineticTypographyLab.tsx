@@ -162,6 +162,20 @@ const MOTION_PRESETS: StyleConfig[] = [
   }
 ];
 
+const getCategoryLabel = (category: string, lang: 'en' | 'vi'): string => {
+  if (lang === 'en') return category;
+  switch (category) {
+    case 'High-Retention': return 'Giữ Chân Cao';
+    case 'Cinematic': return 'Điện Ảnh';
+    case 'Experimental': return 'Đột Phá';
+    case 'Cyberpunk': return 'Cyberpunk';
+    case 'Creative': return 'Sáng Tạo';
+    case 'Dynamic': return 'Năng Động';
+    case 'Minimalist': return 'Tối Giản';
+    default: return category;
+  }
+};
+
 export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ language }) => {
   const [text, setText] = useState<string>('HIGH-RETENTION CINEMATIC MOTION');
   const [activeStyle, setActiveStyle] = useState<MotionStyle>('mrbeast_pop');
@@ -226,7 +240,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
 
           <button
             onClick={handleReplay}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-sm shadow-violet-500/20 active:scale-95"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-sm shadow-violet-500/20 active:scale-95"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>{language === 'en' ? 'Replay Physics' : 'Chạy lại'}</span>
@@ -238,7 +252,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
       <div className="space-y-2">
         <div className="flex items-center justify-between text-xs text-[#94A3B8] font-mono">
           <span>{language === 'en' ? 'SELECT TYPOGRAPHY PRESET:' : 'CHỌN KIỂU CHUYỂN ĐỘNG:'}</span>
-          <span className="text-[#8B5CF6]">{selectedPreset.category}</span>
+          <span className="text-[#8B5CF6]">{getCategoryLabel(selectedPreset.category, language)}</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
@@ -261,7 +275,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
                   {language === 'en' ? preset.nameEn : preset.nameVi}
                 </div>
                 <div className="text-[10px] text-[#8B5CF6] font-mono mt-0.5 truncate">
-                  {preset.category}
+                  {getCategoryLabel(preset.category, language)}
                 </div>
               </button>
             );
@@ -281,7 +295,7 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
             value={text}
             onChange={(e) => setText(e.target.value)}
             className="w-full px-3 py-2 rounded-lg bg-[#131B2E] border border-[#1E293B] text-base sm:text-xs text-[#F8FAFC] focus:outline-none focus:border-[#8B5CF6]"
-            placeholder="Type custom text..."
+            placeholder={language === 'en' ? 'Type custom text...' : 'Nhập văn bản thử nghiệm...'}
           />
         </div>
 

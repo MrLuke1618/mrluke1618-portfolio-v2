@@ -193,7 +193,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
             <div className="flex items-center gap-2">
               <span className="text-[#8B5CF6] text-xs font-medium flex items-center gap-1.5">
                 <Disc className="w-3.5 h-3.5" />
-                <span>Web Audio Procedural Synthesis</span>
+                <span>{language === 'en' ? 'Web Audio Procedural Synthesis' : 'Tổng Hợp Âm Thanh Web Audio'}</span>
               </span>
             </div>
             <KineticHeading
@@ -413,11 +413,11 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
             <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E293B] text-xs">
               <div className="flex items-center gap-2 text-[#8B5CF6] font-semibold">
                 <Timer className="w-4 h-4" />
-                <span>Pomodoro Focus Timer</span>
+                <span>{language === 'en' ? 'Pomodoro Focus Timer' : 'Đồng Hồ Tập Trung Pomodoro'}</span>
               </div>
               <div className="text-[11px] text-[#94A3B8] flex items-center gap-1">
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                <span>{completedSessions} Done</span>
+                <span>{completedSessions} {language === 'en' ? 'Done' : 'Hoàn thành'}</span>
               </div>
             </div>
 
@@ -431,7 +431,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
-                25m Focus
+                {language === 'en' ? '25m Focus' : '25p Tập trung'}
               </button>
               <button
                 onClick={() => handleSetPomodoroPreset('shortBreak')}
@@ -441,7 +441,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
-                5m Short
+                {language === 'en' ? '5m Short' : '5p Nghỉ ngắn'}
               </button>
               <button
                 onClick={() => handleSetPomodoroPreset('longBreak')}
@@ -451,7 +451,7 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                     : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
-                15m Long
+                {language === 'en' ? '15m Long' : '15p Nghỉ dài'}
               </button>
             </div>
 
@@ -490,12 +490,12 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
                 {isTimerRunning ? (
                   <>
                     <Pause className="w-3.5 h-3.5 fill-current" />
-                    <span>Pause Timer</span>
+                    <span>{language === 'en' ? 'Pause Timer' : 'Tạm dừng'}</span>
                   </>
                 ) : (
                   <>
                     <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>Start Session</span>
+                    <span>{language === 'en' ? 'Start Session' : 'Bắt đầu phiên'}</span>
                   </>
                 )}
               </button>

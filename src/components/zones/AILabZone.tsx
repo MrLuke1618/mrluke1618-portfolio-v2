@@ -4,6 +4,8 @@ import { TRADING_CARDS } from '../../constants/gameData';
 import { sound } from '../../constants/soundEffects';
 import { Cpu, Terminal, ShieldCheck, Binary, Eye } from 'lucide-react';
 
+import { formatReadTime } from '../../utils/readingTime';
+
 interface AILabZoneProps {
   onOpenCard: (card: TradingCardItem) => void;
   onOpenEasterEgg: (snippetId: string) => void;
@@ -15,11 +17,33 @@ export const AILabZone: React.FC<AILabZoneProps> = ({
   onOpenEasterEgg,
   language
 }) => {
-  const [terminalOutput, setTerminalOutput] = useState<string[]>([
-    'Systems Automation diagnostic environment initialized.',
-    'Ready for diagnostic command execution...'
-  ]);
+  const [terminalOutput, setTerminalOutput] = useState<string[]>(() =>
+    language === 'en'
+      ? [
+          'Systems Automation diagnostic environment initialized.',
+          'Ready for diagnostic command execution...'
+        ]
+      : [
+          'Môi trường chẩn đoán Tự động hóa Hệ thống đã khởi tạo.',
+          'Sẵn sàng thực thi lệnh kiểm tra...'
+        ]
+  );
   const [isExecuting, setIsExecuting] = useState(false);
+
+  // Sync initial log on language switch if unmodified
+  React.useEffect(() => {
+    setTerminalOutput(
+      language === 'en'
+        ? [
+            'Systems Automation diagnostic environment initialized.',
+            'Ready for diagnostic command execution...'
+          ]
+        : [
+            'Môi trường chẩn đoán Tự động hóa Hệ thống đã khởi tạo.',
+            'Sẵn sàng thực thi lệnh kiểm tra...'
+          ]
+    );
+  }, [language]);
 
   const runCommand = (cmd: string) => {
     sound.playTerminalClick();
@@ -29,13 +53,21 @@ export const AILabZone: React.FC<AILabZoneProps> = ({
     setTimeout(() => {
       let outputLine = '';
       if (cmd.includes('cargo test')) {
-        outputLine = 'test tests::test_signature_resolution ... ok (0.001s). 1 passed; 0 failed.';
+        outputLine = language === 'en'
+          ? 'test tests::test_signature_resolution ... ok (0.001s). 1 passed; 0 failed.'
+          : 'test tests::test_signature_resolution ... thành công (0.001s). 1 đạt; 0 lỗi.';
       } else if (cmd.includes('modder inspect')) {
-        outputLine = 'Pattern match found at memory address 0x7FFF0042 [Hook verified].';
+        outputLine = language === 'en'
+          ? 'Pattern match found at memory address 0x7FFF0042 [Hook verified].'
+          : 'Tìm thấy mẫu khớp tại địa chỉ bộ nhớ 0x7FFF0042 [Đã xác thực hook].';
       } else if (cmd.includes('antigravity')) {
-        outputLine = 'Workflow pipeline dispatch completed: 3 video artifacts generated.';
+        outputLine = language === 'en'
+          ? 'Workflow pipeline dispatch completed: 3 video artifacts generated.'
+          : 'Hoàn tất điều phối quy trình tự động: Đã tạo 3 tệp video.';
       } else {
-        outputLine = 'Process finished with exit code 0.';
+        outputLine = language === 'en'
+          ? 'Process finished with exit code 0.'
+          : 'Tiến trình kết thúc với mã trạng thái 0.';
       }
       setTerminalOutput(prev => [...prev, outputLine]);
       setIsExecuting(false);
@@ -97,17 +129,21 @@ export const AILabZone: React.FC<AILabZoneProps> = ({
         {/* Terminal Header */}
         <div className="px-4 py-2.5 bg-[#131B2E] border-b border-[#1E293B] flex items-center justify-between text-[#94A3B8]">
           <div className="flex items-center gap-2">
-            <span className="text-[#F8FAFC] font-semibold">Terminal: Rust Toolchain & Workflow Engine</span>
+            <span className="text-[#F8FAFC] font-semibold">
+              {language === 'en' ? 'Terminal: Rust Toolchain & Workflow Engine' : 'Dòng lệnh: Bộ công cụ Rust & Động cơ Quy trình'}
+            </span>
           </div>
           <span className="text-[10px] text-[#8B5CF6] flex items-center gap-1">
             <ShieldCheck className="w-3 h-3" />
-            READY
+            {language === 'en' ? 'READY' : 'SẴN SÀNG'}
           </span>
         </div>
 
         {/* Command Buttons */}
         <div className="p-3 bg-[#131B2E]/60 border-b border-[#1E293B] flex flex-wrap items-center gap-2">
-          <span className="text-[10px] text-[#94A3B8] mr-2">EXECUTE:</span>
+          <span className="text-[10px] text-[#94A3B8] mr-2">
+            {language === 'en' ? 'EXECUTE:' : 'THỰC THI:'}
+          </span>
           <button
             onClick={() => runCommand('cargo test --lib -- --nocapture')}
             disabled={isExecuting}
@@ -139,7 +175,9 @@ export const AILabZone: React.FC<AILabZoneProps> = ({
             </div>
           ))}
           {isExecuting && (
-            <div className="text-[#94A3B8] animate-pulse">Executing routine...</div>
+            <div className="text-[#94A3B8] animate-pulse">
+              {language === 'en' ? 'Executing routine...' : 'Đang xử lý quy trình...'}
+            </div>
           )}
         </div>
       </div>
@@ -172,7 +210,7 @@ export const AILabZone: React.FC<AILabZoneProps> = ({
                     <span className="text-[#8B5CF6] font-medium">
                       {language === 'en' ? card.categoryEn : card.categoryVi}
                     </span>
-                    <span>{card.readTimeEstimate}</span>
+                    <span>{formatReadTime(card.readTimeEstimate, language)}</span>
                   </div>
 
                   <h4 className="font-bold text-sm sm:text-base text-[#F8FAFC] group-hover:text-[#8B5CF6] transition-colors leading-snug">

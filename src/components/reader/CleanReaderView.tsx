@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { TradingCardItem } from '../../types/game';
 import { TRADING_CARDS, QUEST_LOG_DATA } from '../../constants/gameData';
 import { sound } from '../../constants/soundEffects';
+import { formatReadTime } from '../../utils/readingTime';
 import { KineticHeading } from '../common/KineticHeading';
 import { 
   ExternalLink, 
@@ -91,7 +92,11 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
                 />
               </div>
               <p className="text-xl sm:text-2xl font-medium text-[#8B5CF6]">
-                Video Editor <span className="text-[#1E293B]">/</span> News Editor <span className="text-[#1E293B]">/</span> AI Content Creator
+                {language === 'en' ? (
+                  <>Video Editor <span className="text-[#1E293B]">/</span> News Editor <span className="text-[#1E293B]">/</span> AI Content Creator</>
+                ) : (
+                  <>Biên tập Video <span className="text-[#1E293B]">/</span> Biên tập Tin tức <span className="text-[#1E293B]">/</span> Sáng tạo Nội dung AI</>
+                )}
               </p>
             </div>
 
@@ -122,19 +127,29 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-6 border-t border-[#1E293B]">
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold text-[#F59E0B] tabular-nums">72,000+</div>
-                <div className="text-xs text-[#94A3B8] mt-1">Lotus Media Subscribers</div>
+                <div className="text-xs text-[#94A3B8] mt-1">
+                  {language === 'en' ? 'Lotus Media Subscribers' : 'Người đăng ký Lotus Media'}
+                </div>
               </div>
               <div>
-                <div className="text-3xl sm:text-4xl font-extrabold text-[#F59E0B]">MA Honours</div>
-                <div className="text-xs text-[#94A3B8] mt-1">Dublin City University</div>
+                <div className="text-3xl sm:text-4xl font-extrabold text-[#F59E0B]">
+                  {language === 'en' ? 'MA Honours' : 'Thạc sĩ Xuất Sắc'}
+                </div>
+                <div className="text-xs text-[#94A3B8] mt-1">
+                  {language === 'en' ? 'Dublin City University' : 'Đại học Dublin City'}
+                </div>
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold text-[#F8FAFC] tabular-nums">6+ Years</div>
-                <div className="text-xs text-[#94A3B8] mt-1">Video Post-Production</div>
+                <div className="text-xs text-[#94A3B8] mt-1">
+                  {language === 'en' ? 'Video Post-Production' : 'Hậu kỳ Video & Đa phương tiện'}
+                </div>
               </div>
               <div>
                 <div className="text-3xl sm:text-4xl font-extrabold text-[#F8FAFC] tabular-nums">1,000+</div>
-                <div className="text-xs text-[#94A3B8] mt-1">Published Tech & Crypto Articles</div>
+                <div className="text-xs text-[#94A3B8] mt-1">
+                  {language === 'en' ? 'Published Tech & Crypto Articles' : 'Bài viết Công nghệ & Web3'}
+                </div>
               </div>
             </div>
 
@@ -270,7 +285,7 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
                   <span className="text-[#8B5CF6] font-medium">
                     {language === 'en' ? card.categoryEn : card.categoryVi}
                   </span>
-                  <span>{card.readTimeEstimate}</span>
+                  <span>{formatReadTime(card.readTimeEstimate, language)}</span>
                 </div>
 
                 <div className="space-y-2">
@@ -320,7 +335,7 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E293B] pb-4">
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-[#F8FAFC]">
-                    {quest.role}
+                    {language === 'en' ? quest.role : (quest.roleVi || quest.role)}
                   </h3>
                   <div className="text-xs sm:text-sm text-[#94A3B8] mt-0.5">
                     {quest.company}
@@ -328,7 +343,7 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
                 </div>
 
                 <div className="text-xs text-[#94A3B8] font-mono">
-                  {quest.period}
+                  {language === 'en' ? quest.period : (quest.periodVi || quest.period)}
                 </div>
               </div>
 
@@ -340,7 +355,7 @@ export const CleanReaderView: React.FC<CleanReaderViewProps> = ({
                 {quest.achievements.map((ach, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#94A3B8]">
                     <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] mt-2 shrink-0" />
-                    <span>{ach}</span>
+                    <span>{language === 'en' ? ach : (quest.achievementsVi?.[idx] || ach)}</span>
                   </div>
                 ))}
               </div>

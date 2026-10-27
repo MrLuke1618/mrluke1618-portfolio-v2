@@ -37,14 +37,17 @@ export interface SkillTreeNode {
 export interface QuestItem {
   id: string;
   role: string;
+  roleVi?: string;
   company: string;
   period: string;
+  periodVi?: string;
   status: 'Completed' | 'Active';
   xpReward: number;
   questRank: 'S-Rank' | 'A-Rank' | 'B-Rank';
   summaryEn: string;
   summaryVi: string;
   achievements: string[];
+  achievementsVi?: string[];
   lootLinks?: {
     name: string;
     url: string;

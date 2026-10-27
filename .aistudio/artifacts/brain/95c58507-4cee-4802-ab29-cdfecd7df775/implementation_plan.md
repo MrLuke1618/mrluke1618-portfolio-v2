@@ -1,136 +1,157 @@
-# 2.5D Star System Flight Controls & Lounge Interaction Revamp
+# Full Bilingual Localization Engine (English & Vietnamese)
 
-Comprehensive engineering blueprint to repair broken map physics, resolve coordinate bounds preventing travel to distant outposts, and deliver dedicated, differentiated control systems for desktop browsers (WASD + [E] interaction) and mobile/tablet devices (custom virtual analog flight joystick + right-hand action trigger).
+Comprehensive architectural plan to deliver 100% complete, authentic bilingual localization across all UI surfaces, interactive lounges, arcade cabinet emulators, and motion video suites—ensuring zero mixed-language states when switching between English and Vietnamese modes.
 
-## User Review & Critical Decisions
+## User Decisions & Clarifications Summary
 
-> [!NOTE]
-> **Implementation Complete**: All architectural decisions have been implemented and verified with zero build or lint errors.
-
-- **Confirmed Decision 1 (Mobile Control Model)**: Virtual analog joystick on the bottom-left of the flight HUD with a dedicated action/interaction button on the bottom-right. *(Completed)*
-- **Confirmed Decision 2 (Station Node Interaction)**: Triggering entry (via `[E]` on desktop or the action button on mobile) will smoothly scroll the viewport down to `#active-zone-view` and illuminate the station's controls with an attention glow. *(Completed)*
-- **Confirmed Decision 3 (Input Vector Resolution)**: Completely overhauled isometric movement trigonometry so directional inputs map intuitively to visual screen coordinates (Up on screen for W/stick up, Right on screen for D/stick right, etc.). *(Completed)*
-- **Confirmed Decision 4 (Map Boundary Expansion)**: Expanded physical world bounds from `[-125, 125]` to `wx: [-140, 210]`, `wy: [-220, 140]` so the ship can freely navigate to the distant Retro Arcade Planet (`wx: 165`) and the AntiGravity Shipyard (`wy: -175`). *(Completed)*
+- **Translation Style**: Natural tech Vietnamese using clear, modern industry terminology (e.g., video editing, motion design, AI workflows, arcade gaming) rather than stiff or literal mechanical phrasing.
+- **Code & CLI Strategy**: Keep code syntax, CLI commands, and raw filenames in standard English/code syntax, but translate all UI explanations, terminal headers, execution logs, and guides into natural Vietnamese.
+- **Visual & Brand Constraints**: Adhere strictly to the 5-color palette (`#090D16`, `#131B2E`, `#8B5CF6`, `#F8FAFC`, `#94A3B8`) with zero pill enclosures for static metadata and zero heavy 3D mesh overhead.
 
 ---
 
-## 1. Overview & Core Concept
+## 1. Audit Findings: Mixed-Language Hotspots
 
-- **What It Does**: Upgrades the interactive 2.5D star system into a responsive, dual-mode space flight arena. Desktop users navigate the nano-drone with responsive WASD keyboard physics and interact with orbital hubs via `[E]`. Mobile and tablet users pilot their spacecraft in real time using a custom-engineered virtual analog stick and tactile action trigger with full multi-touch support.
-- **Target Audience / Persona**: Recruiters, creative directors, and engineering leads exploring Hoang Cao Minh's video production workflows, automation architecture, and 10-game retro arcade hub on both desktop workstations and mobile touch devices.
-- **Key Value**: Eliminates frustrating control bugs, unlocks full free-flight access to all 5 planetary hubs, and provides platform-native ergonomics tailored to the user's input device.
+During systematic codebase auditing, several UI components and data structures were found to exhibit hardcoded English strings or lack corresponding Vietnamese data fields:
 
----
+1. **`QuestItem` Schema & `QUEST_LOG_DATA` (`src/types/game.ts` & `src/constants/gameData.ts`)**:
+   - `QuestItem` lacked `roleVi`, `periodVi`, and `achievementsVi`.
+   - In both `CleanReaderView.tsx` and `AcademyTowerZone.tsx`, `quest.achievements` was rendered directly from English strings, leaving all career bullet points in English even when the rest of the page was in Vietnamese.
 
-## 2. User Experience & Visual Design
+2. **Editorial Hero & Metrics Strip (`src/components/reader/CleanReaderView.tsx`)**:
+   - Subtitle role string: `Video Editor / News Editor / AI Content Creator` (needs Vietnamese counterpart: `Biên tập Video / Biên tập Tin tức / Sáng tạo Nội dung AI`).
+   - Metrics labels: `"Lotus Media Subscribers"`, `"MA Honours"`, `"Dublin City University"`, `"Video Post-Production"`, `"Published Tech & Crypto Articles"`.
+   - Card read estimates: `"3 min read"`, `"12 min video"`, `"5 min read"` statically defined in English.
 
-### Key User Flows
+3. **10-Game Arcade Hub & In-Game Modals (`src/components/zones/ArcadeProjectZone.tsx` & `src/components/arcade/ArcadeGameModal.tsx`)**:
+   - Cabinet top tags: `"COIN OP"`, `"FREE PLAY"`, `"GAMES"`, `"10 / 10 ONLINE"`, `"FILTER GENRE:"`.
+   - Modal telemetry & touch controls: `"CIRCUIT BREACH"`, `"SCORE"`, `"BEST"`, `"REBOOT SYSTEM"`, `"LINES"`, `"MOVES"`, `"PAIRS"`, `"ROTATE"`, `"DROP"`, `"ALTITUDE"`, `"ATTEMPTS"`, `"RESTART"`.
 
-1. **Desktop Flight & Inspection Flow**:
-   - User lands on Game Mode. The flight HUD displays clear desktop controls: `[W,A,S,D] Fly Drone` and `[E] Enter Station`.
-   - Pressing W/S/A/D accelerates the nano-drone along accurate isometric vectors with dynamic thrust particle trails.
-   - When flying within 28 units of an orbital station (e.g. *Retro Arcade Planet* or *Motion & Video Suite*), the HUD pulses violet: `PRESS [E] TO ENTER STATION`.
-   - Pressing `[E]` triggers an entry chime, engages the warp target, updates the active zone state, and smoothly auto-scrolls down to `#active-zone-view` with a momentary highlight effect.
+4. **Motion & Video Suite Labs (`src/components/video/*`)**:
+   - `KineticTypographyLab.tsx`: Preset category badges (`High-Retention`, `Cinematic`, `Experimental`, `Cyberpunk`, `Creative`, `Dynamic`, `Minimalist`), parameter labels (`"EDIT TEST HEADLINE:"`, `"SPEED & TENSION:"`, `"SELECT TYPOGRAPHY PRESET:"`, `"Copy CSS Keyframes"`).
+   - `AutomatedWorkflowVisualizer.tsx`: Header labels (`"VERIFIED OPEN-SOURCE BLUEPRINTS:"`, `"PHASE 01"`, `"TARGET ASPECT"`, `"CRF COMPRESSION"`, `"AUDIO DUCKING"`, `"RUNTIME CODE BLUEPRINT"`, `"Copy Code"`, `"Benchmark:"`).
+   - `VideoPipelineSimulator.tsx`: Initial console log strings, filter toggles (`"35mm Grain: ON / OFF"`, `"Vignette: ON / OFF"`), and track titles.
 
-2. **Mobile / Tablet Real-Time Flight Flow**:
-   - On touch-enabled devices, an unobtrusive, translucent cybernetic control deck activates automatically at the base of the canvas.
-   - **Left Thumb Zone**: A circular analog stick base (`h-24 w-24` / `96px`) with an inner luminous knob (`h-10 w-10` / `40px`) tracking 360-degree finger displacement. Dragging any direction smoothly propels the ship.
-   - **Right Thumb Zone**: A prominent action button (`min-h-[48px] min-w-[48px]`) that dynamically switches labels:
-     - In open space: `BOOST` (gives a surge of hyperspace thruster acceleration).
-     - Near a planetary node: `ENTER [E]` (pulses violet; tapping engages entry and smoothly scrolls to the station lounge).
-   - Independent multi-touch tracking (`touch.identifier`) ensures players can steer with their left thumb while tapping or holding the action button with their right thumb without gesture collision.
+5. **Lo-Fi Audio Lounge & Contact Zone (`src/components/zones/LoFiLoungeZone.tsx`)**:
+   - Header badge: `"Web Audio Procedural Synthesis"`.
+   - Slider titles: `"Vinyl Crackle"`, `"Tempo / BPM"`, `"Reverb / Space"`, `"Master Volume"`.
+   - Pomodoro timer: presets (`"25m Focus"`, `"5m Short"`, `"15m Long"`), actions (`"Start"`, `"Pause"`, `"Reset"`), and completion counters (`"Done"`).
 
-### Visual Identity & Theme
-
-- **Palette Discipline**:
-  - Deep Space Canvas: Obsidian Black (`#090D16`) with isometric grid matrix (`#131B2E`) and 80 ambient stardust particles.
-  - Interactive Accents: Electric Violet (`#8B5CF6`) for HUD rings, player thrusters, and active station beacons.
-  - UI Framing & Readouts: Slate Gray (`#94A3B8`) typography, Crisp White (`#F8FAFC`) primary labels, and High-Tech Slate (`#1E293B`) control housings.
-- **Ergonomics & Anti-Slop Discipline**:
-  - Virtual joystick and action buttons avoid garish candy styling, featuring crisp vector lines, subtle radial glows, and responsive haptic/sound feedback.
-  - No static pill capsules; clear numeric speed/coordinates in monospaced micro-typography.
+6. **AntiGravity Shipyard Outpost (`src/components/zones/AntiGravityShipyardZone.tsx`)**:
+   - CLI preset descriptions and simulated execution logs (currently English-only).
 
 ---
 
-## 3. Key Product Decisions & Trade-Offs
-
-- **Decision 1: Screen-Space Vector Translation for Isometric Movement**:
-  - *Chosen Approach*: Map WASD and joystick input to visual screen axes ($X_{\text{screen}}, Y_{\text{screen}}$), then run through the inverted isometric matrix to calculate world delta $(dW_x, dW_y)$.
-  - *Why*: In 30-degree isometric projections, raw world axes run diagonally across the screen ($+X$ goes bottom-right, $+Y$ goes bottom-left). Translating user intent from screen coordinates makes pressing "W" or pushing the stick "Up" feel 100% natural and aligned with the screen orientation.
-  - *Alternatives Considered*: Standard axial movement (rejected because pressing "Up" would move the ship diagonally down-left).
-
-- **Decision 2: Dual-Mode Adaptive Control Deck with Manual Override**:
-  - *Chosen Approach*: Auto-detect touch capability (`'ontouchstart' in window || navigator.maxTouchPoints > 0`) to render the virtual joystick, while providing a small toggle button (`Desktop Controls` vs `Touch Controls`) in the canvas header.
-  - *Why*: Accommodates 2-in-1 touchscreen laptops (Surface, iPad with Magic Keyboard) where users may switch between trackpad/keyboard and direct screen touch.
-
-- **Decision 3: Multi-Touch Identifier Isolation**:
-  - *Chosen Approach*: Track the specific `identifier` of the touch event driving the left joystick independently from touches landing on the right action trigger or canvas map.
-  - *Why*: Prevents thumb contention where pressing the action button resets or hijacks joystick coordinates.
-
----
-
-## 4. Technical Architecture & Data Strategy
-
-### System Component Architecture
+## 2. Proposed Architecture & Implementation Steps
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│                        App.tsx (Main Coordinator)                      │
-│   - State: activeZone, viewMode ('game' | 'reader'), language          │
-│   - Handler: handleSelectZone(zoneId, shouldScroll = true)            │
+│                        Language State ('en' | 'vi')                    │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
                                     ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│                      GameCanvas2D.tsx (2.5D World Map)                 │
-│                                                                        │
-│  ┌───────────────────────┐                  ┌───────────────────────┐  │
-│  │   Desktop Input Hub   │                  │  Mobile Control Deck  │  │
-│  │ - Keydown: W,A,S,D    │                  │ - Virtual Analog Stick│  │
-│  │ - Keydown: [E] Enter  │                  │ - Touch Action Button │  │
-│  │ - Keydown: [Space]    │                  │ - Multi-Touch Tracker │  │
-│  └───────────┬───────────┘                  └───────────┬───────────┘  │
-│              │                                          │              │
-│              └────────────────────┬─────────────────────┘              │
-│                                   ▼                                    │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                   Kinematic Space Physics Engine                 │  │
-│  │  - Screen-to-Iso Vector Matrix (W: -Y, S: +Y, A: -X, D: +X)     │  │
-│  │  - Expanded World Clamping: wx[-140..210], wy[-220..140]         │  │
-│  │  - Velocity, Thruster Momentum & 1.0s Trail Decay                │  │
-│  │  - Proximity Detection (r <= 28) -> nearZone state               │  │
-│  └────────────────────────────────┬─────────────────────────────────┘  │
-│                                   │                                    │
-│                                   ▼                                    │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │                   Canvas 2.5D Multi-Layer Render                 │  │
-│  │  - Deep space starfield (80 particles) + Volumetric gradients    │  │
-│  │  - Isometric grid floor with glowing hex sectors                 │  │
-│  │  - 5 Planetary Stations (Core 3 + Distant Alpha & Beta)          │  │
-│  │  - Nano-Drone Vessel with dynamic thruster plume & trail         │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│ 1. Schema & Data Updates (src/types/game.ts & constants/gameData.ts)  │
+│  - QuestItem: roleVi, periodVi, achievementsVi: string[]               │
+│  - QUEST_LOG_DATA: 100% natural Vietnamese career achievements         │
+│  - Helper: formatReadTime(str, language) -> "3 phút đọc", etc.         │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
-                                    ▼ triggers scroll & focus
+          ┌─────────────────────────┼─────────────────────────┐
+          ▼                         ▼                         ▼
+┌───────────────────┐     ┌───────────────────┐     ┌───────────────────┐
+│ CleanReaderView   │     │ Arcade Hub &      │     │ Motion Video &    │
+│ & Academy Tower   │     │ 10-Game Modal     │     │ Automated Suite   │
+│ - Subtitle roles  │     │ - Coin op / genres│     │ - Typography labs │
+│ - Metrics strip   │     │ - In-game HUDs    │     │ - Hyperframes flow│
+│ - Quests & links  │     │ - Touch buttons   │     │ - Pipeline logs   │
+└───────────────────┘     └───────────────────┘     └───────────────────┘
+          │                         │                         │
+          └─────────────────────────┼─────────────────────────┘
+                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
-│           #active-zone-view (Interactive Planetary Lounges)            │
-│   - VideoVaultZone (Motion & Video Suite)                              │
-│   - ArcadeProjectZone (10-Game Retro Arcade Planet)                    │
-│   - AcademyTowerZone (Career & Milestones)                             │
-│   - LoFiLoungeZone (Audio Synthesizer Lounge)                          │
-│   - AntiGravityShipyardZone (Deep-Space Code Outpost)                  │
+│ Lo-Fi Audio Lounge & AntiGravity Shipyard & Navigation HUD             │
+│ - Audio remix sliders & Pomodoro presets                               │
+│ - CLI preset logs & terminal descriptions                              │
+│ - Zero mixed-language state across entire app                          │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
+### Step 1: Types & Data Foundation
+- **`src/types/game.ts`**: Update `QuestItem` to support `roleVi?: string; periodVi?: string; achievementsVi?: string[];`.
+- **`src/utils/readingTime.ts`**: Add `formatReadTime(estimate: string, language: 'en' | 'vi'): string` to automatically convert `"3 min read"` to `"3 phút đọc"`, `"12 min video"` to `"Video 12 phút"`, etc.
+- **`src/constants/gameData.ts`**:
+  - Add comprehensive `roleVi`, `periodVi`, and `achievementsVi` arrays for all career milestones (Lotus Media, Web3 Tech Journalist, Freelance Video Producer).
+
+### Step 2: Editorial & Reader Views
+- **`src/components/reader/CleanReaderView.tsx`**:
+  - Subtitle: `Video Editor / News Editor / AI Content Creator` ⇄ `Biên tập Video / Biên tập Tin tức / Sáng tạo Nội dung AI`.
+  - Metrics strip: Translate all labels into Vietnamese when toggled.
+  - Category filter tabs: `"All Works"`, `"Web & AI Apps"`, `"Cinematic Video"`, `"Documents & Vaults"`.
+  - Render `quest.roleVi`, `quest.periodVi`, and `quest.achievementsVi` seamlessly.
+- **`src/components/zones/AcademyTowerZone.tsx`**:
+  - Render `quest.roleVi`, `quest.periodVi`, and `quest.achievementsVi` in the expanded quest log.
+  - Localize skill tree level chips and stat counters.
+
+### Step 3: Arcade Hub & 10 Game Cabinets
+- **`src/components/zones/ArcadeProjectZone.tsx`**:
+  - Localize header tags: `"COIN OP"`, `"FREE PLAY"`, `"GAMES"`, `"10 / 10 ONLINE"`, `"FILTER GENRE:"`, `"Category:"`.
+- **`src/components/arcade/ArcadeGameModal.tsx`**:
+  - Localize in-game telemetry across all 10 games:
+    - Score / Best score headers: `SCORE` ⇄ `ĐIỂM`, `BEST` ⇄ `KỶ LỤC`.
+    - Game status banners: `CIRCUIT BREACH`, `SYSTEM BREACH`, `MISSION ACCOMPLISHED`, `PAUSED`.
+    - Game-specific buttons & overlays:
+      * Snake: `Reboot System` ⇄ `Chơi lại`, `Score:` ⇄ `Điểm:`
+      * Memory Core: `Moves:` ⇄ `Lượt:`, `Pairs:` ⇄ `Cặp:`, `Memory Restored!` ⇄ `Đã Khôi Phục Bộ Nhớ!`
+      * Cyber-Pong: `Player` ⇄ `Người chơi`, `AI Core` ⇄ `Trí tuệ Nhân tạo`, `Wins!` ⇄ `Thắng!`
+      * Neon-Tetris: `Lines:` ⇄ `Số hàng:`, `Rotate` ⇄ `Xoay`, `Drop` ⇄ `Thả`, `Matrix Cleared` ⇄ `Đã Phá Hàng`
+      * Pixel-Jump: `Altitude:` ⇄ `Độ cao:`, `Falling` ⇄ `Rơi tự do`
+      * Cipher-Break: `Attempts:` ⇄ `Lần thử:`, `Decrypted` ⇄ `Đã giải mã`, `Clear` ⇄ `Xóa`
+      * Grid-Racer: `Distance:` ⇄ `Khoảng cách:`, `Impact` ⇄ `Va chạm`
+      * Reactor-Core: `Core Stability` ⇄ `Độ ổn định lõi`, `Cool Down` ⇄ `Hạ nhiệt`
+      * Void-Breaker: `Bricks Left:` ⇄ `Khối còn lại:`, `Victory` ⇄ `Chiến thắng`
+      * Tic-Tac-Quantum: `Your Turn` ⇄ `Lượt của bạn`, `AI Turn` ⇄ `Lượt của AI`, `Draw` ⇄ `Hòa`
+
+### Step 4: Motion Video Suite & Automation Labs
+- **`src/components/video/KineticTypographyLab.tsx`**:
+  - Map preset categories to Vietnamese: `High-Retention` ⇄ `Giữ chân cao`, `Cinematic` ⇄ `Điện ảnh`, `Experimental` ⇄ `Thử nghiệm`, `Cyberpunk` ⇄ `Cyberpunk`, `Creative` ⇄ `Sáng tạo`, `Dynamic` ⇄ `Năng động`, `Minimalist` ⇄ `Tối giản`.
+  - Localize labels: `"EDIT TEST HEADLINE:"`, `"SPEED & TENSION:"`, `"SELECT TYPOGRAPHY PRESET:"`, `"Copy CSS Keyframes"`, `"Replay Physics"`.
+- **`src/components/video/AutomatedWorkflowVisualizer.tsx`**:
+  - Localize: `"VERIFIED OPEN-SOURCE BLUEPRINTS:"`, `"PHASE"`, `"TARGET ASPECT"`, `"CRF COMPRESSION"`, `"AUDIO DUCKING"`, `"RUNTIME CODE BLUEPRINT"`, `"Copy Code"`, `"Benchmark:"`.
+- **`src/components/video/VideoPipelineSimulator.tsx`**:
+  - Localize startup console logs, color grade preset names, audio ducking labels, and post-render telemetry.
+
+### Step 5: Lo-Fi Audio Lounge & AntiGravity Shipyard
+- **`src/components/zones/LoFiLoungeZone.tsx`**:
+  - Localize audio synthesis effects sliders (`Vinyl Crackle` ⇄ `Tiếng đĩa than`, `Tempo / BPM` ⇄ `Tốc độ nhịp`, `Reverb / Space` ⇄ `Độ vang không gian`, `Master Volume` ⇄ `Âm lượng tổng`).
+  - Localize Pomodoro timer presets and status readouts.
+- **`src/components/zones/AntiGravityShipyardZone.tsx`**:
+  - Add bilingual descriptions and simulated execution log streams for all CLI cards (`antigravity run`, `claude-code task`, `codex sync`).
+
 ---
 
-## Verification Summary
+## 3. Verification & Acceptance Criteria
 
-- **Automated Verification**:
-  - `compile_applet` passed successfully.
-  - `lint_applet` passed with zero errors (`tsc --noEmit`).
-- **Functionality Confirmed**:
-  - WASD moves ship naturally along screen axes (Up, Down, Left, Right).
-  - World boundaries unlocked to reach Distant Planet Beta (`wx: 165`) and Shipyard (`wy: -175`).
-  - Virtual analog stick and action button provide fluid touch control on mobile and tablet.
-  - `[E]` key on desktop and `ENTER` button on mobile trigger station entry and smooth scroll to `#active-zone-view`.
+1. **Language Purity Test**:
+   - In English mode: 100% of UI text, tooltips, buttons, logs, and guides display in clear, easy-to-understand English.
+   - In Vietnamese mode: 100% of UI text, tooltips, buttons, logs, and guides display in natural tech Vietnamese with zero remaining English artifacts.
+2. **Code Syntax Preservation**:
+   - Underlying Python, Rust, YAML code blocks, CLI commands (`concat -i ...`), and raw URLs remain in correct syntax.
+3. **Build & Type Check**:
+   - `compile_applet` (`npm run build`) succeeds with 0 errors.
+   - `lint_applet` (`tsc --noEmit`) passes with 0 type errors.
+
+---
+
+## 4. Execution Status: COMPLETED
+
+All planned changes have been implemented and verified:
+- [x] Schema & Data: Added `roleVi`, `periodVi`, `achievementsVi` to `QuestItem` and populated complete Vietnamese translations.
+- [x] Format Read Time: Created `formatReadTime` and integrated into reader, dossier cards, and zone modals.
+- [x] Clean Reader & Tower: Fully localized subtitles, metrics strip, degree honors, and quest logs.
+- [x] 10-Game Arcade Hub & Modal: Fully localized cabinet tags, telemetry HUD, game overlays, and touch controls.
+- [x] Motion & Video Suite: Fully localized presets, automated blueprints, 9:16 monitor subtitles, and console logs.
+- [x] Lo-Fi Audio Lounge: Fully localized procedural synthesis sliders, Pomodoro timers, and dock controls.
+- [x] AntiGravity Shipyard: Added bilingual CLI logs, descriptions, and workflow blueprints.
+- [x] 2.5D Star System Map: Fully localized ship HUD, touch stick controls, dock prompts, and fast-travel bar.
+- [x] Verification: Successfully executed `tsc --noEmit` (0 errors) and `npm run build` (success). Zero mixed-language state.

@@ -247,7 +247,9 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
                 >
                   <span>{language === 'en' ? item.labelEn : item.labelVi}</span>
                   <span className="text-[10px] opacity-70">
-                    {viewMode === 'game' ? 'GOTO STATION ›' : 'SECTION ›'}
+                    {viewMode === 'game'
+                      ? (language === 'en' ? 'GOTO STATION ›' : 'ĐẾN TRẠM ›')
+                      : (language === 'en' ? 'SECTION ›' : 'MỤC ›')}
                   </span>
                 </button>
               );

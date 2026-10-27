@@ -31,11 +31,23 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
   const [colorGrade, setColorGrade] = useState<ColorGradePreset>('cyber_neon');
   const [enableFilmGrain, setEnableFilmGrain] = useState<boolean>(true);
   const [enableVignette, setEnableVignette] = useState<boolean>(true);
-  const [logFeed, setLogFeed] = useState<string[]>([
-    '[system] Video Pipeline Engine initialized.',
-    '[config] Output Profile: 1080x1920 @ 60fps · Codec: H.264 High-Profile',
-    '[ready] Press "Run Pipeline Simulation" to trigger programmatic video render.'
-  ]);
+  const [logFeed, setLogFeed] = useState<string[]>([]);
+
+  useEffect(() => {
+    setLogFeed(
+      language === 'en'
+        ? [
+            '[system] Video Pipeline Engine initialized.',
+            '[config] Output Profile: 1080x1920 @ 60fps · Codec: H.264 High-Profile',
+            '[ready] Press "Run Pipeline Simulation" to trigger programmatic video render.'
+          ]
+        : [
+            '[hệ thống] Đã khởi tạo Trình dựng Video Tự động.',
+            '[cấu hình] Định dạng: 1080x1920 @ 60fps · Bộ giải mã: H.264 High-Profile',
+            '[sẵn sàng] Nhấn "Chạy Giả Lập Pipeline" để kích hoạt kết xuất video tự động.'
+          ]
+    );
+  }, [language]);
 
   const totalDurationMs = 15000; // 15s simulated short
   const terminalLogRef = useRef<HTMLDivElement>(null);
@@ -166,7 +178,11 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 text-xs font-mono text-[#8B5CF6] mb-1">
             <Video className="w-3.5 h-3.5" />
-            <span>INTERACTIVE POST-PRODUCTION SIMULATOR & TIMELINE</span>
+            <span>
+              {language === 'en'
+                ? 'INTERACTIVE POST-PRODUCTION SIMULATOR & TIMELINE'
+                : 'TRÌNH GIẢ LẬP HẬU KỲ & DÒNG THỜI GIAN TƯƠNG TÁC'}
+            </span>
           </div>
           <h3 className="text-xl font-bold text-[#F8FAFC]">
             {language === 'en'
@@ -206,7 +222,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
           <button
             onClick={handleReset}
             className="p-2.5 rounded-xl bg-[#090D16] border border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#8B5CF6] transition-colors"
-            title="Reset Simulation"
+            title={language === 'en' ? 'Reset Simulation' : 'Đặt lại giả lập'}
             aria-label="Reset Simulation"
           >
             <RotateCcw className="w-4 h-4" />
@@ -219,14 +235,16 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 text-[#8B5CF6]">
             <Palette className="w-4 h-4 shrink-0" />
-            <span className="font-mono text-[11px] text-[#94A3B8]">COLOR GRADE LUT:</span>
+            <span className="font-mono text-[11px] text-[#94A3B8]">
+              {language === 'en' ? 'COLOR GRADE LUT:' : 'BẢNG MÀU LUT:'}
+            </span>
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             {[
-              { id: 'cyber_neon', label: 'Cyber Neon' },
-              { id: 'teal_orange', label: 'Teal & Orange' },
-              { id: 'moody_noir', label: 'Moody Noir' },
-              { id: 'clean_neutral', label: 'Clean Rec.709' }
+              { id: 'cyber_neon', labelEn: 'Cyber Neon', labelVi: 'Cyber Neon' },
+              { id: 'teal_orange', labelEn: 'Teal & Orange', labelVi: 'Xanh Cam Điện Ảnh' },
+              { id: 'moody_noir', labelEn: 'Moody Noir', labelVi: 'Đen Trắng Noir' },
+              { id: 'clean_neutral', labelEn: 'Clean Rec.709', labelVi: 'Tự Nhiên Rec.709' }
             ].map((lut) => (
               <button
                 key={lut.id}
@@ -240,7 +258,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
                     : 'bg-[#131B2E] text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
-                {lut.label}
+                {language === 'en' ? lut.labelEn : lut.labelVi}
               </button>
             ))}
           </div>
@@ -256,7 +274,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
                 : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
             }`}
           >
-            35mm Grain: {enableFilmGrain ? 'ON' : 'OFF'}
+            {language === 'en' ? '35mm Grain: ' : 'Hạt 35mm: '}{enableFilmGrain ? (language === 'en' ? 'ON' : 'BẬT') : (language === 'en' ? 'OFF' : 'TẮT')}
           </button>
           <button
             onClick={() => setEnableVignette(!enableVignette)}
@@ -266,7 +284,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
                 : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
             }`}
           >
-            Vignette: {enableVignette ? 'ON' : 'OFF'}
+            {language === 'en' ? 'Vignette: ' : 'Tối góc: '}{enableVignette ? (language === 'en' ? 'ON' : 'BẬT') : (language === 'en' ? 'OFF' : 'TẮT')}
           </button>
         </div>
       </div>
@@ -291,7 +309,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
             >
               <div className="flex items-center justify-between mb-1.5">
                 <span className={`text-[10px] font-mono font-bold ${isCurrent ? 'text-[#8B5CF6]' : 'text-[#94A3B8]'}`}>
-                  STEP {step.stepNumber}
+                  {language === 'en' ? 'STEP' : 'BƯỚC'} {step.stepNumber}
                 </span>
                 {isDone && <CheckCircle2 className="w-3.5 h-3.5 text-[#8B5CF6]" />}
               </div>
@@ -315,7 +333,11 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
             <div className="flex items-center justify-between text-xs text-[#94A3B8] font-mono">
               <span className="text-[#8B5CF6] font-bold flex items-center gap-1.5">
                 <FastForward className="w-3.5 h-3.5" />
-                <span>MULTI-TRACK TIMELINE WITH AUDIO-SYNC BEAT MARKERS</span>
+                <span>
+                  {language === 'en'
+                    ? 'MULTI-TRACK TIMELINE WITH AUDIO-SYNC BEAT MARKERS'
+                    : 'DÒNG THỜI GIAN ĐA LUỒNG ĐỒNG BỘ ĐIỂM NHỊP'}
+                </span>
               </span>
               <span>1080x1920 · 60 FPS</span>
             </div>
@@ -346,7 +368,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
               {/* Track 1: Audio Narration & Waveform */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>TRK 1: VOICE MASTER (48kHz)</span>
+                  <span>{language === 'en' ? 'TRK 1: VOICE MASTER (48kHz)' : 'LUỒNG 1: GIỌNG ĐỌC CHUẨN (48kHz)'}</span>
                   <span className="text-[#8B5CF6]">-14.1 LUFS</span>
                 </div>
                 <div className="h-8 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex items-center gap-0.5 overflow-hidden">
@@ -369,8 +391,8 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
               {/* Track 2: Video Footage / Hyperframes B-Roll */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>TRK 2: HYPERFRAMES CANVAS SEGMENTS</span>
-                  <span>4 CLIPS</span>
+                  <span>{language === 'en' ? 'TRK 2: HYPERFRAMES CANVAS SEGMENTS' : 'LUỒNG 2: PHÂN CẢNH CANVA HYPERFRAMES'}</span>
+                  <span>{language === 'en' ? '4 CLIPS' : '4 PHÂN ĐOẠN'}</span>
                 </div>
                 <div className="h-7 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex gap-1">
                   {['CLIP 01: INTRO', 'CLIP 02: PROBLEM', 'CLIP 03: CODE', 'CLIP 04: OUTRO'].map(
@@ -393,8 +415,8 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
               {/* Track 3: Kinetic Typography Subtitles */}
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>TRK 3: KINETIC SUBTITLE BURN-IN</span>
-                  <span className="text-violet-300">AUTO-SYNCED</span>
+                  <span>{language === 'en' ? 'TRK 3: KINETIC SUBTITLE BURN-IN' : 'LUỒNG 3: PHỤ ĐỀ KINETIC CHUYỂN ĐỘNG'}</span>
+                  <span className="text-violet-300">{language === 'en' ? 'AUTO-SYNCED' : 'TỰ ĐỘNG ĐỒNG BỘ'}</span>
                 </div>
                 <div className="h-7 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex gap-1">
                   {Array.from({ length: 6 }).map((_, wIdx) => {
@@ -422,7 +444,7 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
             <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8] border-b border-[#1E293B] pb-2">
               <span className="flex items-center gap-2 text-[#8B5CF6]">
                 <Terminal className="w-3.5 h-3.5" />
-                <span>AUTOMATION TERMINAL LOG</span>
+                <span>{language === 'en' ? 'AUTOMATION TERMINAL LOG' : 'NHẬT KÝ LỆNH TỰ ĐỘNG HÓA'}</span>
               </span>
               <span>PYTHON 3.12 · CLI RUNNER</span>
             </div>
@@ -488,13 +510,23 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
                     {language === 'en' ? getSceneLabel().en : getSceneLabel().vi}
                   </div>
                   <div className="text-xs font-bold text-[#F8FAFC] leading-snug">
-                    {Number(seconds) < 2
-                      ? 'Automate Your Video Editing'
-                      : Number(seconds) < 6
-                      ? 'No More Repetitive Timeline Cuts'
-                      : Number(seconds) < 11
-                      ? 'Python + Hyperframes Stitcher'
-                      : 'Hoang Cao Minh · Video Editor'}
+                    {language === 'en' ? (
+                      Number(seconds) < 2
+                        ? 'Automate Your Video Editing'
+                        : Number(seconds) < 6
+                        ? 'No More Repetitive Timeline Cuts'
+                        : Number(seconds) < 11
+                        ? 'Python + Hyperframes Stitcher'
+                        : 'Hoang Cao Minh · Video Editor'
+                    ) : (
+                      Number(seconds) < 2
+                        ? 'Tự động hóa Biên tập Video'
+                        : Number(seconds) < 6
+                        ? 'Không còn cắt ghép thủ công'
+                        : Number(seconds) < 11
+                        ? 'Ghép nối Python + Hyperframes'
+                        : 'Cao Minh Hoàng · Biên tập Video'
+                    )}
                   </div>
                 </div>
 
@@ -518,13 +550,23 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
               <div className="space-y-2 z-20">
                 <div className="p-2 rounded-xl bg-[#090D16]/90 border border-[#1E293B] text-center">
                   <span className="text-[11px] font-extrabold text-[#F8FAFC] tracking-wide">
-                    {Number(seconds) < 2
-                      ? 'STOP EDITING BY HAND.'
-                      : Number(seconds) < 6
-                      ? 'GENERATE WITH CODE.'
-                      : Number(seconds) < 11
-                      ? '60 FPS PROGRAMMATIC RENDER'
-                      : 'BUILD THE FUTURE OF MEDIA.'}
+                    {language === 'en' ? (
+                      Number(seconds) < 2
+                        ? 'STOP EDITING BY HAND.'
+                        : Number(seconds) < 6
+                        ? 'GENERATE WITH CODE.'
+                        : Number(seconds) < 11
+                        ? '60 FPS PROGRAMMATIC RENDER'
+                        : 'BUILD THE FUTURE OF MEDIA.'
+                    ) : (
+                      Number(seconds) < 2
+                        ? 'DỪNG DỰNG PHIM THỦ CÔNG.'
+                        : Number(seconds) < 6
+                        ? 'TẠO NỘI DUNG BẰNG CODE.'
+                        : Number(seconds) < 11
+                        ? 'KẾT XUẤT LẬP TRÌNH 60 FPS'
+                        : 'KIẾN TẠO TƯƠNG LAI TRUYỀN THÔNG.'
+                    )}
                   </span>
                 </div>
 

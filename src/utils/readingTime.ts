@@ -28,3 +28,22 @@ export const calculateReadingTime = (content: string, language: Language = 'en')
 
   return { text, minutes, words };
 };
+
+export const formatReadTime = (estimate: string, language: 'en' | 'vi'): string => {
+  if (!estimate) return '';
+  if (language === 'en') return estimate;
+  
+  // Convert standard patterns like "3 min read", "12 min video", "4 min read"
+  const minMatch = estimate.match(/(\d+)\s*min\s*(read|video)?/i);
+  if (minMatch) {
+    const mins = minMatch[1];
+    const type = minMatch[2]?.toLowerCase();
+    if (type === 'video') return `Video ${mins} phút`;
+    return `${mins} phút đọc`;
+  }
+  
+  return estimate
+    .replace(/min read/gi, 'phút đọc')
+    .replace(/min video/gi, 'phút video')
+    .replace(/min/gi, 'phút');
+};

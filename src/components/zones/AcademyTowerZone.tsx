@@ -140,13 +140,13 @@ export const AcademyTowerZone: React.FC<AcademyTowerZoneProps> = ({
                 >
                   <div>
                     <div className="flex items-center gap-2 text-xs text-[#94A3B8]">
-                      <span>{quest.period}</span>
+                      <span>{language === 'en' ? quest.period : (quest.periodVi || quest.period)}</span>
                       <span>·</span>
                       <span className="text-[#8B5CF6] font-medium">{quest.questRank}</span>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-bold text-[#F8FAFC] mt-0.5">
-                      {quest.role}
+                      {language === 'en' ? quest.role : (quest.roleVi || quest.role)}
                     </h3>
                     <p className="text-xs text-[#94A3B8]">{quest.company}</p>
                   </div>
@@ -167,7 +167,7 @@ export const AcademyTowerZone: React.FC<AcademyTowerZoneProps> = ({
                       {quest.achievements.map((ach, idx) => (
                         <div key={idx} className="flex items-start gap-2.5 text-xs text-[#94A3B8]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6] mt-1.5 shrink-0" />
-                          <span>{ach}</span>
+                          <span>{language === 'en' ? ach : (quest.achievementsVi?.[idx] || ach)}</span>
                         </div>
                       ))}
                     </div>
@@ -235,18 +235,25 @@ export const AcademyTowerZone: React.FC<AcademyTowerZoneProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs font-semibold text-[#F59E0B]">
-                  FIRST CLASS HONOURS (2:1)
+                  {language === 'en' ? 'FIRST CLASS HONOURS (2:1)' : 'TỐT NGHIỆP LOẠI GIỎI (2:1)'}
                 </span>
                 <h3 className="text-lg font-bold text-[#F8FAFC] mt-0.5">
-                  Master’s Degree in Communication and Media Studies
+                  {language === 'en'
+                    ? 'Master’s Degree in Communication and Media Studies'
+                    : 'Thạc sĩ Truyền thông & Nghiên cứu Đa phương tiện'}
                 </h3>
-                <p className="text-xs text-[#94A3B8]">Dublin City University (2024–2025)</p>
+                <p className="text-xs text-[#94A3B8]">
+                  {language === 'en' ? 'Dublin City University (2024–2025)' : 'Đại học Dublin City, Ireland (2024–2025)'}
+                </p>
               </div>
               <span className="text-xs text-[#94A3B8]">Dublin, Ireland</span>
             </div>
 
             <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-              <strong>Core Modules:</strong> Audio & Sonic Design, Moving Image & Video Production, Visual Design, Responsive Media, Screenwriting, Project Planning & Management, Major Project.
+              <strong>{language === 'en' ? 'Core Modules: ' : 'Môn học trọng tâm: '}</strong>
+              {language === 'en'
+                ? 'Audio & Sonic Design, Moving Image & Video Production, Visual Design, Responsive Media, Screenwriting, Project Planning & Management, Major Project.'
+                : 'Thiết kế Âm thanh & Sonic, Sản xuất Video & Hình ảnh Động, Thiết kế Thị giác, Truyền thông Tương tác, Biên kịch, Quản trị Dự án, Đồ án Tốt nghiệp.'}
             </p>
 
             <div className="pt-3 border-t border-[#1E293B]">
@@ -280,17 +287,25 @@ export const AcademyTowerZone: React.FC<AcademyTowerZoneProps> = ({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <span className="text-xs text-[#94A3B8]">
-                  Final Grade: 8.29 / 10
+                  {language === 'en' ? 'Final Grade: 8.29 / 10' : 'Điểm tốt nghiệp: 8.29 / 10'}
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-[#F8FAFC] mt-0.5">
-                  Bachelor of Technology (Information Technology)
+                  {language === 'en'
+                    ? 'Bachelor of Technology (Information Technology)'
+                    : 'Cử nhân Công nghệ Thông tin'}
                 </h3>
-                <p className="text-xs text-[#94A3B8]">Posts and Telecommunications Institute of Technology (2013–2018)</p>
+                <p className="text-xs text-[#94A3B8]">
+                  {language === 'en'
+                    ? 'Posts and Telecommunications Institute of Technology (2013–2018)'
+                    : 'Học viện Công nghệ Bưu chính Viễn thông (2013–2018)'}
+                </p>
               </div>
               <span className="text-xs text-[#94A3B8]">Hanoi, Vietnam</span>
             </div>
             <p className="text-xs sm:text-sm text-[#94A3B8] leading-relaxed">
-              Developed interactive English grammar testing platforms with question databases and gamified feedback loops.
+              {language === 'en'
+                ? 'Developed interactive English grammar testing platforms with question databases and gamified feedback loops.'
+                : 'Phát triển nền tảng trắc nghiệm ngữ pháp tiếng Anh tương tác với cơ sở dữ liệu câu hỏi và cơ chế gamification.'}
             </p>
           </div>
         </div>

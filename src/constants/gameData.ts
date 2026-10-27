@@ -327,8 +327,10 @@ export const QUEST_LOG_DATA: QuestItem[] = [
   {
     id: 'quest-chuyen',
     role: 'MULTIMEDIA STRATEGIST & AI CONTENT CREATOR',
+    roleVi: 'Chiến Lược Gia Đa Phương Tiện & Sáng Tạo Nội Dung AI',
     company: 'Chuyên Education Center (Hanoi, Vietnam)',
     period: 'May 2026 - Jun 2026',
+    periodVi: 'Tháng 5/2026 - Tháng 6/2026',
     status: 'Completed',
     xpReward: 2500,
     questRank: 'S-Rank',
@@ -341,6 +343,13 @@ export const QUEST_LOG_DATA: QuestItem[] = [
       'Built and upgraded personalized AI Chatbots and published 2 educational apps on Google AI Studio.',
       'Produced multimedia TVCs across 5 major brands and recovered business storage assets via Google appeals.'
     ],
+    achievementsVi: [
+      'Tái định vị thành công mô hình giáo dục thành hệ thống cao cấp với 3 thương hiệu trụ cột (Gia sư Ms. Chuyên, Bean English, Chuyên Education).',
+      'Tích hợp quy trình AI Voice Cloning và thư viện thị giác AI vào sản xuất video với Kling AI, Runway ML và Veo3.',
+      'Chuẩn hóa kỹ thuật quay đa góc máy (multi-shot, flycam, xoay quỹ đạo, biến đổi logo) và tính năng Style-Lock đảm bảo nhân vật liền mạch.',
+      'Xây dựng và nâng cấp hệ thống AI Chatbot cá nhân hóa, xuất bản 2 ứng dụng giáo dục trên Google AI Studio.',
+      'Sản xuất các thước phim TVC đa phương tiện cho 5 thương hiệu và khôi phục thành công kho lưu trữ dữ liệu doanh nghiệp.'
+    ],
     lootLinks: [
       { name: 'Google Drive Asset Vault', url: 'https://drive.google.com/drive/folders/1JLeemFDS4cda0RMqv8Wd-ko_uD3Y57_N', type: 'drive' },
       { name: 'YouTube Demo Showcase', url: 'https://www.youtube.com/watch?v=p_pr8RI3T-c', type: 'youtube' }
@@ -349,8 +358,10 @@ export const QUEST_LOG_DATA: QuestItem[] = [
   {
     id: 'quest-deviation',
     role: 'AI CONTENT CREATOR',
+    roleVi: 'Chuyên Viên Sáng Tạo Nội Dung AI',
     company: 'Deviation Lab (Hanoi, Vietnam)',
     period: 'Mar 2026 - Mar 2026',
+    periodVi: 'Tháng 3/2026',
     status: 'Completed',
     xpReward: 1800,
     questRank: 'A-Rank',
@@ -361,6 +372,11 @@ export const QUEST_LOG_DATA: QuestItem[] = [
       'Conceptualized and integrated "Style-Lock" rules guaranteeing continuity across backgrounds, color grades, and characters.',
       'Standardized lean post-production procedures blending cinematic pacing with AI components.'
     ],
+    achievementsVi: [
+      'Ứng dụng các quy trình AI video tiên tiến nhất (Flow AI, Higgsfield, ElevenLabs) để rút ngắn chu kỳ sản xuất nội dung.',
+      'Thiết lập và chuẩn hóa bộ quy tắc "Style-Lock" đảm bảo tính đồng nhất tuyệt đối về bối cảnh, bảng màu và nhân vật xuyên suốt các cảnh quay.',
+      'Xây dựng quy trình hậu kỳ tinh gọn, kết hợp hài hòa giữa nhịp điệu điện ảnh chuyên nghiệp và các công cụ AI thế hệ mới.'
+    ],
     lootLinks: [
       { name: 'AI Video Playlist (VEO3, Kling, Higgsfield)', url: 'https://www.youtube.com/playlist?list=PL8l48rFpYhhaFUDxydFt2tTY55rpb9rWi', type: 'youtube' }
     ]
@@ -368,8 +384,10 @@ export const QUEST_LOG_DATA: QuestItem[] = [
   {
     id: 'quest-duonglinh',
     role: 'COMMUNICATIONS SPECIALIST',
+    roleVi: 'Chuyên Viên Truyền Thông & Hậu Kỳ',
     company: 'Duong Linh Group (Hai Phong, Vietnam)',
     period: 'Dec 2025 - Jan 2026',
+    periodVi: 'Tháng 12/2025 - Tháng 1/2026',
     status: 'Completed',
     xpReward: 2000,
     questRank: 'A-Rank',
@@ -380,6 +398,11 @@ export const QUEST_LOG_DATA: QuestItem[] = [
       'Penned and published comprehensive training packets for the An Lac factory, detailing technical and safety standards.',
       'Led multimedia coverage for critical enterprise milestones and coordinated CSR initiatives.'
     ],
+    achievementsVi: [
+      'Thiết kế toàn bộ ấn phẩm số, ấn phẩm in ấn và chỉ đạo sản xuất các thước phim giới thiệu doanh nghiệp chuẩn 4K.',
+      'Biên soạn và xuất bản bộ cẩm nang đào tạo kỹ thuật an toàn toàn diện cho nhà máy An Lạc, đáp ứng tiêu chuẩn công nghiệp khắt khe.',
+      'Chủ trì chiến dịch truyền thông đa phương tiện cho các dấu mốc doanh nghiệp trọng điểm và điều phối các chương trình CSR vì cộng đồng.'
+    ],
     lootLinks: [
       { name: 'Google Drive Enterprise Folder', url: 'https://drive.google.com/drive/folders/1kLUYpGsSFCWE6-R4HZf7keQ5tPZVxef9?usp=drive_link', type: 'drive' }
     ]
@@ -387,8 +410,10 @@ export const QUEST_LOG_DATA: QuestItem[] = [
   {
     id: 'quest-avada',
     role: 'CONTENT CREATOR & AI TOOL BUILDER',
+    roleVi: 'Chuyên Viên Nội Dung & Xây Dựng Công Cụ AI',
     company: 'Avada Commerce (Hanoi, Vietnam)',
     period: 'Oct 2025 - Oct 2025',
+    periodVi: 'Tháng 10/2025',
     status: 'Completed',
     xpReward: 1600,
     questRank: 'A-Rank',
@@ -397,13 +422,19 @@ export const QUEST_LOG_DATA: QuestItem[] = [
     achievements: [
       'Spearheaded internal AI product workflows, creating specialized tools like Shopify Growth Video Idea Generator.',
       'Directed content blueprints on YouTube, structuring agile video production methods to increase channel traction.'
+    ],
+    achievementsVi: [
+      'Khởi xướng và phát triển các công cụ AI nội bộ chuyên biệt như Shopify Growth Video Idea Generator giúp đội ngũ marketing tăng tốc lên ý tưởng.',
+      'Chỉ đạo định hướng nội dung trên kênh YouTube, thiết lập quy trình sản xuất video linh hoạt nhằm gia tăng tỷ lệ tiếp cận và chuyển đổi.'
     ]
   },
   {
     id: 'quest-lotus',
     role: 'VIDEO EDITOR (FULL TIME)',
+    roleVi: 'Chuyên Viên Biên Tập Video (Toàn Thời Gian)',
     company: 'Lotus Media (Hanoi, Vietnam)',
     period: 'Oct 2018 - Jan 2022',
+    periodVi: 'Tháng 10/2018 - Tháng 1/2022',
     status: 'Completed',
     xpReward: 3500,
     questRank: 'S-Rank',
@@ -413,6 +444,11 @@ export const QUEST_LOG_DATA: QuestItem[] = [
       'Led video editing projects from storyboard to final format.',
       'Increased YouTube subscribers from 1,000 to 72,000.',
       'Managed multiple channels, enhancing audience interaction and engagement.'
+    ],
+    achievementsVi: [
+      'Chủ trì toàn bộ quy trình biên tập video từ kịch bản phân cảnh đến thành phẩm cuối cùng.',
+      'Tăng trưởng ngoạn mục kênh YouTube từ 1.000 lên hơn 72.000 người đăng ký thực tế nhờ kỹ thuật dựng video giữ chân người xem đỉnh cao.',
+      'Quản lý đa kênh nội dung số, thúc đẩy mức độ tương tác và thảo luận sôi nổi của cộng đồng người xem.'
     ]
   }
 ];

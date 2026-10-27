@@ -8,6 +8,8 @@ import { KineticTypographyLab } from '../video/KineticTypographyLab';
 import { AutomatedWorkflowVisualizer } from '../video/AutomatedWorkflowVisualizer';
 import { VideoPipelineSimulator } from '../video/VideoPipelineSimulator';
 
+import { formatReadTime } from '../../utils/readingTime';
+
 interface VideoVaultZoneProps {
   onOpenCard: (card: TradingCardItem) => void;
   onOpenEasterEgg: (snippetId: string) => void;
@@ -112,7 +114,7 @@ export const VideoVaultZone: React.FC<VideoVaultZoneProps> = ({
                   <span className="text-[#8B5CF6] font-medium">
                     {language === 'en' ? card.categoryEn : card.categoryVi}
                   </span>
-                  <span>{card.readTimeEstimate}</span>
+                  <span>{formatReadTime(card.readTimeEstimate, language)}</span>
                 </div>
 
                 <h4 className="font-bold text-sm sm:text-base text-[#F8FAFC] group-hover:text-[#8B5CF6] transition-colors leading-snug">

@@ -87,12 +87,12 @@ export const ArcadeProjectZone: React.FC<ArcadeProjectZoneProps> = ({
 
           <div className="flex items-center gap-2">
             <div className="px-3.5 py-2 rounded-xl bg-[#090D16] border border-[#1E293B] text-center font-mono">
-              <div className="text-[10px] text-[#94A3B8] uppercase">COIN OP</div>
-              <div className="text-xs text-[#8B5CF6] font-bold">FREE PLAY</div>
+              <div className="text-[10px] text-[#94A3B8] uppercase">{language === 'en' ? 'COIN OP' : 'XU ARCADE'}</div>
+              <div className="text-xs text-[#8B5CF6] font-bold">{language === 'en' ? 'FREE PLAY' : 'CHƠI MIỄN PHÍ'}</div>
             </div>
             <div className="px-3.5 py-2 rounded-xl bg-[#090D16] border border-[#1E293B] text-center font-mono">
-              <div className="text-[10px] text-[#94A3B8] uppercase">GAMES</div>
-              <div className="text-xs text-[#F8FAFC] font-bold">10 / 10 ONLINE</div>
+              <div className="text-[10px] text-[#94A3B8] uppercase">{language === 'en' ? 'GAMES' : 'TRÒ CHƠI'}</div>
+              <div className="text-xs text-[#F8FAFC] font-bold">{language === 'en' ? '10 / 10 ONLINE' : '10 / 10 SẴN SÀNG'}</div>
             </div>
           </div>
         </div>

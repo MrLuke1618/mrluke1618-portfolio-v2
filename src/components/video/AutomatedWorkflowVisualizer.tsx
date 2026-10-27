@@ -168,7 +168,9 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
 
       {/* Official Open-Source Blueprint Badges */}
       <div className="flex flex-wrap items-center gap-2.5 p-3 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs">
-        <span className="text-[#94A3B8] font-mono text-[11px]">VERIFIED OPEN-SOURCE BLUEPRINTS:</span>
+        <span className="text-[#94A3B8] font-mono text-[11px]">
+          {language === 'en' ? 'VERIFIED OPEN-SOURCE BLUEPRINTS:' : 'MẪU THIẾT KẾ MÃ NGUỒN MỞ XÁC THỰC:'}
+        </span>
         <a
           href="https://github.com/heygen-com/hyperframes"
           target="_blank"
@@ -211,7 +213,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
                       isSelected ? 'text-[#8B5CF6]' : 'text-[#94A3B8]'
                     }`}
                   >
-                    PHASE {step.number}
+                    {language === 'en' ? 'PHASE' : 'GIAI ĐOẠN'} {step.number}
                   </span>
                   {isSelected ? (
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
@@ -229,7 +231,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
               </div>
 
               <div className="mt-3 pt-2 border-t border-[#1E293B] flex items-center justify-between text-[10px] text-[#94A3B8]">
-                <span>Perf:</span>
+                <span>{language === 'en' ? 'Perf:' : 'Hiệu năng:'}</span>
                 <span className="font-mono text-[#F8FAFC] font-semibold">{step.benchmark}</span>
               </div>
             </div>
@@ -242,7 +244,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#1E293B] pb-3">
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#8B5CF6]/20 text-[#8B5CF6]">
-              PHASE {activeStep.number}
+              {language === 'en' ? 'PHASE' : 'GIAI ĐOẠN'} {activeStep.number}
             </span>
             <h4 className="text-sm font-bold text-[#F8FAFC]">
               {language === 'en' ? activeStep.titleEn : activeStep.titleVi}
@@ -262,14 +264,14 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
 
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-[#94A3B8]">
-              Latency: <span className="text-[#8B5CF6]">{activeStep.benchmark}</span>
+              {language === 'en' ? 'Latency: ' : 'Độ trễ: '}<span className="text-[#8B5CF6]">{activeStep.benchmark}</span>
             </span>
             <button
               onClick={handleCopyCode}
               className="flex items-center gap-1 px-2.5 py-1 rounded bg-[#131B2E] border border-[#1E293B] text-[11px] font-mono text-[#F8FAFC] hover:border-[#8B5CF6] transition-colors"
             >
               {copiedCode ? <Check className="w-3 h-3 text-[#8B5CF6]" /> : <Copy className="w-3 h-3 text-[#8B5CF6]" />}
-              <span>{copiedCode ? 'Copied' : 'Copy'}</span>
+              <span>{copiedCode ? (language === 'en' ? 'Copied' : 'Đã sao chép') : (language === 'en' ? 'Copy Code' : 'Sao chép mã')}</span>
             </button>
           </div>
         </div>
@@ -282,7 +284,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 rounded-lg bg-[#131B2E] border border-[#1E293B]">
           <div className="space-y-1">
             <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
-              <span>TARGET ASPECT:</span>
+              <span>{language === 'en' ? 'TARGET ASPECT:' : 'TỶ LỆ KHUNG HÌNH:'}</span>
               <span className="text-[#8B5CF6]">{targetAspect}</span>
             </div>
             <div className="flex gap-1.5 pt-1">
@@ -307,7 +309,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
 
           <div className="space-y-1">
             <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
-              <span>CRF COMPRESSION:</span>
+              <span>{language === 'en' ? 'CRF COMPRESSION:' : 'ĐỘ NÉN CRF:'}</span>
               <span className="text-[#8B5CF6]">{crfQuality}</span>
             </div>
             <input
@@ -322,7 +324,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
 
           <div className="space-y-1">
             <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8]">
-              <span>AUDIO DUCKING:</span>
+              <span>{language === 'en' ? 'AUDIO DUCKING:' : 'GIẢM ÂM NỀN (DUCKING):'}</span>
               <span className="text-[#8B5CF6]">{audioDucking} dB</span>
             </div>
             <input
@@ -341,7 +343,7 @@ export const AutomatedWorkflowVisualizer: React.FC<AutomatedWorkflowVisualizerPr
           <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#1E293B] text-[10px] text-[#94A3B8]">
             <span className="flex items-center gap-1.5">
               <Sliders className="w-3 h-3 text-[#8B5CF6]" />
-              <span>RUNTIME CODEBLUEPRINT</span>
+              <span>{language === 'en' ? 'RUNTIME CODE BLUEPRINT' : 'MÃ NGUỒN THỰC THI'}</span>
             </span>
             <span>{activeStep.techStack}</span>
           </div>

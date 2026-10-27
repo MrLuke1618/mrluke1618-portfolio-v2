@@ -120,12 +120,12 @@ export const ArcadeGameModal: React.FC<ArcadeGameModalProps> = ({
         <div className="flex items-center justify-between px-5 py-2.5 bg-[#090D16]/50 border-b border-[#1E293B] text-xs">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
-              <span className="text-[#94A3B8]">SCORE:</span>
+              <span className="text-[#94A3B8]">{language === 'en' ? 'SCORE:' : 'ĐIỂM:'}</span>
               <span className="text-[#8B5CF6] font-bold text-sm tracking-wider">{score}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span className="text-[#94A3B8]">BEST:</span>
+              <span className="text-[#94A3B8]">{language === 'en' ? 'BEST:' : 'KỶ LỤC:'}</span>
               <span className="text-[#F8FAFC] font-bold">{highScore}</span>
             </div>
           </div>
@@ -288,10 +288,12 @@ export const ArcadeGameModal: React.FC<ArcadeGameModalProps> = ({
         {/* Footer specs */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-[#1E293B] bg-[#090D16]/60 text-[10px] text-[#94A3B8]">
           <div className="flex items-center gap-3">
-            <span>ENGINE: {game.specs.engine}</span>
-            <span>TARGET: {game.specs.fpsTarget}</span>
+            <span>{language === 'en' ? 'ENGINE:' : 'CƠ CHẾ:'} {game.specs.engine}</span>
+            <span>{language === 'en' ? 'TARGET:' : 'MỤC TIÊU:'} {game.specs.fpsTarget}</span>
           </div>
-          <span className="text-[#8B5CF6]">HOANG CAO MINH RETRO ARCADE SUITE</span>
+          <span className="text-[#8B5CF6]">
+            {language === 'en' ? 'HOANG CAO MINH RETRO ARCADE SUITE' : 'PHÒNG TRÒ CHƠI RETRO ARCADE CAO MINH HOÀNG'}
+          </span>
         </div>
       </div>
     </div>
@@ -421,8 +423,12 @@ const SnakeGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void
         <canvas ref={canvasRef} width={300} height={300} className="block bg-[#090D16]" />
         {isDead && (
           <div className="absolute inset-0 bg-[#090D16]/85 backdrop-blur-sm flex flex-col items-center justify-center p-4">
-            <span className="text-red-400 font-bold text-sm mb-1">CIRCUIT BREACH</span>
-            <span className="text-xs text-[#94A3B8] mb-3">Score: {scoreRef.current}</span>
+            <span className="text-red-400 font-bold text-sm mb-1">
+              {language === 'en' ? 'CIRCUIT BREACH' : 'KẾT NỐI GIÁN ĐOẠN'}
+            </span>
+            <span className="text-xs text-[#94A3B8] mb-3">
+              {language === 'en' ? 'Score: ' : 'Điểm: '}{scoreRef.current}
+            </span>
             <button
               onClick={resetGame}
               className="px-4 py-2 rounded-xl bg-[#8B5CF6] text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-[#8B5CF6]/30"
@@ -568,7 +574,8 @@ const MemoryCoreGame: React.FC<{ onScore: (s: number) => void; onGameWon: () => 
 // ============================================================================
 const CyberPongGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void; language: string }> = ({
   onScore,
-  onGameOver
+  onGameOver,
+  language
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [playerScore, setPlayerScore] = useState(0);
@@ -684,7 +691,7 @@ const CyberPongGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
   return (
     <div className="flex flex-col items-center gap-3">
       <div className="flex items-center gap-8 text-sm font-bold text-[#F8FAFC]">
-        <span className="text-[#8B5CF6]">YOU: {playerScore}</span>
+        <span className="text-[#8B5CF6]">{language === 'en' ? 'YOU' : 'BẠN'}: {playerScore}</span>
         <span className="text-[#94A3B8]">AI: {aiScore}</span>
       </div>
       <div className="rounded-2xl overflow-hidden border-2 border-[#1E293B] touch-none">
@@ -697,7 +704,7 @@ const CyberPongGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
           }}
           className="px-4 py-2 bg-[#131B2E] border border-[#1E293B] rounded-xl text-xs font-bold text-[#8B5CF6]"
         >
-          ▲ UP
+          ▲ {language === 'en' ? 'UP' : 'LÊN'}
         </button>
         <button
           onClick={() => {
@@ -705,7 +712,7 @@ const CyberPongGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
           }}
           className="px-4 py-2 bg-[#131B2E] border border-[#1E293B] rounded-xl text-xs font-bold text-[#8B5CF6]"
         >
-          ▼ DOWN
+          ▼ {language === 'en' ? 'DOWN' : 'XUỐNG'}
         </button>
       </div>
     </div>
@@ -717,7 +724,8 @@ const CyberPongGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
 // ============================================================================
 const NeonTetrisGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void; language: string }> = ({
   onScore,
-  onGameOver
+  onGameOver,
+  language
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [lines, setLines] = useState(0);
@@ -846,7 +854,10 @@ const NeonTetrisGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =>
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className="text-xs text-[#94A3B8]">Lines Cleared: <span className="text-[#8B5CF6] font-bold">{lines}</span></div>
+      <div className="text-xs text-[#94A3B8]">
+        {language === 'en' ? 'Lines Cleared: ' : 'Số hàng đã phá: '}
+        <span className="text-[#8B5CF6] font-bold">{lines}</span>
+      </div>
       <div className="rounded-2xl overflow-hidden border-2 border-[#1E293B]">
         <canvas ref={canvasRef} width={150} height={270} className="block bg-[#090D16]" />
       </div>
@@ -866,7 +877,7 @@ const NeonTetrisGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =>
           aria-label="Rotate piece"
         >
           <RotateCcw className="w-3.5 h-3.5 text-[#8B5CF6]" />
-          <span className="text-[10px]">ROTATE</span>
+          <span className="text-[10px]">{language === 'en' ? 'ROTATE' : 'XOAY'}</span>
         </button>
         <button
           onClick={() => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight' }))}
@@ -1101,8 +1112,8 @@ const CipherBreakGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
           <div key={i} className="flex items-center justify-between text-xs">
             <span className="text-[#F8FAFC] tracking-widest">{h.guess}</span>
             <div className="flex gap-2 text-[10px]">
-              <span className="text-emerald-400 font-bold">{h.exact} EXACT</span>
-              <span className="text-[#8B5CF6] font-bold">{h.close} ALMOST</span>
+              <span className="text-emerald-400 font-bold">{h.exact} {language === 'en' ? 'EXACT' : 'CHUẨN'}</span>
+              <span className="text-[#8B5CF6] font-bold">{h.close} {language === 'en' ? 'ALMOST' : 'GẦN ĐÚNG'}</span>
             </div>
           </div>
         ))}
@@ -1121,7 +1132,7 @@ const CipherBreakGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
           onClick={handleBackspace}
           className="text-xs text-[#94A3B8] hover:text-[#F8FAFC]"
         >
-          DEL
+          {language === 'en' ? 'DEL' : 'XÓA'}
         </button>
       </div>
 
@@ -1142,7 +1153,7 @@ const CipherBreakGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
         disabled={currentGuess.length !== 4}
         className="w-full py-2 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] disabled:opacity-40 text-white font-bold text-xs"
       >
-        SUBMIT CIPHER [{history.length}/6]
+        {language === 'en' ? 'SUBMIT CIPHER' : 'GỬI MÃ GIẢI'} [{history.length}/6]
       </button>
     </div>
   );
@@ -1153,7 +1164,8 @@ const CipherBreakGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
 // ============================================================================
 const GridRacerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void; language: string }> = ({
   onScore,
-  onGameOver
+  onGameOver,
+  language
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const laneRef = useRef(1); // 0, 1, 2
@@ -1239,13 +1251,13 @@ const GridRacerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
           onClick={() => { if (laneRef.current > 0) laneRef.current--; }}
           className="px-4 py-2 bg-[#131B2E] border border-[#1E293B] rounded-lg text-xs text-[#8B5CF6]"
         >
-          LEFT
+          {language === 'en' ? 'LEFT' : 'TRÁI'}
         </button>
         <button
           onClick={() => { if (laneRef.current < 2) laneRef.current++; }}
           className="px-4 py-2 bg-[#131B2E] border border-[#1E293B] rounded-lg text-xs text-[#8B5CF6]"
         >
-          RIGHT
+          {language === 'en' ? 'RIGHT' : 'PHẢI'}
         </button>
       </div>
     </div>
@@ -1257,7 +1269,8 @@ const GridRacerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => 
 // ============================================================================
 const ReactorCoreGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void; language: string }> = ({
   onScore,
-  onGameOver
+  onGameOver,
+  language
 }) => {
   const [angle, setAngle] = useState(0);
   const [targetAngle, setTargetAngle] = useState(0.8);
@@ -1300,7 +1313,7 @@ const ReactorCoreGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
     <div className="flex flex-col items-center gap-4">
       <div className="flex items-center gap-6 text-xs">
         <span className="text-[#8B5CF6]">COMBO: x{combo}</span>
-        <span className="text-red-400">LIVES: {'❤ '.repeat(lives)}</span>
+        <span className="text-red-400">{language === 'en' ? 'LIVES: ' : 'MẠNG: '}{'❤ '.repeat(lives)}</span>
       </div>
 
       <div
@@ -1314,7 +1327,7 @@ const ReactorCoreGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
         />
         {/* Core */}
         <div className="w-12 h-12 rounded-full bg-[#8B5CF6] shadow-lg shadow-[#8B5CF6]/50 flex items-center justify-center text-[10px] font-bold text-white z-10">
-          STABILIZE
+          {language === 'en' ? 'STABILIZE' : 'CÂN BẰNG'}
         </div>
       </div>
 
@@ -1322,7 +1335,7 @@ const ReactorCoreGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
         onClick={handlePulse}
         className="px-6 py-2 rounded-xl bg-[#8B5CF6] text-white text-xs font-bold shadow-lg"
       >
-        PULSE STABILIZER [SPACE]
+        {language === 'en' ? 'PULSE STABILIZER [SPACE]' : 'XUNG ĐIỀU HÒA LÕI [SPACE]'}
       </button>
     </div>
   );
@@ -1334,7 +1347,8 @@ const ReactorCoreGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
 const VoidBreakerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () => void; onGameWon: () => void; language: string }> = ({
   onScore,
   onGameOver,
-  onGameWon
+  onGameWon,
+  language
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -1486,7 +1500,7 @@ const VoidBreakerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
           className="px-5 py-2.5 bg-[#131B2E] hover:bg-[#1E293B] border border-[#1E293B] rounded-xl text-xs font-bold text-[#8B5CF6] flex items-center gap-1.5 active:scale-95 transition-transform select-none"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>LEFT</span>
+          <span>{language === 'en' ? 'LEFT' : 'TRÁI'}</span>
         </button>
         <button
           onTouchStart={() => { rightPressed.current = true; }}
@@ -1495,11 +1509,15 @@ const VoidBreakerGame: React.FC<{ onScore: (s: number) => void; onGameOver: () =
           onMouseUp={() => { rightPressed.current = false; }}
           className="px-5 py-2.5 bg-[#131B2E] hover:bg-[#1E293B] border border-[#1E293B] rounded-xl text-xs font-bold text-[#8B5CF6] flex items-center gap-1.5 active:scale-95 transition-transform select-none"
         >
-          <span>RIGHT</span>
+          <span>{language === 'en' ? 'RIGHT' : 'PHẢI'}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-      <p className="text-[11px] text-[#94A3B8]">Drag paddle, use Left/Right keys or buttons</p>
+      <p className="text-[11px] text-[#94A3B8]">
+        {language === 'en'
+          ? 'Drag paddle, use Left/Right keys or buttons'
+          : 'Kéo thanh đỡ, dùng phím Trái/Phải hoặc nút cảm ứng'}
+      </p>
     </div>
   );
 };

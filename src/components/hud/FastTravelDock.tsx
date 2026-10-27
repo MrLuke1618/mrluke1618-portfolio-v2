@@ -50,7 +50,7 @@ export const FastTravelDock: React.FC<FastTravelDockProps> = ({
       >
         <div className="hidden lg:flex items-center gap-1.5 px-2 text-[10px] font-mono text-[#94A3B8] border-r border-[#1E293B] pr-3 shrink-0">
           <Compass className="w-3.5 h-3.5 text-[#8B5CF6]" />
-          <span>FAST TRAVEL:</span>
+          <span>{language === 'en' ? 'FAST TRAVEL:' : 'CHUYỂN NHANH:'}</span>
         </div>
 
         {GAME_ZONES.map((zone, idx) => {
@@ -67,7 +67,7 @@ export const FastTravelDock: React.FC<FastTravelDockProps> = ({
                   ? 'bg-[#8B5CF6] text-white font-semibold shadow-md shadow-[#8B5CF6]/30'
                   : 'text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#090D16] border border-transparent hover:border-[#1E293B]'
               }`}
-              title={`${language === 'en' ? zone.titleEn : zone.titleVi} [Press ${idx + 1}]`}
+              title={`${language === 'en' ? zone.titleEn : zone.titleVi} [${language === 'en' ? 'Press' : 'Phím'} ${idx + 1}]`}
             >
               <span className={isActive ? 'text-white' : 'text-[#94A3B8]'}>
                 {getZoneIcon(zone.iconName)}

@@ -58,35 +58,59 @@ watchdog:
 const CLI_PRESETS = [
   {
     cmd: 'antigravity run video-pipeline --preset youtube-shorts',
-    description: 'Execute full intake, Hyperframes synthesis, and Concat stitch.',
-    logs: [
+    descriptionEn: 'Execute full intake, Hyperframes synthesis, and Concat stitch.',
+    descriptionVi: 'Thực thi nạp kịch bản, tổng hợp Hyperframes và ghép video Concat.',
+    logsEn: [
       '[antigravity:core] Initializing autonomous agent pool...',
       '[antigravity:git] Syncing HEAD with origin/main (SHA: 4a9f2c1)',
       '[claude-code] Extracted 6 viral narrative beats from script_input.md',
       '[hyperframes] Compiling 60fps canvas keyframe buffers for 9:16 layout',
       '[concat] Lossless demuxing 4 segments via libx264 (crf 18, -14 LUFS)',
       '[antigravity:pipeline] SUCCESS: master_shorts.mp4 generated in 4.21s (Zero frame drops)'
+    ],
+    logsVi: [
+      '[antigravity:core] Khởi tạo nhóm tiến trình tự động...',
+      '[antigravity:git] Đồng bộ nhánh HEAD với origin/main (SHA: 4a9f2c1)',
+      '[claude-code] Trích xuất 6 điểm nhịp kịch bản từ script_input.md',
+      '[hyperframes] Biên dịch khung hình canvas 60fps cho tỷ lệ 9:16',
+      '[concat] Ghép nối lossless 4 phân đoạn qua libx264 (crf 18, -14 LUFS)',
+      '[antigravity:pipeline] THÀNH CÔNG: master_shorts.mp4 xuất bản trong 4.21s (Không rớt khung hình)'
     ]
   },
   {
     cmd: 'claude-code task "Audit frame-drop latency in concat stitching"',
-    description: 'Deep reasoning agent inspection of FFmpeg audio/video demux timing.',
-    logs: [
+    descriptionEn: 'Deep reasoning agent inspection of FFmpeg audio/video demux timing.',
+    descriptionVi: 'Tiến trình suy luận kiểm tra đồng bộ thời gian âm thanh/hình ảnh FFmpeg.',
+    logsEn: [
       '[claude-code] Scanning concat demuxer timestamp drift across PTS/DTS streams...',
       '[claude-code] Stream #0:0 (video): 60.00 fps locked, zero jitter detected',
       '[claude-code] Stream #0:1 (audio): AAC 48000Hz stereo, sync deviation < 0.4ms',
       '[claude-code] AUDIT COMPLETE: Audio-video sync is mathematically frame-perfect.'
+    ],
+    logsVi: [
+      '[claude-code] Quét độ lệch dấu thời gian PTS/DTS trong luồng concat demuxer...',
+      '[claude-code] Luồng #0:0 (video): Khóa 60.00 fps, không phát hiện rung giật',
+      '[claude-code] Luồng #0:1 (audio): AAC 48000Hz stereo, độ lệch < 0.4ms',
+      '[claude-code] KIỂM TRA HOÀN TẤT: Đồng bộ âm thanh - hình ảnh chuẩn xác từng khung hình.'
     ]
   },
   {
     cmd: 'codex sync github --repo MrLuke1618/my-interactive-portfolio',
-    description: 'Autonomous Git pull, branch validation, and packaging check.',
-    logs: [
+    descriptionEn: 'Autonomous Git pull, branch validation, and packaging check.',
+    descriptionVi: 'Tự động kéo mã nguồn Git, kiểm tra nhánh và quy trình đóng gói.',
+    logsEn: [
       '[codex:git] Connecting to github.com/MrLuke1618/my-interactive-portfolio...',
       '[codex:git] Fetching packfile: 100% (214/214), done.',
       '[codex:deps] Validating package.json dependencies and vercel.json rewrite rules...',
       '[codex:build] Running "npm run build" -> dist/index.html & dist/404.html verified.',
       '[codex:status] Outpost workspace is 100% clean and synchronized with production.'
+    ],
+    logsVi: [
+      '[codex:git] Kết nối tới github.com/MrLuke1618/my-interactive-portfolio...',
+      '[codex:git] Tải gói dữ liệu: 100% (214/214), hoàn thành.',
+      '[codex:deps] Kiểm tra dependencies trong package.json và quy tắc vercel.json...',
+      '[codex:build] Chạy "npm run build" -> dist/index.html và dist/404.html đã xác thực.',
+      '[codex:status] Không gian làm việc sạch 100% và đã đồng bộ hoàn toàn với bản phát hành.'
     ]
   }
 ];
@@ -96,23 +120,34 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
   onOpenEasterEgg
 }) => {
   const [selectedCliIdx, setSelectedCliIdx] = useState<number>(0);
-  const [terminalLogs, setTerminalLogs] = useState<string[]>(CLI_PRESETS[0].logs);
+  const [terminalLogs, setTerminalLogs] = useState<string[]>(
+    language === 'en' ? CLI_PRESETS[0].logsEn : CLI_PRESETS[0].logsVi
+  );
   const [isExecuting, setIsExecuting] = useState<boolean>(false);
   const [copiedYaml, setCopiedYaml] = useState<boolean>(false);
 
   const activeCli = CLI_PRESETS[selectedCliIdx];
 
+  // Update logs when language or selected index changes
+  React.useEffect(() => {
+    setTerminalLogs(language === 'en' ? activeCli.logsEn : activeCli.logsVi);
+  }, [language, selectedCliIdx, activeCli]);
+
   const handleRunCommand = (idx: number) => {
     setSelectedCliIdx(idx);
     setIsExecuting(true);
     sound.playTerminalClick();
-    setTerminalLogs(['[shipyard:kernel] Spawning isolated agent container...']);
+    setTerminalLogs([
+      language === 'en'
+        ? '[shipyard:kernel] Spawning isolated agent container...'
+        : '[shipyard:kernel] Đang khởi tạo container tiến trình biệt lập...'
+    ]);
 
     setTimeout(() => {
-      setTerminalLogs(CLI_PRESETS[idx].logs);
+      setTerminalLogs(language === 'en' ? CLI_PRESETS[idx].logsEn : CLI_PRESETS[idx].logsVi);
       setIsExecuting(false);
       sound.playLevelUp();
-    }, 450);
+    }, 700);
   };
 
   const handleCopyYaml = async () => {
@@ -182,9 +217,11 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6]">
             <HardDrive className="w-3.5 h-3.5" />
-            <span>ORBITAL AUTONOMOUS PIPELINE ARCHITECTURE</span>
+            <span>{language === 'en' ? 'ORBITAL AUTONOMOUS PIPELINE ARCHITECTURE' : 'KIẾN TRÚC TỰ ĐỘNG HÓA QUỸ ĐẠO'}</span>
           </div>
-          <span className="text-[11px] font-mono text-[#94A3B8]">Headless Execution · Zero GUI Latency</span>
+          <span className="text-[11px] font-mono text-[#94A3B8]">
+            {language === 'en' ? 'Headless Execution · Zero GUI Latency' : 'Thực thi ngầm · Độ trễ đồ họa bằng 0'}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -220,7 +257,9 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
           ].map((node) => (
             <div key={node.phase} className="p-4 rounded-xl bg-[#090D16] border border-[#1E293B] space-y-2">
               <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-[#8B5CF6] font-bold">PHASE {node.phase}</span>
+                <span className="text-[#8B5CF6] font-bold">
+                  {language === 'en' ? 'PHASE' : 'GIAI ĐOẠN'} {node.phase}
+                </span>
                 <Shield className="w-3.5 h-3.5 text-[#94A3B8]" />
               </div>
               <h4 className="text-xs sm:text-sm font-semibold text-[#F8FAFC]">{node.title}</h4>
@@ -253,7 +292,7 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors self-start sm:self-auto"
           >
             {copiedYaml ? <Check className="w-3.5 h-3.5 text-[#8B5CF6]" /> : <Copy className="w-3.5 h-3.5 text-[#8B5CF6]" />}
-            <span>{copiedYaml ? 'Copied YAML!' : 'Copy antigravity.yaml'}</span>
+            <span>{copiedYaml ? (language === 'en' ? 'Copied YAML!' : 'Đã sao chép!') : (language === 'en' ? 'Copy antigravity.yaml' : 'Sao chép YAML')}</span>
           </button>
         </div>
 
@@ -267,9 +306,11 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6]">
             <Play className="w-3.5 h-3.5" />
-            <span>SHIPYARD CLI EMULATOR</span>
+            <span>{language === 'en' ? 'SHIPYARD CLI EMULATOR' : 'TRÌNH GIẢ LẬP LỆNH DÒNG CLI'}</span>
           </div>
-          <span className="text-[11px] font-mono text-[#94A3B8]">Test Real Terminal Instructions</span>
+          <span className="text-[11px] font-mono text-[#94A3B8]">
+            {language === 'en' ? 'Test Real Terminal Instructions' : 'Thử nghiệm các lệnh terminal thực tế'}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
@@ -289,7 +330,7 @@ export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = (
                   $ {preset.cmd.split(' ')[0]} {preset.cmd.split(' ')[1]}
                 </div>
                 <div className="text-[11px] text-[#94A3B8] line-clamp-2">
-                  {preset.description}
+                  {language === 'en' ? preset.descriptionEn : preset.descriptionVi}
                 </div>
               </button>
             );

@@ -76,8 +76,14 @@ export const EasterEggModal: React.FC<EasterEggModalProps> = ({ snippet, onClose
 
         {/* Footer status */}
         <div className="px-4 py-2.5 bg-[#090D16] border-t border-[#1E293B] flex items-center justify-between text-[11px] text-[#94A3B8]">
-          <span>Source Snippet for Technical Verification</span>
-          <span className="font-mono">UTF-8 · Clean Engineering</span>
+          <span>
+            {language === 'en'
+              ? 'Source Snippet for Technical Verification'
+              : 'Đoạn mã nguồn dùng kiểm định kỹ thuật'}
+          </span>
+          <span className="font-mono">
+            {language === 'en' ? 'UTF-8 · Clean Engineering' : 'UTF-8 · Chuẩn kỹ thuật'}
+          </span>
         </div>
       </div>
     </div>
