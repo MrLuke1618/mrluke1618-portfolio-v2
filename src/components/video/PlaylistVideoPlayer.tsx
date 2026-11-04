@@ -8,11 +8,18 @@ import {
   Sparkles, 
   Film, 
   Maximize2, 
+  Minimize2,
   X, 
   Tv, 
   CheckCircle2, 
   Smartphone, 
-  Monitor 
+  Monitor,
+  ArrowLeft,
+  FileText,
+  Briefcase,
+  GraduationCap,
+  Rocket,
+  Compass
 } from 'lucide-react';
 
 interface PlaylistVideoPlayerProps {
@@ -267,6 +274,7 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
   const [selectedItemId, setSelectedItemId] = useState<string>(PLAYLIST_ITEMS[0].id);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isCinemaModalOpen, setIsCinemaModalOpen] = useState<boolean>(false);
+  const [isPipMode, setIsPipMode] = useState<boolean>(false);
   const [theaterLayout, setTheaterLayout] = useState<'inline-split' | 'inline-expanded'>('inline-expanded');
   const [aspectRatioMode, setAspectRatioMode] = useState<AspectRatioType>('auto');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
@@ -284,9 +292,11 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
   // Keyboard shortcut for closing cinema mode
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isCinemaModalOpen) {
-        setIsCinemaModalOpen(false);
-        sound.playBip?.();
+      if (e.key === 'Escape') {
+        if (isCinemaModalOpen) {
+          setIsCinemaModalOpen(false);
+          sound.playBip?.();
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -307,15 +317,57 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
   const handleStopPlay = () => {
     sound.playBip?.();
     setIsPlaying(false);
+    setIsPipMode(false);
   };
 
   const handleToggleCinemaModal = () => {
     sound.playTeleport?.();
-    setIsCinemaModalOpen((prev) => !prev);
-    // If opening cinema modal and not yet playing, auto-start playback
-    if (!isCinemaModalOpen && !isPlaying) {
+    if (isCinemaModalOpen) {
+      setIsCinemaModalOpen(false);
+    } else {
+      setIsCinemaModalOpen(true);
+      setIsPipMode(false);
+      if (!isPlaying) {
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  // Switch to Picture-in-Picture floating mode and browse the CV
+  const handleMinimizeToPipAndBrowseCV = () => {
+    sound.playTeleport?.();
+    setIsCinemaModalOpen(false);
+    setIsPipMode(true);
+    if (!isPlaying) {
       setIsPlaying(true);
     }
+  };
+
+  // Jump directly to a CV section from the Mini Theater
+  const handleJumpToCVSection = (sectionTarget: 'top' | 'experience' | 'skills' | 'shipyard') => {
+    sound.playTeleport?.();
+    // Collapse to floating PiP so video stays playing in corner
+    setIsCinemaModalOpen(false);
+    setIsPipMode(true);
+    if (!isPlaying) {
+      setIsPlaying(true);
+    }
+
+    setTimeout(() => {
+      if (sectionTarget === 'top') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (sectionTarget === 'experience' || sectionTarget === 'skills') {
+        const el = document.getElementById('active-zone-view') || document.querySelector('main');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      } else if (sectionTarget === 'shipyard') {
+        const el = document.getElementById('active-zone-view') || document.querySelector('main');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }, 100);
   };
 
   const filteredItems = PLAYLIST_ITEMS.filter((item) => {
@@ -530,6 +582,14 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
                   />
                   {/* Floating in-app control to stop / return to preview */}
                   <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5">
+                    <button
+                      onClick={handleMinimizeToPipAndBrowseCV}
+                      className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#090D16]/90 hover:bg-[#131B2E] border border-[#1E293B] text-xs text-[#8B5CF6] hover:text-white backdrop-blur-md transition-all shadow-lg cursor-pointer"
+                      title={language === 'en' ? 'Minimize to corner PiP & inspect CV' : 'Thu nhỏ về góc để xem CV'}
+                    >
+                      <Minimize2 className="w-3 h-3 text-[#8B5CF6]" />
+                      <span className="text-[11px] font-mono">{language === 'en' ? 'Browse CV (PiP)' : 'Xem CV (PiP)'}</span>
+                    </button>
                     <button
                       onClick={handleToggleCinemaModal}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#090D16]/90 hover:bg-[#131B2E] border border-[#1E293B] text-xs text-[#F8FAFC] backdrop-blur-md transition-all shadow-lg cursor-pointer"
@@ -775,58 +835,121 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
         </div>
       </div>
 
-      {/* FULLSCREEN MINI THEATER MODAL (Cinema Lightbox) */}
+      {/* FULLSCREEN MINI THEATER MODAL (Cinema Lightbox) WITH CV NAVIGATION TOGGLE SWITCH */}
       {isCinemaModalOpen && (
         <div className="fixed inset-0 z-50 bg-[#060910]/95 backdrop-blur-2xl flex flex-col justify-between p-3 sm:p-6 overflow-y-auto animate-fadeIn">
-          {/* Cinema Header */}
-          <div className="w-full max-w-6xl mx-auto flex items-center justify-between pb-3 mb-2 border-b border-[#1E293B]">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6]">
-                <Film className="w-4 h-4" />
+          {/* Cinema Header with "Back to CV / Inspect CV" Navigation Bar */}
+          <div className="w-full max-w-6xl mx-auto space-y-3 pb-3 mb-2 border-b border-[#1E293B]">
+            {/* Top row: Back to CV button, Title, and Action Controls */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              {/* Back to CV Toggle Button */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleMinimizeToPipAndBrowseCV}
+                  className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-bold font-mono transition-all shadow-lg shadow-[#8B5CF6]/30 cursor-pointer"
+                  title={language === 'en' ? 'Minimize to corner player and inspect the CV' : 'Thu nhỏ về góc màn hình để đọc CV'}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>{language === 'en' ? 'Back to CV (Keep Playing)' : 'Quay Lại CV (Tiếp Tục Phát)'}</span>
+                </button>
+
+                <button
+                  onClick={handleToggleCinemaModal}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#131B2E] hover:bg-[#1E293B] border border-[#1E293B] text-xs font-mono text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
+                  title={language === 'en' ? 'Return to inline video player' : 'Trở về trình phát thông thường'}
+                >
+                  <Minimize2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                  <span className="hidden sm:inline">{language === 'en' ? 'Standard View' : 'Giao Diện Chuẩn'}</span>
+                </button>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5CF6] font-bold">
-                    {language === 'en' ? 'MINI THEATER · CINEMA VIEW' : 'RẠP PHIM THU NHỎ · CHẾ ĐỘ RẠP'}
+
+              {/* Theater Mode Title */}
+              <div className="hidden lg:flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[#8B5CF6] font-bold">
+                  {language === 'en' ? 'MINI THEATER VIEW' : 'CHẾ ĐỘ RẠP PHIM THU NHỎ'}
+                </span>
+                <span className="text-xs text-[#94A3B8]">·</span>
+                <span className="text-xs font-mono text-[#F8FAFC] truncate max-w-xs">
+                  {language === 'en' ? activeItem.titleEn : activeItem.titleVi}
+                </span>
+              </div>
+
+              {/* Right Controls: Aspect Ratio and Close Button */}
+              <div className="flex items-center gap-2">
+                {/* Aspect Ratio Switcher */}
+                <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-[#131B2E] border border-[#1E293B] text-xs font-mono">
+                  <span className="text-[#94A3B8] text-[10px] mr-1 hidden md:inline">
+                    {language === 'en' ? 'FRAME:' : 'KHUNG:'}
                   </span>
-                  <span className="text-xs text-[#94A3B8]">·</span>
-                  <span className="text-xs font-mono text-[#F8FAFC]">
-                    {language === 'en' ? activeItem.titleEn : activeItem.titleVi}
-                  </span>
+                  <button
+                    onClick={() => setAspectRatioMode('auto')}
+                    className={`px-2 py-0.5 rounded ${aspectRatioMode === 'auto' ? 'bg-[#8B5CF6] text-white font-bold' : 'text-[#94A3B8]'}`}
+                  >
+                    Auto
+                  </button>
+                  <button
+                    onClick={() => setAspectRatioMode('16:9')}
+                    className={`px-2 py-0.5 rounded ${aspectRatioMode === '16:9' ? 'bg-[#8B5CF6] text-white font-bold' : 'text-[#94A3B8]'}`}
+                  >
+                    16:9
+                  </button>
+                  <button
+                    onClick={() => setAspectRatioMode('9:16')}
+                    className={`px-2 py-0.5 rounded ${aspectRatioMode === '9:16' ? 'bg-[#8B5CF6] text-white font-bold' : 'text-[#94A3B8]'}`}
+                  >
+                    9:16
+                  </button>
                 </div>
+
+                {/* Close Theater Button */}
+                <button
+                  onClick={handleToggleCinemaModal}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#131B2E] hover:bg-rose-500/20 border border-[#1E293B] hover:border-rose-500/40 text-xs font-mono text-[#F8FAFC] transition-colors cursor-pointer"
+                  title="Close theater and return to CV (ESC)"
+                >
+                  <X className="w-4 h-4 text-rose-400" />
+                  <span>{language === 'en' ? 'Close (ESC)' : 'Đóng (ESC)'}</span>
+                </button>
               </div>
             </div>
 
-            {/* Cinema Header Actions */}
-            <div className="flex items-center gap-3">
-              {/* Aspect Ratio Switcher */}
-              <div className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-lg bg-[#131B2E] border border-[#1E293B] text-xs font-mono">
-                <button
-                  onClick={() => setAspectRatioMode('auto')}
-                  className={`px-2 py-0.5 rounded ${aspectRatioMode === 'auto' ? 'bg-[#8B5CF6] text-white' : 'text-[#94A3B8]'}`}
-                >
-                  Auto
-                </button>
-                <button
-                  onClick={() => setAspectRatioMode('16:9')}
-                  className={`px-2 py-0.5 rounded ${aspectRatioMode === '16:9' ? 'bg-[#8B5CF6] text-white' : 'text-[#94A3B8]'}`}
-                >
-                  16:9
-                </button>
-                <button
-                  onClick={() => setAspectRatioMode('9:16')}
-                  className={`px-2 py-0.5 rounded ${aspectRatioMode === '9:16' ? 'bg-[#8B5CF6] text-white' : 'text-[#94A3B8]'}`}
-                >
-                  9:16 Shorts
-                </button>
-              </div>
+            {/* Sub-row: Direct CV Station Jump Toggles */}
+            <div className="flex items-center gap-2 overflow-x-auto pt-1 pb-1 text-xs font-mono">
+              <span className="text-[#94A3B8] text-[11px] whitespace-nowrap flex items-center gap-1">
+                <Compass className="w-3.5 h-3.5 text-[#8B5CF6]" />
+                {language === 'en' ? 'INSPECT CV SECTIONS:' : 'XEM CÁC MỤC CV:'}
+              </span>
 
               <button
-                onClick={handleToggleCinemaModal}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#131B2E] hover:bg-rose-500/20 border border-[#1E293B] hover:border-rose-500/40 text-xs font-mono text-[#F8FAFC] transition-colors cursor-pointer"
+                onClick={() => handleJumpToCVSection('top')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] hover:text-[#8B5CF6] whitespace-nowrap transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4 text-rose-400" />
-                <span>{language === 'en' ? 'Close Theater (ESC)' : 'Đóng Rạp (ESC)'}</span>
+                <FileText className="w-3 h-3 text-[#8B5CF6]" />
+                <span>{language === 'en' ? 'Editorial CV Overview' : 'Tổng Quan CV & Học Vấn'}</span>
+              </button>
+
+              <button
+                onClick={() => handleJumpToCVSection('experience')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] hover:text-[#8B5CF6] whitespace-nowrap transition-colors cursor-pointer"
+              >
+                <Briefcase className="w-3 h-3 text-purple-400" />
+                <span>{language === 'en' ? 'Work Experience & Arcade' : 'Kinh Nghiệm & Dự Án'}</span>
+              </button>
+
+              <button
+                onClick={() => handleJumpToCVSection('skills')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] hover:text-[#8B5CF6] whitespace-nowrap transition-colors cursor-pointer"
+              >
+                <GraduationCap className="w-3 h-3 text-cyan-400" />
+                <span>{language === 'en' ? 'Tech Stacks & Certs' : 'Kỹ Năng & Chứng Chỉ'}</span>
+              </button>
+
+              <button
+                onClick={() => handleJumpToCVSection('shipyard')}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] hover:text-[#8B5CF6] whitespace-nowrap transition-colors cursor-pointer"
+              >
+                <Rocket className="w-3 h-3 text-emerald-400" />
+                <span>{language === 'en' ? 'Shipyard & Map' : 'Xưởng Tàu & Bản Đồ'}</span>
               </button>
             </div>
           </div>
@@ -919,6 +1042,65 @@ export const PlaylistVideoPlayer: React.FC<PlaylistVideoPlayerProps> = ({ langua
             </div>
           </div>
         </div>
+      )}
+
+      {/* FLOATING PICTURE-IN-PICTURE (PiP) WIDGET FOR CONTINUOUS BROWSING WHILE READING CV */}
+      {isPipMode && isPlaying && !isCinemaModalOpen && (
+        <aside
+          aria-label="Floating Picture-in-Picture Mini-Player"
+          className="fixed bottom-5 right-5 z-40 w-72 sm:w-88 rounded-2xl bg-[#090D16]/95 border-2 border-[#8B5CF6] shadow-2xl backdrop-blur-xl overflow-hidden transition-all animate-bounce-subtle"
+        >
+          {/* PiP Header */}
+          <div className="px-3 py-2 bg-[#131B2E] border-b border-[#1E293B] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-[#8B5CF6] uppercase tracking-wider">
+                {language === 'en' ? 'PiP Mode · Reading CV' : 'Đang Đọc CV'}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleToggleCinemaModal}
+                className="p-1 rounded hover:bg-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] transition-colors cursor-pointer"
+                title={language === 'en' ? 'Expand back to Mini Theater' : 'Phóng to lại rạp phim'}
+              >
+                <Maximize2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
+              </button>
+              <button
+                onClick={handleStopPlay}
+                className="p-1 rounded hover:bg-rose-500/20 text-[#94A3B8] hover:text-rose-400 transition-colors cursor-pointer"
+                title={language === 'en' ? 'Close floating player' : 'Đóng trình phát nổi'}
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          {/* PiP Video Frame */}
+          <div className="relative aspect-video w-full bg-black">
+            <iframe
+              src={activeItem.embedUrl}
+              title={language === 'en' ? activeItem.titleEn : activeItem.titleVi}
+              className="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
+
+          {/* PiP Footer Info & Quick Maximize */}
+          <div className="px-3 py-2 bg-[#090D16] flex items-center justify-between text-[11px] font-mono">
+            <span className="text-[#F8FAFC] font-medium truncate max-w-[170px]">
+              {language === 'en' ? activeItem.titleEn : activeItem.titleVi}
+            </span>
+            <button
+              onClick={handleToggleCinemaModal}
+              className="text-[#8B5CF6] hover:text-white font-bold cursor-pointer transition-colors"
+            >
+              {language === 'en' ? 'Expand [⤢]' : 'Phóng to [⤢]'}
+            </button>
+          </div>
+        </aside>
       )}
     </div>
   );
