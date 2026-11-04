@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TradingCardItem } from '../../types/game';
 import { sound } from '../../constants/soundEffects';
 import { ExternalLink, Copy, Check, X, Clock, Youtube, FileText, FolderGit2, Laptop } from 'lucide-react';
@@ -12,6 +12,27 @@ interface InteractiveCardModalProps {
 
 export const InteractiveCardModal: React.FC<InteractiveCardModalProps> = ({ card, onClose, language }) => {
   const [copied, setCopied] = useState(false);
+
+  // Single video instance mutex: Pause other videos when this card opens with video,
+  // and close this modal if Mini Theater starts playing.
+  useEffect(() => {
+    if (card && card.type === 'youtube') {
+      window.dispatchEvent(
+        new CustomEvent('ai-portfolio:pause-videos', {
+          detail: { source: 'card-modal' }
+        })
+      );
+    }
+
+    const handleGlobalPause = (e: Event) => {
+      const customEvent = e as CustomEvent<{ source?: string }>;
+      if (customEvent.detail?.source && customEvent.detail.source !== 'card-modal') {
+        onClose();
+      }
+    };
+    window.addEventListener('ai-portfolio:pause-videos', handleGlobalPause);
+    return () => window.removeEventListener('ai-portfolio:pause-videos', handleGlobalPause);
+  }, [card, onClose]);
 
   if (!card) return null;
 
