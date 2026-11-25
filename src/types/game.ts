@@ -1,6 +1,6 @@
 export type PerformanceTier = 'ultra' | 'balanced' | 'lite';
 
-export type GameZoneId = 'vault' | 'arcade' | 'academy' | 'lounge' | 'shipyard';
+export type GameZoneId = 'arcade' | 'projects' | 'vault' | 'academy' | 'shipyard' | 'lounge';
 
 export interface GameZone {
   id: GameZoneId;

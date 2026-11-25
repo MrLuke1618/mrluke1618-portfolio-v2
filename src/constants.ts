@@ -5,7 +5,7 @@ export const i18n: { en: LanguageData; vi: LanguageData } = {
   en: {
     header: {
       title: 'Hoang Cao Minh',
-      subtitle: 'Video Editor & News Editor & AI Content Creator'
+      subtitle: 'AI Content Automation · AI Game Creator · Video Editor'
     },
     navigation: [
       { type: 'header', title: 'Portfolio' },
@@ -24,7 +24,7 @@ export const i18n: { en: LanguageData; vi: LanguageData } = {
         skills: 'Skills',
         links: 'Social Media & Links',
     },
-    summaryText: "Hello, I'm Hoang. With over six years of experience as a Video Editor, News Editor, and AI Content Creator, I specialize in enhancing content clarity and engaging readers across multiple platforms. My expertise in next-gen AI prompt engineering, video post-production pipelines, and AI app integrations allows me to deliver exceptional interactive products. I am deeply passionate about merging traditional media storytelling with custom software systems to streamline creative workflows and power learning personalization.",
+    summaryText: "Hello, I'm Hoang. With over six years of experience in video editing, news editing, and AI content creation, I automate end-to-end content pipelines (programmatic video rendering, AI voice synthesis, and multi-platform workflows) and create playable video games with AI—from narrative engines like Midnight Express and Football: Fantastic FCs to interactive WebGL and Canvas worlds.",
     experienceData: [
         {
             role: 'MULTIMEDIA STRATEGIST & AI CONTENT CREATOR',
@@ -198,7 +198,7 @@ export const i18n: { en: LanguageData; vi: LanguageData } = {
   vi: {
     header: {
         title: 'Cao Minh Hoàng',
-        subtitle: 'Biên tập viên Video & Tin tức & Sáng tạo Nội dung AI'
+        subtitle: 'Tự động hóa Nội dung AI · Sáng tạo Game AI · Biên tập Video'
     },
     navigation: [
         { type: 'header', title: 'Portfolio' },
@@ -217,7 +217,7 @@ export const i18n: { en: LanguageData; vi: LanguageData } = {
         skills: 'Các kỹ năng',
         links: 'Mạng xã hội & Liên kết',
     },
-    summaryText: "Xin chào, tôi là Hoàng. Với hơn sáu năm kinh nghiệm làm Biên tập viên Video, Biên tập viên Tin tức và Sáng tạo Nội dung AI, tôi chuyên tối ưu hóa độ rõ nét của nội dung và thu hút người đọc trên nhiều nền tảng số. Việc am hiểu thiết lập kỹ xảo quay dựng AI thế hệ mới, tối ưu hóa Prompt và phát triển ứng dụng AI giúp tôi tạo ra những sản phẩm giáo dục cá nhân hóa chất lượng. Tôi đam mê kết hợp kỹ năng kể chuyện truyền thống với sự phát triển của công nghệ để thúc đẩy trải nghiệm tự học và quy trình làm nội dung tự động.",
+    summaryText: "Xin chào, tôi là Hoàng. Với hơn sáu năm kinh nghiệm biên tập video, tin tức và sáng tạo nội dung AI, tôi chuyên tự động hóa quy trình sản xuất nội dung trọn gói (render video lập trình, tổng hợp giọng nói AI, quy trình đa nền tảng) và sáng tạo game bằng AI—từ các tựa game cốt truyện như Midnight Express, Football: Fantastic FCs đến thế giới WebGL và Canvas tương tác.",
     experienceData: [
         { 
             role: 'MULTIMEDIA STRATEGIST & AI CONTENT CREATOR',

@@ -204,157 +204,144 @@ export const KineticTypographyLab: React.FC<KineticTypographyLabProps> = ({ lang
   const words = text.split(' ').filter(Boolean);
 
   return (
-    <div className="rounded-2xl bg-[#131B2E] border border-[#1E293B] p-5 sm:p-6 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="grid h-full min-h-0 grid-cols-1 gap-3 overflow-hidden rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5 lg:grid-cols-12">
+      {/* Left Column (5 cols): 2x5 Preset Grid + Headline + Tension */}
+      <div className="flex min-h-0 flex-col justify-between gap-2.5 lg:col-span-5">
         <div>
-          <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6] mb-1">
-            <Type className="w-3.5 h-3.5" />
-            <span>
-              {language === 'en'
-                ? 'KINETIC MOTION TYPOGRAPHY MASTER ENGINE (10 PRESETS)'
-                : 'BỘ ĐIỀU KHIỂN CHUYỂN ĐỘNG CHỮ KINETIC (10 KIỂU MẪU)'}
+          <div className="mb-1 flex items-center justify-between font-mono text-[10px] text-[#8B5CF6]">
+            <span className="flex items-center gap-1.5">
+              <Type className="h-3 w-3" />
+              <span>{language === 'en' ? '10 KINETIC PRESETS' : '10 KIỂU CHỮ KINETIC'}</span>
             </span>
+            <span>{getCategoryLabel(selectedPreset.category, language)}</span>
           </div>
-          <h3 className="text-lg font-bold text-[#F8FAFC]">
-            {language === 'en'
-              ? 'Real-Time Physics & Keyframe Sandbox'
-              : 'Phòng Thí Nghiệm Vật Lý & Khung Hình Chuyển Động'}
-          </h3>
-          <p className="text-xs text-[#94A3B8] mt-0.5">
-            {language === 'en'
-              ? 'Explore 10 production-grade typography animation algorithms. Adjust tension, preview live, and copy CSS keyframes directly.'
-              : 'Khám phá 10 thuật toán chuyển động chữ tiêu chuẩn truyền hình. Tùy chỉnh lực lò xo, xem thử trực tiếp và sao chép CSS.'}
-          </p>
-        </div>
 
-        {/* Action Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={handleCopyCss}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors active:scale-95"
-          >
-            {copiedCss ? <Check className="w-3.5 h-3.5 text-[#8B5CF6]" /> : <Copy className="w-3.5 h-3.5 text-[#8B5CF6]" />}
-            <span>{copiedCss ? (language === 'en' ? 'Copied CSS!' : 'Đã sao chép!') : (language === 'en' ? 'Copy CSS Keyframes' : 'Sao chép CSS')}</span>
-          </button>
-
-          <button
-            onClick={handleReplay}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-sm shadow-violet-500/20 active:scale-95"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>{language === 'en' ? 'Replay Physics' : 'Chạy lại'}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 10 Presets Selector Grid */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-[#94A3B8] font-mono">
-          <span>{language === 'en' ? 'SELECT TYPOGRAPHY PRESET:' : 'CHỌN KIỂU CHUYỂN ĐỘNG:'}</span>
-          <span className="text-[#8B5CF6]">{getCategoryLabel(selectedPreset.category, language)}</span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
-          {MOTION_PRESETS.map((preset) => {
-            const isSelected = activeStyle === preset.id;
-            return (
-              <button
-                key={preset.id}
-                onClick={() => {
-                  setActiveStyle(preset.id);
-                  handleReplay();
-                }}
-                className={`p-2.5 rounded-xl border text-left transition-all ${
-                  isSelected
-                    ? 'bg-[#090D16] border-[#8B5CF6] text-[#F8FAFC] shadow-sm shadow-violet-500/10'
-                    : 'bg-[#090D16]/60 border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#1E293B]/80'
-                }`}
-              >
-                <div className="text-xs font-semibold truncate leading-tight">
-                  {language === 'en' ? preset.nameEn : preset.nameVi}
-                </div>
-                <div className="text-[10px] text-[#8B5CF6] font-mono mt-0.5 truncate">
-                  {getCategoryLabel(preset.category, language)}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Interactive Controls Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-3 rounded-xl bg-[#090D16] border border-[#1E293B]">
-        {/* Custom Text Input */}
-        <div className="md:col-span-2 space-y-1">
-          <label className="text-[11px] font-mono text-[#94A3B8]">
-            {language === 'en' ? 'EDIT TEST HEADLINE:' : 'NỘI DUNG THỬ NGHIỆM:'}
-          </label>
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg bg-[#131B2E] border border-[#1E293B] text-base sm:text-xs text-[#F8FAFC] focus:outline-none focus:border-[#8B5CF6]"
-            placeholder={language === 'en' ? 'Type custom text...' : 'Nhập văn bản thử nghiệm...'}
-          />
-        </div>
-
-        {/* Spring Tension Multiplier */}
-        <div className="space-y-1">
-          <div className="flex justify-between text-[11px] font-mono text-[#94A3B8]">
-            <span>{language === 'en' ? 'SPEED & TENSION:' : 'TỐC ĐỘ & LỰC LÒ XO:'}</span>
-            <span className="text-[#8B5CF6] font-semibold">{springTension.toFixed(1)}x</span>
+          <div className="grid grid-cols-2 gap-1.5">
+            {MOTION_PRESETS.map((preset) => {
+              const isSelected = activeStyle === preset.id;
+              return (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveStyle(preset.id);
+                    handleReplay();
+                  }}
+                  className={`rounded-xl border p-2 text-left transition ${
+                    isSelected
+                      ? 'border-[#8B5CF6] bg-[#090D16] text-[#F8FAFC]'
+                      : 'border-[#1E293B] bg-[#090D16]/60 text-[#94A3B8] hover:text-white'
+                  }`}
+                >
+                  <div className="truncate text-[11px] font-semibold leading-tight">
+                    {language === 'en' ? preset.nameEn : preset.nameVi}
+                  </div>
+                  <div className="mt-0.5 truncate font-mono text-[9px] text-[#8B5CF6]">
+                    {getCategoryLabel(preset.category, language)}
+                  </div>
+                </button>
+              );
+            })}
           </div>
-          <input
-            type="range"
-            min="0.5"
-            max="2.2"
-            step="0.1"
-            value={springTension}
-            onChange={(e) => setSpringTension(parseFloat(e.target.value))}
-            className="w-full accent-[#8B5CF6] mt-2 cursor-pointer h-3 sm:h-2 touch-none"
-          />
+        </div>
+
+        <div className="space-y-2 rounded-xl border border-[#1E293B] bg-[#090D16] p-2.5">
+          <div>
+            <label className="font-mono text-[10px] text-[#94A3B8]">
+              {language === 'en' ? 'TEST HEADLINE:' : 'NỘI DUNG THỬ NGHIỆM:'}
+            </label>
+            <input
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              className="mt-1 w-full rounded-lg border border-[#1E293B] bg-[#131B2E] px-2.5 py-1.5 text-xs text-[#F8FAFC] focus:border-[#8B5CF6] focus:outline-none"
+              placeholder={language === 'en' ? 'Type custom text...' : 'Nhập văn bản...'}
+            />
+          </div>
+
+          <div>
+            <div className="flex justify-between font-mono text-[10px] text-[#94A3B8]">
+              <span>{language === 'en' ? 'SPEED & TENSION:' : 'TỐC ĐỘ & LỰC LÒ XO:'}</span>
+              <span className="font-semibold text-[#8B5CF6]">{springTension.toFixed(1)}x</span>
+            </div>
+            <input
+              type="range"
+              min="0.5"
+              max="2.2"
+              step="0.1"
+              value={springTension}
+              onChange={(e) => setSpringTension(parseFloat(e.target.value))}
+              className="mt-1 h-1.5 w-full cursor-pointer accent-[#8B5CF6]"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Kinetic Typography Stage Viewport */}
-      <div
-        key={animKey}
-        className="relative min-h-[170px] sm:min-h-[210px] rounded-xl bg-[#090D16] border border-[#1E293B] p-6 flex flex-col items-center justify-center overflow-hidden"
-      >
-        {/* Subtle stage grid backdrop */}
-        <div className="absolute inset-0 bg-[radial-gradient(#1E293B_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
+      {/* Right Column (7 cols): Controls Header + Full-Height Live Preview Stage */}
+      <div className="flex min-h-0 flex-col gap-2.5 lg:col-span-7">
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#1E293B] pb-2">
+          <div>
+            <h3 className="text-sm font-bold text-[#F8FAFC]">
+              {language === 'en' ? selectedPreset.nameEn : selectedPreset.nameVi}
+            </h3>
+            <p className="line-clamp-1 text-[11px] text-[#94A3B8]">
+              {language === 'en' ? selectedPreset.descriptionEn : selectedPreset.descriptionVi}
+            </p>
+          </div>
 
-        {/* Dynamic Animated Kinetic Word Stack */}
-        <div className="relative z-10 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center max-w-3xl">
-          {words.map((word, wIdx) => {
-            const delaySec = (wIdx * 0.1) / springTension;
-            const animDuration = 0.65 / springTension;
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleCopyCss}
+              className="flex items-center gap-1.5 rounded-lg border border-[#1E293B] bg-[#090D16] px-2.5 py-1.5 font-mono text-[11px] text-[#F8FAFC] transition hover:border-[#8B5CF6]"
+            >
+              {copiedCss ? <Check className="h-3.5 w-3.5 text-[#8B5CF6]" /> : <Copy className="h-3.5 w-3.5 text-[#8B5CF6]" />}
+              <span>{copiedCss ? (language === 'en' ? 'Copied CSS!' : 'Đã chép!') : (language === 'en' ? 'Copy CSS' : 'Chép CSS')}</span>
+            </button>
 
-            return (
-              <span
-                key={wIdx}
-                style={{
-                  animation: `${getAnimationName(activeStyle)} ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1) ${delaySec}s both`
-                }}
-                className={`text-2xl sm:text-3xl md:text-4xl font-black tracking-tight inline-block hover:text-[#8B5CF6] transition-colors ${
-                  activeStyle === 'neon_bounce' ? 'text-[#F8FAFC]' : 'text-[#F8FAFC]'
-                }`}
-              >
-                {word}
-              </span>
-            );
-          })}
+            <button
+              type="button"
+              onClick={handleReplay}
+              className="flex items-center gap-1.5 rounded-lg bg-[#8B5CF6] px-2.5 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#7C3AED]"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+              <span>{language === 'en' ? 'Replay Physics' : 'Chạy lại'}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Viewport Meta Indicator */}
-        <div className="absolute bottom-2.5 right-3 text-[10px] font-mono text-[#94A3B8] flex items-center gap-1.5">
-          <Sparkles className="w-3 h-3 text-[#8B5CF6]" />
-          <span>{selectedPreset.nameEn} · 60fps locked</span>
+        <div
+          key={animKey}
+          className="relative flex min-h-0 flex-1 flex-col items-center justify-center overflow-hidden rounded-xl border border-[#1E293B] bg-[#090D16] p-6"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#1E293B_1px,transparent_1px)] opacity-40 [background-size:16px_16px]" />
+
+          <div className="relative z-10 flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center">
+            {words.map((word, wIdx) => {
+              const delaySec = (wIdx * 0.1) / springTension;
+              const animDuration = 0.65 / springTension;
+
+              return (
+                <span
+                  key={wIdx}
+                  style={{
+                    animation: `${getAnimationName(activeStyle)} ${animDuration}s cubic-bezier(0.16, 1, 0.3, 1) ${delaySec}s both`,
+                  }}
+                  className="inline-block text-2xl font-black tracking-tight text-[#F8FAFC] transition-colors hover:text-[#8B5CF6] sm:text-3xl md:text-4xl"
+                >
+                  {word}
+                </span>
+              );
+            })}
+          </div>
+
+          <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 font-mono text-[10px] text-[#94A3B8]">
+            <Sparkles className="h-3 w-3 text-[#8B5CF6]" />
+            <span>{selectedPreset.nameEn} · 60fps locked</span>
+          </div>
         </div>
       </div>
 
-      {/* Global Embedded Keyframes for All 10 Presets */}
       <style>{`
         ${MOTION_PRESETS.map((p) => p.cssKeyframes).join('\n')}
       `}</style>

@@ -1,368 +1,316 @@
 import React, { useState } from 'react';
-import { Terminal, GitBranch, Cpu, Play, Copy, Check, Radio, HardDrive, Shield, ExternalLink, Sparkles } from 'lucide-react';
+import { Workflow, Terminal, GitBranch, ExternalLink, Layers, CheckCircle2, FileText } from 'lucide-react';
 import { sound } from '../../constants/soundEffects';
-import { KineticHeading } from '../common/KineticHeading';
+import { LiveDioramaCard } from '../common/LiveDioramaCard';
 
 interface AntiGravityShipyardZoneProps {
   language: 'en' | 'vi';
   onOpenEasterEgg: (snippetId: string) => void;
 }
 
-const SAMPLE_ANTIGRAVITY_YAML = `# ==============================================================================
-# AntiGravity Autonomous Video & Code Pipeline Manifest
-# Orchestrates Claude Code, Codex, and headless FFmpeg render agents
-# ==============================================================================
-version: "2.4"
-name: "luke-autonomous-creator-pipeline"
-runtime: "python3.11-rust1.78-hybrid"
+interface ProductionWorkflow {
+  id: string;
+  step: string;
+  titleEn: string;
+  titleVi: string;
+  outcomeEn: string;
+  outcomeVi: string;
+  tools: string[];
+  detailEn: string;
+  detailVi: string;
+}
 
-environment:
-  gpu_acceleration: "cuda-enabled"
-  headless_display: "xvfb-virtual-framebuffer"
-  concurrency_limit: 4
-
-github_sync:
-  repository: "https://github.com/MrLuke1618/my-interactive-portfolio"
-  watch_branch: "main"
-  auto_pull_assets: true
-  commit_artifacts_on_success: false
-
-tasks:
-  - id: "intake-narrative"
-    engine: "claude-code"
-    action: "parse_structured_beats"
-    input_format: "markdown"
-    output_schema: "schemas/story_beats.json"
-
-  - id: "synthesize-keyframes"
-    engine: "hyperframes-cli"
-    source: "https://github.com/heygen-com/hyperframes"
-    aspect_ratio: "1080x1920"
-    fps: 60
-    cache_dir: ".cache/hyperframes"
-
-  - id: "lossless-concat"
-    engine: "concat-demuxer"
-    source: "https://github.com/jub0t/concat"
-    preset: "slow"
-    crf: 18
-    audio_ducking_db: -12.0
-    loudness_lufs: -14.0
-    output_destination: "dist/exports/master_shorts.mp4"
-
-watchdog:
-  restart_on_crash: true
-  max_retries: 3
-  alert_webhook: "https://api.telegram.org/bot/alert"`;
-
-const CLI_PRESETS = [
+const WORKFLOWS: ProductionWorkflow[] = [
   {
-    cmd: 'antigravity run video-pipeline --preset youtube-shorts',
-    descriptionEn: 'Execute full intake, Hyperframes synthesis, and Concat stitch.',
-    descriptionVi: 'Thực thi nạp kịch bản, tổng hợp Hyperframes và ghép video Concat.',
-    logsEn: [
-      '[antigravity:core] Initializing autonomous agent pool...',
-      '[antigravity:git] Syncing HEAD with origin/main (SHA: 4a9f2c1)',
-      '[claude-code] Extracted 6 viral narrative beats from script_input.md',
-      '[hyperframes] Compiling 60fps canvas keyframe buffers for 9:16 layout',
-      '[concat] Lossless demuxing 4 segments via libx264 (crf 18, -14 LUFS)',
-      '[antigravity:pipeline] SUCCESS: master_shorts.mp4 generated in 4.21s (Zero frame drops)'
-    ],
-    logsVi: [
-      '[antigravity:core] Khởi tạo nhóm tiến trình tự động...',
-      '[antigravity:git] Đồng bộ nhánh HEAD với origin/main (SHA: 4a9f2c1)',
-      '[claude-code] Trích xuất 6 điểm nhịp kịch bản từ script_input.md',
-      '[hyperframes] Biên dịch khung hình canvas 60fps cho tỷ lệ 9:16',
-      '[concat] Ghép nối lossless 4 phân đoạn qua libx264 (crf 18, -14 LUFS)',
-      '[antigravity:pipeline] THÀNH CÔNG: master_shorts.mp4 xuất bản trong 4.21s (Không rớt khung hình)'
-    ]
+    id: 'wf-video',
+    step: '01',
+    titleEn: 'AI Video Factory',
+    titleVi: 'Nhà Máy Video AI',
+    outcomeEn: 'Lotus Media 1k → 72k+ Subs · 50+ Commercials',
+    outcomeVi: 'Lotus Media 1k → 72k+ Sub · 50+ Video Thương Mại',
+    tools: ['Veo 3', 'Kling AI', 'Hyperframes', 'Concat', 'Edge TTS'],
+    detailEn:
+      'Combines AI scene generation, Style-Lock character continuity, neural voice-over, and programmatic Hyperframes + Concat stitching for high-retention YouTube Shorts & 16:9 reels.',
+    detailVi:
+      'Kết hợp tạo cảnh AI, giữ nhất quán nhân vật Style-Lock, giọng đọc neural và ghép nối tự động Hyperframes + Concat cho video YouTube giữ chân cao.',
   },
   {
-    cmd: 'claude-code task "Audit frame-drop latency in concat stitching"',
-    descriptionEn: 'Deep reasoning agent inspection of FFmpeg audio/video demux timing.',
-    descriptionVi: 'Tiến trình suy luận kiểm tra đồng bộ thời gian âm thanh/hình ảnh FFmpeg.',
-    logsEn: [
-      '[claude-code] Scanning concat demuxer timestamp drift across PTS/DTS streams...',
-      '[claude-code] Stream #0:0 (video): 60.00 fps locked, zero jitter detected',
-      '[claude-code] Stream #0:1 (audio): AAC 48000Hz stereo, sync deviation < 0.4ms',
-      '[claude-code] AUDIT COMPLETE: Audio-video sync is mathematically frame-perfect.'
-    ],
-    logsVi: [
-      '[claude-code] Quét độ lệch dấu thời gian PTS/DTS trong luồng concat demuxer...',
-      '[claude-code] Luồng #0:0 (video): Khóa 60.00 fps, không phát hiện rung giật',
-      '[claude-code] Luồng #0:1 (audio): AAC 48000Hz stereo, độ lệch < 0.4ms',
-      '[claude-code] KIỂM TRA HOÀN TẤT: Đồng bộ âm thanh - hình ảnh chuẩn xác từng khung hình.'
-    ]
+    id: 'wf-apps',
+    step: '02',
+    titleEn: 'Full-Stack AI Apps',
+    titleVi: 'Ứng Dụng AI Full-Stack',
+    outcomeEn: '16 Upgraded 2026 Dual-Mode GitHub Apps',
+    outcomeVi: '16 Ứng Dụng AI Dual-Mode Chuẩn 2026',
+    tools: ['Gemini API', 'React 19', 'TypeScript', 'Cloud Run'],
+    detailEn:
+      'Every creator, growth-ops, and language-dojo app ships with Instant Demo mode + BYOK Gemini API support, zero-friction UX, and production deployment on Vercel / Cloud Run.',
+    detailVi:
+      'Mỗi ứng dụng Creator Lab, Growth Ops và Language Dojo đều hỗ trợ chế độ Demo tức thì + BYOK Gemini API, triển khai trực tiếp trên Vercel / Cloud Run.',
   },
   {
-    cmd: 'codex sync github --repo MrLuke1618/my-interactive-portfolio',
-    descriptionEn: 'Autonomous Git pull, branch validation, and packaging check.',
-    descriptionVi: 'Tự động kéo mã nguồn Git, kiểm tra nhánh và quy trình đóng gói.',
-    logsEn: [
-      '[codex:git] Connecting to github.com/MrLuke1618/my-interactive-portfolio...',
-      '[codex:git] Fetching packfile: 100% (214/214), done.',
-      '[codex:deps] Validating package.json dependencies and vercel.json rewrite rules...',
-      '[codex:build] Running "npm run build" -> dist/index.html & dist/404.html verified.',
-      '[codex:status] Outpost workspace is 100% clean and synchronized with production.'
-    ],
-    logsVi: [
-      '[codex:git] Kết nối tới github.com/MrLuke1618/my-interactive-portfolio...',
-      '[codex:git] Tải gói dữ liệu: 100% (214/214), hoàn thành.',
-      '[codex:deps] Kiểm tra dependencies trong package.json và quy tắc vercel.json...',
-      '[codex:build] Chạy "npm run build" -> dist/index.html và dist/404.html đã xác thực.',
-      '[codex:status] Không gian làm việc sạch 100% và đã đồng bộ hoàn toàn với bản phát hành.'
-    ]
-  }
+    id: 'wf-games',
+    step: '03',
+    titleEn: 'Procedural 2.5D Games',
+    titleVi: 'Game 2.5D Lập Trình Thuần',
+    outcomeEn: 'Zero-Image Canvas Engines · Midnight Express & FFC',
+    outcomeVi: 'Engine Canvas Không Dùng Ảnh · Midnight Express & FFC',
+    tools: ['HTML5 Canvas', 'WebGL', 'Web Audio API', 'Procedural Rigging'],
+    detailEn:
+      'Characters, stadiums, isometric trains, and 35+ portfolio dioramas are synthesized live in code using procedural stickman rigging and native Web Audio — zero static sprite bloat.',
+    detailVi:
+      'Nhân vật, sân vận động, tàu hỏa 2.5D và hơn 35 mô hình đều được vẽ trực tiếp bằng code Canvas và tổng hợp âm thanh Web Audio theo thời gian thực.',
+  },
+  {
+    id: 'wf-qa',
+    step: '04',
+    titleEn: 'Automated QA & Deploy',
+    titleVi: 'Kiểm Thử & Triển Khai Tự Động',
+    outcomeEn: 'Zero Page Errors · Cloudflare Pages & Vercel Ready',
+    outcomeVi: '0 Lỗi Trang · Sẵn Sàng Cloudflare Pages & Vercel',
+    tools: ['Playwright', 'TypeScript Strict', 'Vite', 'Cloudflare Pages'],
+    detailEn:
+      'Every build is verified end-to-end with strict tsc --noEmit, bundle budget checks (check_cf_limits.py), and headless Chrome visual + zero-scroll assertions.',
+    detailVi:
+      'Mỗi bản build đều được kiểm tra bằng TypeScript strict, kiểm soát dung lượng Cloudflare và kiểm thử giao diện tự động qua Playwright Chrome.',
+  },
+];
+
+const STACK_GROUPS = [
+  {
+    titleEn: 'AI & Agentic Ops',
+    titleVi: 'AI & Tự Động Hóa',
+    color: '#38BDF8',
+    items: ['Gemini 2.5/3.x', 'Antigravity IDE', 'Veo 3 · Kling', 'Edge TTS Neural'],
+  },
+  {
+    titleEn: 'Video & Audio',
+    titleVi: 'Video & Âm Thanh',
+    color: '#F43F5E',
+    items: ['Hyperframes', 'Concat Stitcher', 'Web Audio Synth', 'Kinetic Subtitles'],
+  },
+  {
+    titleEn: 'Frontend & 2.5D Canvas',
+    titleVi: 'Frontend & Canvas 2.5D',
+    color: '#14B8A6',
+    items: ['React 19', 'TypeScript', 'HTML5 Canvas', 'Three.js / WebGL'],
+  },
+  {
+    titleEn: 'Cloud & QA',
+    titleVi: 'Cloud & Kiểm Thử',
+    color: '#10B981',
+    items: ['Playwright', 'Vercel · Cloud Run', 'Cloudflare Pages', 'Python · Rust'],
+  },
 ];
 
 export const AntiGravityShipyardZone: React.FC<AntiGravityShipyardZoneProps> = ({
   language,
-  onOpenEasterEgg
+  onOpenEasterEgg,
 }) => {
-  const [selectedCliIdx, setSelectedCliIdx] = useState<number>(0);
-  const [terminalLogs, setTerminalLogs] = useState<string[]>(
-    language === 'en' ? CLI_PRESETS[0].logsEn : CLI_PRESETS[0].logsVi
-  );
-  const [isExecuting, setIsExecuting] = useState<boolean>(false);
-  const [copiedYaml, setCopiedYaml] = useState<boolean>(false);
-
-  const activeCli = CLI_PRESETS[selectedCliIdx];
-
-  // Update logs when language or selected index changes
-  React.useEffect(() => {
-    setTerminalLogs(language === 'en' ? activeCli.logsEn : activeCli.logsVi);
-  }, [language, selectedCliIdx, activeCli]);
-
-  const handleRunCommand = (idx: number) => {
-    setSelectedCliIdx(idx);
-    setIsExecuting(true);
-    sound.playTerminalClick();
-    setTerminalLogs([
-      language === 'en'
-        ? '[shipyard:kernel] Spawning isolated agent container...'
-        : '[shipyard:kernel] Đang khởi tạo container tiến trình biệt lập...'
-    ]);
-
-    setTimeout(() => {
-      setTerminalLogs(language === 'en' ? CLI_PRESETS[idx].logsEn : CLI_PRESETS[idx].logsVi);
-      setIsExecuting(false);
-      sound.playLevelUp();
-    }, 700);
-  };
-
-  const handleCopyYaml = async () => {
-    try {
-      await navigator.clipboard.writeText(SAMPLE_ANTIGRAVITY_YAML);
-      setCopiedYaml(true);
-      sound.playLevelUp();
-      setTimeout(() => setCopiedYaml(false), 2000);
-    } catch {
-      // Handled silently
-    }
-  };
+  const [selectedId, setSelectedId] = useState<string>('wf-video');
+  const activeWf = WORKFLOWS.find((w) => w.id === selectedId) || WORKFLOWS[0];
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Remote Orbital Command Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-[#1E293B] bg-[#131B2E] p-6 sm:p-8 shadow-2xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[#8B5CF6] text-xs font-mono flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#8B5CF6]/10 border border-[#8B5CF6]/30">
-                <Radio className="w-3.5 h-3.5 animate-pulse" />
-                <span>SECTOR: ORBITAL-ALPHA // DIST: 160AU</span>
-              </span>
-            </div>
-            <KineticHeading
-              as="h1"
-              text={
-                language === 'en'
-                  ? 'Deep-Space AntiGravity & Code Shipyard'
-                  : 'Trạm Vũ Trụ AntiGravity & Lập Trình Hệ Thống'
-              }
-              className="text-2xl sm:text-3xl font-extrabold text-[#F8FAFC] tracking-tight"
-            />
-            <p className="text-sm text-[#94A3B8] max-w-2xl leading-relaxed">
-              {language === 'en'
-                ? 'Isolated remote orbital outpost hosting autonomous development runtimes. Review GitHub-synced pipelines where AntiGravity, Claude Code, and Codex execute local headless batch rendering.'
-                : 'Trạm quỹ đạo biệt lập vận hành các môi trường phát triển tự động. Khám phá quy trình đồng bộ GitHub nơi AntiGravity, Claude Code và Codex thực thi dựng video hàng loạt không cần giao diện.'}
-            </p>
-          </div>
+    <div className="flex h-full min-h-0 flex-col gap-3 overflow-hidden">
+      {/* Compact Header */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#1E293B] pb-2">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-sky-400/30 bg-sky-500/15 px-2.5 py-0.5 font-mono text-[10px] font-bold text-[#38BDF8]">
+            <Workflow className="h-3 w-3" />
+            <span>{language === 'en' ? 'PRODUCTION ARCHITECTURE' : 'KIẾN TRÚC SẢN XUẤT'}</span>
+          </span>
+          <h2 className="text-lg font-extrabold text-[#F8FAFC]">
+            {language === 'en' ? 'AI Workflows & Engineering Stack' : 'Quy Trình AI & Hệ Sinh Thái Công Nghệ'}
+          </h2>
+        </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 shrink-0">
-            <button
-              onClick={() => onOpenEasterEgg('rust-scanner')}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors"
-            >
-              <Cpu className="w-4 h-4 text-[#8B5CF6]" />
-              <span>{language === 'en' ? 'Inspect Rust Scanner' : 'Xem Code Rust'}</span>
-            </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onOpenEasterEgg('python-hyperframes')}
+            className="flex items-center gap-1.5 rounded-xl border border-[#1E293B] bg-[#090D16] px-3 py-1.5 font-mono text-[11px] text-[#F8FAFC] transition hover:border-[#38BDF8]"
+          >
+            <Terminal className="h-3.5 w-3.5 text-[#38BDF8]" />
+            <span>{language === 'en' ? 'Inspect Pipeline Code' : 'Xem Mã Pipeline'}</span>
+          </button>
 
-            <a
-              href="https://github.com/MrLuke1618/my-interactive-portfolio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white text-xs font-medium transition-colors shadow-lg shadow-violet-500/20"
-            >
-              <GitBranch className="w-4 h-4" />
-              <span>{language === 'en' ? 'Live GitHub Repository' : 'Kho Mã Nguồn GitHub'}</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
+          <a
+            href="https://github.com/MrLuke1618"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-xl bg-[#0284C7] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#0369A1]"
+          >
+            <GitBranch className="h-3.5 w-3.5" />
+            <span>GitHub @MrLuke1618</span>
+            <ExternalLink className="h-3 w-3" />
+          </a>
         </div>
       </div>
 
-      {/* GitHub-Synced Autonomous Architecture Flowchart */}
-      <div className="rounded-2xl bg-[#131B2E] border border-[#1E293B] p-5 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6]">
-            <HardDrive className="w-3.5 h-3.5" />
-            <span>{language === 'en' ? 'ORBITAL AUTONOMOUS PIPELINE ARCHITECTURE' : 'KIẾN TRÚC TỰ ĐỘNG HÓA QUỸ ĐẠO'}</span>
-          </div>
-          <span className="text-[11px] font-mono text-[#94A3B8]">
-            {language === 'en' ? 'Headless Execution · Zero GUI Latency' : 'Thực thi ngầm · Độ trễ đồ họa bằng 0'}
-          </span>
-        </div>
+      {/* Top Row: 3 Live Diorama Cards */}
+      <div className="grid shrink-0 grid-cols-1 gap-3 md:grid-cols-3">
+        {[
+          {
+            id: 'ship-hyperframes',
+            title: 'Hyperframes + Concat',
+            sub: 'Programmatic Video Pipelines',
+            url: 'https://github.com/heygen-com/hyperframes',
+            badge: 'VIDEO ENGINE',
+          },
+          {
+            id: 'ship-portfolio',
+            title: '2.5D Portfolio Engine',
+            sub: 'React 19 · Canvas · Edge TTS',
+            url: 'https://github.com/MrLuke1618/mrluke1618-portfolio-v2',
+            badge: 'LIVE SOURCE',
+          },
+          {
+            id: 'ship-concat',
+            title: 'MrLuke1618 GitHub Hub',
+            sub: '16+ Live Dual-Mode AI Apps',
+            url: 'https://github.com/MrLuke1618',
+            badge: 'GITHUB',
+          },
+        ].map((item, idx) => (
+          <LiveDioramaCard
+            key={item.title}
+            indexLabel={String(idx + 1).padStart(2, '0')}
+            title={item.title}
+            subtitle={item.sub}
+            sceneId={item.id}
+            accent="#38BDF8"
+            badge={item.badge}
+            githubUrl={item.url}
+            heightClass="h-28"
+            onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
+          />
+        ))}
+      </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {[
-            {
-              phase: '01',
-              title: 'GitHub Repo Pull',
-              tech: 'Git · SSH Keyring',
-              descEn: 'Shallow clones latest commit, pulls video assets, and caches dependencies.',
-              descVi: 'Tự động clone commit mới nhất, tải tài nguyên video và nạp bộ nhớ đệm.'
-            },
-            {
-              phase: '02',
-              title: 'Sandbox Spin-up',
-              tech: 'xvfb · CUDA Sandbox',
-              descEn: 'Boots headless virtual framebuffer for hardware-accelerated canvas rendering.',
-              descVi: 'Khởi tạo bộ đệm ảo không cần màn hình để dựng đồ họa canvas tăng tốc phần cứng.'
-            },
-            {
-              phase: '03',
-              title: 'Agent Batch Render',
-              tech: 'Hyperframes + Concat',
-              descEn: 'Executes parallel scene stitching and audio-video timing synchronization.',
-              descVi: 'Thực thi ghép nối phân cảnh song song và đồng bộ thời gian âm thanh.'
-            },
-            {
-              phase: '04',
-              title: 'Release & Deployment',
-              tech: 'Vercel CLI · GitHub API',
-              descEn: 'Publishes completed master MP4s and triggers instant Vercel SPA build.',
-              descVi: 'Xuất bản video thành phẩm và kích hoạt quy trình triển khai Vercel tức thì.'
-            }
-          ].map((node) => (
-            <div key={node.phase} className="p-4 rounded-xl bg-[#090D16] border border-[#1E293B] space-y-2">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-[#8B5CF6] font-bold">
-                  {language === 'en' ? 'PHASE' : 'GIAI ĐOẠN'} {node.phase}
+      {/* Bottom Row: Zero-Scroll 12-Col Bento Split */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-12">
+        {/* Left (7 cols): Interactive "How I Ship" 4-Stage Production Blueprint */}
+        <div className="flex min-h-0 flex-col justify-between gap-2.5 overflow-hidden rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5 lg:col-span-7">
+          <div className="flex shrink-0 items-center justify-between">
+            <span className="flex items-center gap-1.5 font-mono text-[11px] font-bold text-[#38BDF8]">
+              <Layers className="h-3.5 w-3.5" />
+              <span>{language === 'en' ? 'HOW I SHIP · PRODUCTION WORKFLOWS' : 'QUY TRÌNH TRIỂN KHAI THỰC TẾ'}</span>
+            </span>
+            <span className="font-mono text-[10px] text-[#94A3B8]">
+              {language === 'en' ? 'Click stage to inspect' : 'Chọn giai đoạn để xem'}
+            </span>
+          </div>
+
+          <div className="grid shrink-0 grid-cols-2 gap-2">
+            {WORKFLOWS.map((wf) => {
+              const isSelected = wf.id === activeWf.id;
+              return (
+                <button
+                  key={wf.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedId(wf.id);
+                    sound.playBip(720, 0.04);
+                  }}
+                  className={`rounded-xl border p-2.5 text-left transition ${
+                    isSelected
+                      ? 'border-[#38BDF8] bg-[#090D16] shadow-md shadow-sky-500/10'
+                      : 'border-[#1E293B] bg-[#090D16]/60 hover:border-[#38BDF8]/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-between font-mono text-[10px]">
+                    <span className={isSelected ? 'font-bold text-[#38BDF8]' : 'text-[#94A3B8]'}>
+                      WORKFLOW {wf.step}
+                    </span>
+                    {isSelected && <CheckCircle2 className="h-3 w-3 text-[#38BDF8]" />}
+                  </div>
+                  <div className="mt-0.5 truncate text-xs font-bold text-[#F8FAFC]">
+                    {language === 'en' ? wf.titleEn : wf.titleVi}
+                  </div>
+                  <div className="mt-0.5 truncate text-[10px] text-[#38BDF8]/90">
+                    {language === 'en' ? wf.outcomeEn : wf.outcomeVi}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex min-h-0 flex-1 flex-col justify-between rounded-xl border border-[#1E293B] bg-[#090D16] p-3">
+            <div>
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="text-xs font-bold text-[#F8FAFC]">
+                  {activeWf.step}. {language === 'en' ? activeWf.titleEn : activeWf.titleVi}
+                </h4>
+                <span className="font-mono text-[10px] text-[#38BDF8]">
+                  {language === 'en' ? activeWf.outcomeEn : activeWf.outcomeVi}
                 </span>
-                <Shield className="w-3.5 h-3.5 text-[#94A3B8]" />
               </div>
-              <h4 className="text-xs sm:text-sm font-semibold text-[#F8FAFC]">{node.title}</h4>
-              <p className="text-[11px] font-mono text-[#8B5CF6]">{node.tech}</p>
-              <p className="text-xs text-[#94A3B8] leading-relaxed">
-                {language === 'en' ? node.descEn : node.descVi}
+              <p className="mt-1.5 text-xs leading-relaxed text-[#CBD5E1]">
+                {language === 'en' ? activeWf.detailEn : activeWf.detailVi}
               </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Interactive antigravity.yaml Execution Manifest Inspector */}
-      <div className="rounded-2xl bg-[#131B2E] border border-[#1E293B] p-5 sm:p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#1E293B] pb-3">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6]">
-              <Terminal className="w-3.5 h-3.5" />
-              <span>EXECUTION MANIFEST · antigravity.yaml</span>
+            <div className="mt-2 flex flex-wrap gap-1.5 border-t border-[#1E293B] pt-2">
+              {activeWf.tools.map((t) => (
+                <span
+                  key={t}
+                  className="rounded-md border border-sky-500/25 bg-sky-500/10 px-2 py-0.5 font-mono text-[10px] text-[#BAE6FD]"
+                >
+                  {t}
+                </span>
+              ))}
             </div>
-            <h3 className="text-base font-bold text-[#F8FAFC] mt-0.5">
-              {language === 'en'
-                ? 'Autonomous Video Orchestration Blueprint'
-                : 'Bản Thiết Kế Điều Phối Dựng Video Tự Động'}
-            </h3>
           </div>
-
-          <button
-            onClick={handleCopyYaml}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-xs font-mono text-[#F8FAFC] transition-colors self-start sm:self-auto"
-          >
-            {copiedYaml ? <Check className="w-3.5 h-3.5 text-[#8B5CF6]" /> : <Copy className="w-3.5 h-3.5 text-[#8B5CF6]" />}
-            <span>{copiedYaml ? (language === 'en' ? 'Copied YAML!' : 'Đã sao chép!') : (language === 'en' ? 'Copy antigravity.yaml' : 'Sao chép YAML')}</span>
-          </button>
         </div>
 
-        <div className="rounded-xl bg-[#090D16] border border-[#1E293B] p-4 font-mono text-xs text-[#F8FAFC] overflow-x-auto max-h-[340px] leading-relaxed">
-          <pre className="text-violet-300">{SAMPLE_ANTIGRAVITY_YAML}</pre>
-        </div>
-      </div>
-
-      {/* Interactive CLI Command Simulator */}
-      <div className="rounded-2xl bg-[#131B2E] border border-[#1E293B] p-5 sm:p-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-mono text-[#8B5CF6]">
-            <Play className="w-3.5 h-3.5" />
-            <span>{language === 'en' ? 'SHIPYARD CLI EMULATOR' : 'TRÌNH GIẢ LẬP LỆNH DÒNG CLI'}</span>
-          </div>
-          <span className="text-[11px] font-mono text-[#94A3B8]">
-            {language === 'en' ? 'Test Real Terminal Instructions' : 'Thử nghiệm các lệnh terminal thực tế'}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-          {CLI_PRESETS.map((preset, idx) => {
-            const isSelected = selectedCliIdx === idx;
-            return (
-              <button
-                key={idx}
-                onClick={() => handleRunCommand(idx)}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  isSelected
-                    ? 'bg-[#090D16] border-[#8B5CF6] text-[#F8FAFC] shadow-sm'
-                    : 'bg-[#090D16]/60 border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#1E293B]/80'
-                }`}
-              >
-                <div className="text-xs font-mono font-semibold text-[#8B5CF6] truncate mb-1">
-                  $ {preset.cmd.split(' ')[0]} {preset.cmd.split(' ')[1]}
-                </div>
-                <div className="text-[11px] text-[#94A3B8] line-clamp-2">
-                  {language === 'en' ? preset.descriptionEn : preset.descriptionVi}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Emulated Terminal Output Window */}
-        <div className="rounded-xl bg-[#090D16] border border-[#1E293B] p-4 font-mono text-xs space-y-2">
-          <div className="flex items-center justify-between border-b border-[#1E293B] pb-2 text-[11px] text-[#94A3B8]">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
-              <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
-              <span className="ml-2 hidden xs:inline">terminal — bash</span>
+        {/* Right (5 cols): Production Tech Stack Matrix */}
+        <div className="flex min-h-0 flex-col justify-between gap-2 overflow-hidden rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5 lg:col-span-5">
+          <div className="flex shrink-0 items-center justify-between border-b border-[#1E293B] pb-2">
+            <span className="font-mono text-[11px] font-bold text-[#F8FAFC]">
+              {language === 'en' ? 'PRODUCTION TECH STACK' : 'HỆ SINH THÁI CÔNG NGHỆ'}
             </span>
-            <span className="truncate max-w-[150px] sm:max-w-xs md:max-w-none text-right">$ {activeCli.cmd}</span>
+            <span className="font-mono text-[10px] text-[#38BDF8]">2026 READY</span>
           </div>
 
-          <div className="space-y-1.5 pt-1 text-[11px]">
-            {isExecuting ? (
-              <div className="text-[#8B5CF6] animate-pulse flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 animate-spin" />
-                <span>[orbital:kernel] Executing autonomous worker task...</span>
-              </div>
-            ) : (
-              terminalLogs.map((log, lIdx) => (
-                <div key={lIdx} className="leading-relaxed">
-                  <span className="text-[#8B5CF6]">{log.split(']')[0]}]</span>
-                  <span className="text-[#F8FAFC]">{log.substring(log.indexOf(']') + 1)}</span>
+          <div className="grid min-h-0 flex-1 grid-cols-1 content-between gap-2">
+            {STACK_GROUPS.map((grp) => (
+              <div key={grp.titleEn} className="rounded-xl border border-[#1E293B] bg-[#090D16] p-2.5">
+                <div className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] font-bold" style={{ color: grp.color }}>
+                  <span className="h-2 w-2 rounded-full" style={{ backgroundColor: grp.color }} />
+                  <span>{language === 'en' ? grp.titleEn : grp.titleVi}</span>
                 </div>
-              ))
-            )}
+                <div className="flex flex-wrap gap-1">
+                  {grp.items.map((item) => (
+                    <span
+                      key={item}
+                      className="rounded border border-[#1E293B] bg-[#131B2E] px-2 py-0.5 text-[10px] text-[#E2E8F0]"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex shrink-0 items-center justify-between gap-2 border-t border-[#1E293B] pt-2">
+            <a
+              href="https://docs.google.com/document/d/1ZO9BMG0B3p7g_aXBwxDnV92xEyVCbmjk_HJZeSpGKYk/edit?usp=sharing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-[#1E293B] bg-[#090D16] px-2.5 py-1.5 text-[11px] font-semibold text-[#F8FAFC] transition hover:border-[#38BDF8]"
+            >
+              <FileText className="h-3.5 w-3.5 text-[#38BDF8]" />
+              <span>{language === 'en' ? 'Master Portfolio Doc' : 'Hồ sơ Google Docs'}</span>
+            </a>
+            <a
+              href="https://github.com/MrLuke1618"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-1 rounded-xl bg-[#38BDF8]/15 px-3 py-1.5 text-[11px] font-bold text-[#38BDF8] transition hover:bg-[#38BDF8]/25"
+            >
+              <span>Repos</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
           </div>
         </div>
       </div>

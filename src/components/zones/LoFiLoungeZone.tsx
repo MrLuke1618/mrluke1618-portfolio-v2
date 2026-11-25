@@ -8,16 +8,11 @@ import {
   Sliders, 
   Timer, 
   Headphones, 
-  Sparkles, 
-  Disc, 
-  Waves, 
   SkipForward, 
-  Coffee,
-  CheckCircle2,
   Mail,
   Copy
 } from 'lucide-react';
-import { KineticHeading } from '../common/KineticHeading';
+import { LiveDioramaCard } from '../common/LiveDioramaCard';
 
 interface LoFiLoungeZoneProps {
   language: 'en' | 'vi';
@@ -185,382 +180,227 @@ export const LoFiLoungeZone: React.FC<LoFiLoungeZoneProps> = ({ language }) => {
   const activeMoodConfig = MOOD_CONFIGS[currentMood];
 
   return (
-    <div className="space-y-8 animate-fadeIn">
-      {/* Zone Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-[#1E293B] bg-[#131B2E] p-6 sm:p-8 shadow-2xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-[#8B5CF6] text-xs font-medium flex items-center gap-1.5">
-                <Disc className="w-3.5 h-3.5" />
-                <span>{language === 'en' ? 'Web Audio Procedural Synthesis' : 'Tổng Hợp Âm Thanh Web Audio'}</span>
-              </span>
-            </div>
-            <KineticHeading
-              as="h1"
-              text={language === 'en' ? 'The Lo-Fi Lounge & Contact Hub' : 'Phòng Lo-Fi & Trạm Kết Nối'}
-              className="text-2xl sm:text-3xl font-bold text-[#F8FAFC] tracking-tight"
-            />
-            <p className="text-sm sm:text-base text-[#94A3B8] max-w-3xl leading-relaxed">
-              {language === 'en'
-                ? 'Synthesized in real-time inside your browser using the native Web Audio API. Explore warm Rhodes chords, analog vinyl crackle, and acoustic space reverb engineered for deep creative flow.'
-                : 'Được tổng hợp âm thanh thời gian thực ngay trên trình duyệt qua Web Audio API. Khám phá hợp âm Rhodes ấm áp, tiếng đĩa than cổ điển và không gian vang giúp tối đa hóa khả năng tập trung.'}
-            </p>
-          </div>
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      {/* Compact Header */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#1E293B] pb-2">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/15 px-2.5 py-1 font-mono text-[10px] font-bold text-[#818CF8]">
+            <Headphones className="h-3 w-3" />
+            <span>{language === 'en' ? 'WEB AUDIO · COMMS HUB' : 'WEB AUDIO · LIÊN HỆ'}</span>
+          </span>
+          <h2 className="text-lg font-extrabold text-[#F8FAFC]">
+            {language === 'en' ? 'Lo-Fi Lounge & Contact Hub' : 'Phòng Lo-Fi & Trạm Kết Nối'}
+          </h2>
+        </div>
 
-          {/* Quick Play Action Button */}
-          <button
-            onClick={handleTogglePlay}
-            className={`flex items-center gap-2 px-5 py-3 rounded-xl font-medium text-xs transition-all shadow-md ${
-              isPlaying
-                ? 'bg-[#8B5CF6] text-white shadow-[#8B5CF6]/30'
-                : 'bg-[#090D16] border border-[#1E293B] text-[#F8FAFC] hover:border-[#8B5CF6]'
-            }`}
+        <div className="flex items-center gap-2">
+          <a
+            href="mailto:hoangcaominh27@gmail.com"
+            className="flex items-center gap-1.5 rounded-xl bg-[#8B5CF6] px-3 py-1.5 text-[11px] font-bold text-white transition hover:bg-[#7C3AED]"
           >
-            {isPlaying ? (
-              <>
-                <Pause className="w-4 h-4 fill-current" />
-                <span>{language === 'en' ? 'Pause Lounge' : 'Tạm dừng'}</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-4 h-4 fill-current" />
-                <span>{language === 'en' ? 'Play Lounge' : 'Bật nhạc'}</span>
-              </>
-            )}
+            <Mail className="h-3.5 w-3.5" />
+            <span>hoangcaominh27@gmail.com</span>
+          </a>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText('hoangcaominh27@gmail.com');
+              sound.playLevelUp();
+            }}
+            className="flex items-center gap-1 rounded-xl border border-[#1E293B] bg-[#090D16] px-2.5 py-1.5 text-[11px] font-semibold text-[#F8FAFC] transition hover:border-[#8B5CF6]"
+          >
+            <Copy className="h-3.5 w-3.5 text-[#8B5CF6]" />
+            <span>{language === 'en' ? 'Copy' : 'Sao chép'}</span>
           </button>
         </div>
       </div>
 
-      {/* Main Two-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
-        {/* Left Column: Deck & Sliders (7 Cols) */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="rounded-2xl border border-[#1E293B] bg-[#131B2E] p-6 shadow-xl">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E293B] text-xs">
-              <div className="flex items-center gap-2 text-[#8B5CF6]">
-                <Headphones className="w-4 h-4" />
-                <span className="font-semibold">Synthesizer Deck · Hi-Fi Stereo</span>
+      {/* 16:9 2-Column Bento Split */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 lg:grid-cols-12">
+        {/* Left: 3x2 Comms, Docs & Social Dioramas */}
+        <div className="grid grid-cols-1 content-start gap-2.5 sm:grid-cols-2 lg:col-span-7 lg:grid-cols-3">
+          {[
+            { id: 'comms-doc', title: 'Work Portfolio (Docs)', sub: 'Official Dossier & Credits', url: 'https://docs.google.com/document/d/1ZO9BMG0B3p7g_aXBwxDnV92xEyVCbmjk_HJZeSpGKYk/edit?usp=sharing', badge: 'GOOGLE DOCS' },
+            { id: 'comms-drive', title: 'Video Showcase (Drive)', sub: 'Master Showreel Archive', url: 'https://drive.google.com/file/d/1MKrJ9lNwt3Y0gzC2UYbodEIYDmIc0iVa/view?usp=drive_link', badge: 'GOOGLE DRIVE' },
+            { id: 'comms-linkedin', title: 'LinkedIn Profile', sub: 'linkedin.com/in/hoangminhcao', url: 'https://www.linkedin.com/in/hoangminhcao', badge: 'LINKEDIN' },
+            { id: 'comms-youtube', title: 'YouTube @luke1618gamer', sub: 'AI Video & Game Devlogs', url: 'https://www.youtube.com/@luke1618gamer', badge: 'YOUTUBE' },
+            { id: 'comms-tiktok', title: 'TikTok @hoangcao2704', sub: 'Short-Form AI Visuals', url: 'https://www.tiktok.com/@hoangcao2704', badge: 'TIKTOK' },
+            { id: 'comms-email', title: 'Direct Email (Hanoi)', sub: 'hoangcaominh27@gmail.com', url: 'mailto:hoangcaominh27@gmail.com?subject=Transmission', badge: 'EMAIL' },
+          ].map((item, idx) => (
+            <LiveDioramaCard
+              key={item.title}
+              indexLabel={String(idx + 1).padStart(2, '0')}
+              title={item.title}
+              subtitle={item.sub}
+              sceneId={item.id}
+              accent="#818CF8"
+              badge={item.badge}
+              liveUrl={item.url}
+              heightClass="h-28"
+              onClick={() => window.open(item.url, '_blank', 'noopener,noreferrer')}
+            />
+          ))}
+        </div>
+
+        {/* Right: Compact Web Audio Synth + Pomodoro Focus Timer */}
+        <div className="flex min-h-0 flex-col justify-between gap-2.5 lg:col-span-5">
+          {/* Compact Web Audio Lo-Fi Synth */}
+          <div className="flex min-h-0 flex-1 flex-col justify-between rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <div className="font-mono text-[10px] font-bold text-[#818CF8]">
+                  {isPlaying ? 'NOW SYNTHESIZING' : 'SYNTH READY'} · {bpm} BPM
+                </div>
+                <div className="text-sm font-bold text-[#F8FAFC]">
+                  {language === 'en' ? activeMoodConfig.nameEn : activeMoodConfig.nameVi}
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-[#94A3B8] text-[11px]">
-                <span className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-[#8B5CF6] animate-pulse' : 'bg-[#1E293B]'}`} />
-                <span>{isPlaying ? 'Synthesizing Audio' : 'Standby'}</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleTogglePlay}
+                  className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+                    isPlaying
+                      ? 'bg-[#8B5CF6] text-white'
+                      : 'border border-[#1E293B] bg-[#090D16] text-[#F8FAFC] hover:border-[#8B5CF6]'
+                  }`}
+                >
+                  {isPlaying ? <Pause className="h-3.5 w-3.5 fill-current" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+                  <span>{isPlaying ? 'Pause' : 'Play'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCycleMood}
+                  aria-label="Next mood"
+                  className="rounded-xl border border-[#1E293B] bg-[#090D16] p-1.5 text-[#94A3B8] hover:border-[#8B5CF6] hover:text-white"
+                >
+                  <SkipForward className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
 
-            {/* Deck Shell */}
-            <div className="rounded-xl border border-[#1E293B] bg-[#090D16] p-5 space-y-4">
-              <div className="flex items-center justify-between text-xs text-[#94A3B8]">
-                <span className="font-medium text-[#F8FAFC]">
-                  {language === 'en' ? activeMoodConfig.nameEn : activeMoodConfig.nameVi}
-                </span>
-                <span>{bpm} BPM · {activeMoodConfig.filterCutoff}Hz Low-pass</span>
+            <div className="flex h-10 items-end justify-center gap-1 rounded-lg border border-[#1E293B] bg-[#090D16] px-3 py-1.5">
+              {visualizerBars.map((height, i) => (
+                <div
+                  key={i}
+                  className="w-2 rounded-t bg-[#8B5CF6] transition-all duration-75"
+                  style={{ height: `${height}%`, opacity: 0.4 + height / 160 }}
+                />
+              ))}
+            </div>
+
+            <div className="grid grid-cols-5 gap-1">
+              {(['latenight', 'elevator', 'cyberpunk', 'binaural', 'chillhop'] as LoFiMood[]).map((moodKey) => {
+                const cfg = MOOD_CONFIGS[moodKey];
+                const isSelected = currentMood === moodKey;
+                return (
+                  <button
+                    key={moodKey}
+                    type="button"
+                    onClick={() => handleSelectMood(moodKey)}
+                    className={`rounded-lg border px-1.5 py-1.5 text-center transition ${
+                      isSelected
+                        ? 'border-[#8B5CF6] bg-[#1E293B] text-[#F8FAFC]'
+                        : 'border-[#1E293B] bg-[#090D16] text-[#94A3B8] hover:text-white'
+                    }`}
+                  >
+                    <div className="truncate text-[10px] font-bold">
+                      {language === 'en' ? cfg.nameEn.split(' ')[0] : cfg.nameVi.split(' ')[0]}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 text-[11px]">
+              <div className="rounded-xl border border-[#1E293B] bg-[#090D16] p-2">
+                <div className="flex justify-between text-[#94A3B8]">
+                  <span className="flex items-center gap-1"><Sliders className="h-3 w-3 text-[#8B5CF6]" />Vinyl</span>
+                  <span className="font-mono text-[#F8FAFC]">{vinylLevel}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={vinylLevel} onChange={handleVinylChange} className="mt-1 h-1.5 w-full cursor-pointer accent-[#8B5CF6]" />
+              </div>
+              <div className="rounded-xl border border-[#1E293B] bg-[#090D16] p-2">
+                <div className="flex justify-between text-[#94A3B8]">
+                  <span>Tempo</span>
+                  <span className="font-mono text-[#F8FAFC]">{bpm} BPM</span>
+                </div>
+                <input type="range" min="50" max="110" value={bpm} onChange={handleBpmChange} className="mt-1 h-1.5 w-full cursor-pointer accent-[#8B5CF6]" />
+              </div>
+              <div className="rounded-xl border border-[#1E293B] bg-[#090D16] p-2">
+                <div className="flex justify-between text-[#94A3B8]">
+                  <span>Reverb</span>
+                  <span className="font-mono text-[#F8FAFC]">{reverbLevel}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={reverbLevel} onChange={handleReverbChange} className="mt-1 h-1.5 w-full cursor-pointer accent-[#8B5CF6]" />
+              </div>
+              <div className="rounded-xl border border-[#1E293B] bg-[#090D16] p-2">
+                <div className="flex justify-between text-[#94A3B8]">
+                  <span>Volume</span>
+                  <span className="font-mono text-[#F8FAFC]">{volume}%</span>
+                </div>
+                <input type="range" min="0" max="100" value={volume} onChange={handleVolumeChange} className="mt-1 h-1.5 w-full cursor-pointer accent-[#8B5CF6]" />
+              </div>
+            </div>
+          </div>
+
+          {/* Compact Pomodoro Focus Timer */}
+          <div className="shrink-0 rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5">
+            <div className="mb-2 flex items-center justify-between text-[11px]">
+              <span className="flex items-center gap-1.5 font-semibold text-[#818CF8]">
+                <Timer className="h-3.5 w-3.5" />
+                {language === 'en' ? 'Pomodoro Focus' : 'Pomodoro Tập trung'}
+              </span>
+              <span className="font-mono text-[#94A3B8]">{completedSessions} {language === 'en' ? 'Done' : 'Xong'}</span>
+            </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <div className="font-mono text-3xl font-bold tracking-wider text-[#F8FAFC] tabular-nums">
+                {formatTime(timeLeft)}
               </div>
 
-              {/* Visualizer Meter */}
-              <div className="h-20 rounded-lg bg-[#131B2E] border border-[#1E293B] flex items-end justify-center gap-1.5 px-4 py-2">
-                {visualizerBars.map((height, i) => (
-                  <div
-                    key={i}
-                    className="w-2.5 rounded-t transition-all duration-75 bg-[#8B5CF6]"
-                    style={{ height: `${height}%`, opacity: 0.4 + (height / 160) }}
-                  />
+              <div className="flex items-center gap-1">
+                {(['focus', 'shortBreak', 'longBreak'] as const).map((m) => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => handleSetPomodoroPreset(m)}
+                    className={`rounded-lg px-2 py-1 text-[10px] font-bold transition ${
+                      pomodoroMode === m ? 'bg-[#8B5CF6] text-white' : 'bg-[#090D16] text-[#94A3B8] hover:text-white'
+                    }`}
+                  >
+                    {m === 'focus' ? '25m' : m === 'shortBreak' ? '5m' : '15m'}
+                  </button>
                 ))}
               </div>
 
-              {/* Controls */}
-              <div className="flex items-center justify-between gap-3 pt-2">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleTogglePlay}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-medium transition-colors ${
-                      isPlaying
-                        ? 'bg-[#8B5CF6] text-white'
-                        : 'bg-[#131B2E] border border-[#1E293B] text-[#F8FAFC] hover:border-[#8B5CF6]'
-                    }`}
-                  >
-                    {isPlaying ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
-                    <span>{isPlaying ? 'Pause' : 'Play'}</span>
-                  </button>
-
-                  <button
-                    onClick={handleCycleMood}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#131B2E] border border-[#1E293B] hover:border-[#8B5CF6] text-[#94A3B8] hover:text-[#F8FAFC] text-xs transition-colors"
-                  >
-                    <SkipForward className="w-3.5 h-3.5" />
-                    <span>Next Mood</span>
-                  </button>
-                </div>
-
-                <div className="text-[11px] text-[#94A3B8] flex items-center gap-1.5">
-                  <Waves className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                  <span>Real-time Synthesis</span>
-                </div>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsTimerRunning(!isTimerRunning);
+                    sound.playTerminalClick();
+                    if (!isTimerRunning && !isPlaying) {
+                      lofiAudioEngine.play();
+                      setIsPlaying(true);
+                    }
+                  }}
+                  className="rounded-xl bg-[#8B5CF6] px-3 py-1.5 text-xs font-bold text-white transition hover:bg-[#7C3AED]"
+                >
+                  {isTimerRunning ? 'Pause' : 'Start'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleSetPomodoroPreset(pomodoroMode);
+                    sound.playBip(500, 0.04);
+                  }}
+                  aria-label="Reset timer"
+                  className="rounded-xl border border-[#1E293B] bg-[#090D16] p-1.5 text-[#94A3B8] hover:text-white"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                </button>
               </div>
-            </div>
-
-            {/* Mood Selector Buttons */}
-            <div className="mt-6 space-y-2">
-              <label className="text-xs text-[#94A3B8] block font-medium">
-                {language === 'en' ? 'Select Ambient Mood:' : 'Chọn không gian âm thanh:'}
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
-                {(['latenight', 'elevator', 'cyberpunk', 'binaural', 'chillhop'] as LoFiMood[]).map((moodKey) => {
-                  const cfg = MOOD_CONFIGS[moodKey];
-                  const isSelected = currentMood === moodKey;
-                  return (
-                    <button
-                      key={moodKey}
-                      onClick={() => handleSelectMood(moodKey)}
-                      className={`text-left p-3 rounded-xl border transition-all ${
-                        isSelected
-                          ? 'bg-[#1E293B] border-[#8B5CF6] text-[#F8FAFC] shadow-sm shadow-[#8B5CF6]/20'
-                          : 'bg-[#090D16] border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#1E293B]/80'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between text-xs font-semibold mb-1">
-                        <span className="truncate">{language === 'en' ? cfg.nameEn.split(' ')[0] : cfg.nameVi.split(' ')[0]}</span>
-                        <span className="text-[10px] text-[#8B5CF6] font-mono shrink-0">{cfg.defaultBpm} BPM</span>
-                      </div>
-                      <div className="text-[11px] text-[#94A3B8] line-clamp-1">
-                        {language === 'en' ? cfg.nameEn : cfg.nameVi}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Live Remix Sliders */}
-            <div className="mt-6 pt-5 border-t border-[#1E293B] space-y-4">
-              <div className="flex items-center gap-2 text-xs text-[#F8FAFC] font-semibold">
-                <Sliders className="w-4 h-4 text-[#8B5CF6]" />
-                <span>{language === 'en' ? 'Audio Synthesis Effects' : 'Bộ điều chỉnh hiệu ứng'}</span>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                {/* Vinyl Crackle */}
-                <div className="space-y-1.5 bg-[#090D16] p-3 rounded-xl border border-[#1E293B]">
-                  <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>{language === 'en' ? 'Vinyl Crackle' : 'Tiếng đĩa than'}</span>
-                    <span className="text-[#F8FAFC] font-mono">{vinylLevel}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={vinylLevel}
-                    onChange={handleVinylChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
-                  />
-                </div>
-
-                {/* BPM / Tempo */}
-                <div className="space-y-1.5 bg-[#090D16] p-3 rounded-xl border border-[#1E293B]">
-                  <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>{language === 'en' ? 'Tempo / BPM' : 'Tốc độ nhịp'}</span>
-                    <span className="text-[#F8FAFC] font-mono">{bpm} BPM</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="50"
-                    max="110"
-                    value={bpm}
-                    onChange={handleBpmChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
-                  />
-                </div>
-
-                {/* Reverb */}
-                <div className="space-y-1.5 bg-[#090D16] p-3 rounded-xl border border-[#1E293B]">
-                  <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>{language === 'en' ? 'Reverb / Space' : 'Độ vang không gian'}</span>
-                    <span className="text-[#F8FAFC] font-mono">{reverbLevel}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={reverbLevel}
-                    onChange={handleReverbChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
-                  />
-                </div>
-
-                {/* Master Volume */}
-                <div className="space-y-1.5 bg-[#090D16] p-3 rounded-xl border border-[#1E293B]">
-                  <div className="flex items-center justify-between text-[#94A3B8]">
-                    <span>{language === 'en' ? 'Master Volume' : 'Âm lượng tổng'}</span>
-                    <span className="text-[#F8FAFC] font-mono">{volume}%</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={volume}
-                    onChange={handleVolumeChange}
-                    className="w-full accent-[#8B5CF6] cursor-pointer h-3 sm:h-2 bg-[#1E293B] rounded-lg touch-none"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column: Pomodoro & Philosophy (5 Cols) */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-2xl border border-[#1E293B] bg-[#131B2E] p-6 shadow-xl">
-            <div className="flex items-center justify-between pb-3 mb-4 border-b border-[#1E293B] text-xs">
-              <div className="flex items-center gap-2 text-[#8B5CF6] font-semibold">
-                <Timer className="w-4 h-4" />
-                <span>{language === 'en' ? 'Pomodoro Focus Timer' : 'Đồng Hồ Tập Trung Pomodoro'}</span>
-              </div>
-              <div className="text-[11px] text-[#94A3B8] flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                <span>{completedSessions} {language === 'en' ? 'Done' : 'Hoàn thành'}</span>
-              </div>
-            </div>
-
-            {/* Presets */}
-            <div className="grid grid-cols-3 gap-2 mb-4">
-              <button
-                onClick={() => handleSetPomodoroPreset('focus')}
-                className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                  pomodoroMode === 'focus'
-                    ? 'bg-[#8B5CF6] text-white shadow-sm'
-                    : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
-                }`}
-              >
-                {language === 'en' ? '25m Focus' : '25p Tập trung'}
-              </button>
-              <button
-                onClick={() => handleSetPomodoroPreset('shortBreak')}
-                className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                  pomodoroMode === 'shortBreak'
-                    ? 'bg-[#8B5CF6] text-white shadow-sm'
-                    : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
-                }`}
-              >
-                {language === 'en' ? '5m Short' : '5p Nghỉ ngắn'}
-              </button>
-              <button
-                onClick={() => handleSetPomodoroPreset('longBreak')}
-                className={`py-2 px-3 rounded-lg text-xs font-medium transition-all ${
-                  pomodoroMode === 'longBreak'
-                    ? 'bg-[#8B5CF6] text-white shadow-sm'
-                    : 'bg-[#090D16] text-[#94A3B8] hover:text-[#F8FAFC]'
-                }`}
-              >
-                {language === 'en' ? '15m Long' : '15p Nghỉ dài'}
-              </button>
-            </div>
-
-            {/* Countdown Face */}
-            <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-[#090D16] border border-[#1E293B] my-2">
-              <div className="text-4xl sm:text-5xl font-mono font-bold text-[#F8FAFC] tracking-wider tabular-nums">
-                {formatTime(timeLeft)}
-              </div>
-              <div className="mt-2 text-xs text-[#94A3B8] flex items-center gap-1.5">
-                <Coffee className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                <span>
-                  {pomodoroMode === 'focus'
-                    ? (language === 'en' ? 'Deep Work Session' : 'Phiên làm việc tập trung')
-                    : (language === 'en' ? 'Rest & Refresh' : 'Nghỉ ngơi')}
-                </span>
-              </div>
-            </div>
-
-            {/* Controls */}
-            <div className="flex items-center gap-3 mt-4">
-              <button
-                onClick={() => {
-                  setIsTimerRunning(!isTimerRunning);
-                  sound.playTerminalClick();
-                  if (!isTimerRunning && !isPlaying) {
-                    lofiAudioEngine.play();
-                    setIsPlaying(true);
-                  }
-                }}
-                className={`flex-1 py-2.5 rounded-xl text-xs font-medium transition-all flex items-center justify-center gap-2 ${
-                  isTimerRunning
-                    ? 'bg-[#1E293B] text-[#F8FAFC] border border-[#1E293B]'
-                    : 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white shadow-md shadow-[#8B5CF6]/30'
-                }`}
-              >
-                {isTimerRunning ? (
-                  <>
-                    <Pause className="w-3.5 h-3.5 fill-current" />
-                    <span>{language === 'en' ? 'Pause Timer' : 'Tạm dừng'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-3.5 h-3.5 fill-current" />
-                    <span>{language === 'en' ? 'Start Session' : 'Bắt đầu phiên'}</span>
-                  </>
-                )}
-              </button>
-
-              <button
-                onClick={() => {
-                  handleSetPomodoroPreset(pomodoroMode);
-                  sound.playBip(500, 0.04);
-                }}
-                className="p-2.5 rounded-xl bg-[#090D16] border border-[#1E293B] hover:border-[#8B5CF6] text-[#94A3B8] hover:text-[#F8FAFC] transition-colors"
-                title="Reset Timer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Audio Philosophy Card */}
-          <div className="rounded-2xl border border-[#1E293B] bg-[#131B2E] p-6 text-xs text-[#94A3B8] space-y-3">
-            <div className="flex items-center gap-2 text-[#8B5CF6] font-semibold">
-              <Sparkles className="w-4 h-4" />
-              <span>{language === 'en' ? 'Sound Design & Retention Pacing' : 'Thiết kế Âm thanh & Giữ chân'}</span>
-            </div>
-            <p className="leading-relaxed">
-              {language === 'en'
-                ? 'In video editing, sound accounts for more than 50% of audience retention. During my time scaling Lotus Media from 1k to 72k subscribers and producing 50+ commercial videos, matching rhythmic musical cadences with micro-cuts and dynamic filtering was fundamental to maximizing audience watch-time.'
-                : 'Trong biên tập video, âm thanh quyết định hơn 50% khả năng giữ chân người xem. Trong quá trình phát triển Lotus Media từ 1k lên 72k người đăng ký và sản xuất 50+ video thương mại, việc đồng bộ nhịp điệu âm nhạc với nhát cắt cảnh là chìa khóa tối ưu tỷ lệ xem hết.'}
-            </p>
-          </div>
-
-          {/* Direct Comms & Contact Card */}
-          <div className="rounded-2xl border border-[#1E293B] bg-[#090D16] p-6 text-xs space-y-4 shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
-              <span className="font-semibold text-[#F8FAFC] flex items-center gap-2">
-                <Mail className="w-4 h-4 text-[#8B5CF6]" />
-                <span>{language === 'en' ? 'Direct Hanoi Transmission' : 'Kênh Liên Hệ Trực Tiếp'}</span>
-              </span>
-              <span className="text-[10px] font-mono text-[#8B5CF6]">UTC+7 · HANOI</span>
-            </div>
-
-            <p className="text-[#94A3B8] leading-relaxed">
-              {language === 'en'
-                ? 'Open for video editing direction, AI content pipelines, and creative media commissions. Reach out directly:'
-                : 'Sẵn sàng hợp tác cho các dự án định hướng video, quy trình sản xuất AI và sản phẩm truyền thông:'}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-2.5 pt-1">
-              <a
-                href="mailto:hoangcaominh27@gmail.com"
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8B5CF6] hover:bg-[#7C3AED] text-white font-medium text-xs transition-colors shadow-md shadow-[#8B5CF6]/20"
-              >
-                <Mail className="w-3.5 h-3.5" />
-                <span>hoangcaominh27@gmail.com</span>
-              </a>
-
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText('hoangcaominh27@gmail.com');
-                  sound.playLevelUp();
-                }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#131B2E] border border-[#1E293B] hover:border-[#8B5CF6] text-[#F8FAFC] font-medium text-xs transition-colors"
-              >
-                <Copy className="w-3.5 h-3.5 text-[#8B5CF6]" />
-                <span>{language === 'en' ? 'Copy Address' : 'Sao chép'}</span>
-              </button>
             </div>
           </div>
         </div>

@@ -41,7 +41,7 @@ export const KineticHeading: React.FC<KineticHeadingProps> = ({
 
   return (
     <Component
-      className={`inline-block select-none ${className}`}
+      className={`block select-none ${className}`}
       aria-label={text}
       onMouseLeave={() => setHoveredIdx(null)}
     >

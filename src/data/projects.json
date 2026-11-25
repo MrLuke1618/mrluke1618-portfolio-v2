@@ -1,0 +1,617 @@
+{
+  "profile": {
+    "name": "Hoàng Cao Minh",
+    "handle": "MrLuke1618",
+    "title": "AI Game Creator & Content Automation Engineer",
+    "tagline": "Automating end-to-end content pipelines and creating playable video games with AI — from narrative engines and procedural visuals to multimodal creator tools.",
+    "githubUrl": "https://github.com/MrLuke1618",
+    "youtubeUrl": "https://www.youtube.com/@luke1618gamer/",
+    "tiktokUrl": "https://www.tiktok.com/@hoangcao2704",
+    "offers": [
+      {
+        "title": "AI Games at Scale",
+        "detail": "End-to-end 20-episode narrative engines, custom sprite/VO pipelines, Canvas/WebGL loops, and zero-lag browser delivery."
+      },
+      {
+        "title": "Multimodal Creator Systems",
+        "detail": "Production tools for storyboarding, audio synthesis, video ideation, and automated content workflows powered by Gemini."
+      },
+      {
+        "title": "Full-Stack Interactive UX",
+        "detail": "React 19 + TypeScript + Cloudflare Pages CI/CD with Dual-Mode (Instant Demo + BYOK) architecture."
+      }
+    ]
+  },
+  "wings": [
+    {
+      "id": "ai-games",
+      "name": "AI Games Arcade",
+      "accent": "#E5A93C",
+      "guideName": "Arcade Director",
+      "guideRole": "AI Games Lead",
+      "guideLine": "Welcome to the Arcade! Walk up to any cabinet to play Midnight Express or inspect our WebGL worlds.",
+      "center": {
+        "x": -480,
+        "y": -300
+      }
+    },
+    {
+      "id": "creator-lab",
+      "name": "AI Creator Lab",
+      "accent": "#2DD4BF",
+      "guideName": "Film & Audio Producer",
+      "guideRole": "Creator Systems",
+      "guideLine": "Here we forge storyboards, voiceovers, and YouTube production toolboxes — all upgraded for 2026.",
+      "center": {
+        "x": 480,
+        "y": -300
+      }
+    },
+    {
+      "id": "growth-ops",
+      "name": "Growth Ops",
+      "accent": "#34D399",
+      "guideName": "Growth Strategist",
+      "guideRole": "Marketing & CS AI",
+      "guideLine": "Built for real marketing & CS teams — instant analytics demos plus optional live Gemini BYOK.",
+      "center": {
+        "x": -480,
+        "y": 320
+      }
+    },
+    {
+      "id": "language-dojo",
+      "name": "Language Dojo",
+      "accent": "#818CF8",
+      "guideName": "Dojo Sensei",
+      "guideRole": "EdTech & IELTS",
+      "guideLine": "Interactive speaking simulators, band-8 rubrics, and gamified English drills live here.",
+      "center": {
+        "x": 480,
+        "y": 320
+      }
+    }
+  ],
+  "skills": [
+    {
+      "id": "skill-ai-games",
+      "name": "AI Game Direction",
+      "wing": "ai-games",
+      "desc": "Multi-episode narrative state machines, 2x2 sprite pipelines, and VO-synced karaoke cutscenes.",
+      "pos": {
+        "x": -230,
+        "y": -160
+      }
+    },
+    {
+      "id": "skill-canvas-webgl",
+      "name": "Canvas, WebGL & Procedural Audio",
+      "wing": "ai-games",
+      "desc": "60fps 2.5D/isometric engines, Three.js shaders, and zero-dependency Web Audio SFX.",
+      "pos": {
+        "x": -680,
+        "y": -140
+      }
+    },
+    {
+      "id": "skill-gemini",
+      "name": "Gemini & Multimodal Pipelines",
+      "wing": "creator-lab",
+      "desc": "Structured outputs, TTS/VO timing, image/video workflows, and Dual-Mode BYOK architecture.",
+      "pos": {
+        "x": 230,
+        "y": -160
+      }
+    },
+    {
+      "id": "skill-video-prod",
+      "name": "Video & Storyboard Tooling",
+      "wing": "creator-lab",
+      "desc": "Automated storyboarding, audio mastering, and creator launchpads built from real creator experience.",
+      "pos": {
+        "x": 680,
+        "y": -140
+      }
+    },
+    {
+      "id": "skill-growth-ai",
+      "name": "Growth & Support Automation",
+      "wing": "growth-ops",
+      "desc": "Production tools shipped for Avada Commerce marketing, Shopify video ops, and CS proofreading.",
+      "pos": {
+        "x": -230,
+        "y": 170
+      }
+    },
+    {
+      "id": "skill-react-ts",
+      "name": "React 19 & TypeScript",
+      "wing": "growth-ops",
+      "desc": "Strict-typed modular architectures, Vite bundling, and fast accessible interfaces.",
+      "pos": {
+        "x": -680,
+        "y": 160
+      }
+    },
+    {
+      "id": "skill-edtech",
+      "name": "Interactive EdTech & Speech",
+      "wing": "language-dojo",
+      "desc": "IELTS speaking practice, Web Speech API feedback, and beginner-friendly guided lessons.",
+      "pos": {
+        "x": 230,
+        "y": 170
+      }
+    },
+    {
+      "id": "skill-cloudflare",
+      "name": "Cloudflare Pages & CI/CD",
+      "wing": "language-dojo",
+      "desc": "GitHub auto-deploys with unlimited bandwidth, asset budget gates, and edge-ready builds.",
+      "pos": {
+        "x": 680,
+        "y": 160
+      }
+    }
+  ],
+  "projects": [
+    {
+      "id": "midnight-express-trans-siberian",
+      "wing": "ai-games",
+      "title": "Midnight Express: Trans-Siberian",
+      "tagline": "20-Episode Art Deco Survival-Noir AI Visual Novel & Strategy Game",
+      "status": "playable",
+      "featured": true,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "HTML5 Canvas",
+        "Studio VO",
+        "Web Audio"
+      ],
+      "highlights": [
+        "20 full episodes with 560 Studio VO lines & word-level karaoke sync",
+        "Custom 2x2 animated character expression sheets & procedural SFX",
+        "Zero-lag static bundle ready for Cloudflare Pages"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618",
+      "liveUrl": "https://midnight-express-trans-siberian.pages.dev",
+      "pos": {
+        "x": -480,
+        "y": -430
+      }
+    },
+    {
+      "id": "football-fantastic-fcs",
+      "wing": "ai-games",
+      "title": "Football: Fantastic FCs",
+      "tagline": "398 Clubs & Nations · Zero-Image Procedural Stickman Sports RPG",
+      "status": "playable",
+      "featured": true,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "HTML5 Canvas",
+        "Procedural Animation",
+        "Web Audio"
+      ],
+      "highlights": [
+        "Zero external image assets — 100% code-generated stickman animations & UI",
+        "398 playable clubs & nations with tactics, transfers, stadium & jukebox",
+        "Built for Google Playground at 60fps hardware-accelerated canvas speed"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618",
+      "liveUrl": "",
+      "pos": {
+        "x": -560,
+        "y": -370
+      }
+    },
+    {
+      "id": "Major-Project-WebGL",
+      "wing": "creator-lab",
+      "title": "Major Project WebGL",
+      "tagline": "Comparative Study of Narrative Engagement in Two Film Media (WebGL)",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "WebGL",
+        "Three.js",
+        "HTML5",
+        "Interactive Cinema"
+      ],
+      "highlights": [
+        "Real-time 3D WebGL narrative showcase",
+        "Modernized controls, HUD framing, and Cloudflare Pages build"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/Major-Project-WebGL",
+      "liveUrl": "https://mrluke1618.github.io/Major-Project-WebGL",
+      "pos": {
+        "x": -310,
+        "y": -310
+      }
+    },
+    {
+      "id": "storyboard-ai",
+      "wing": "creator-lab",
+      "title": "Storyboard AI",
+      "tagline": "AI storyboard workstation for film directors & shot planners",
+      "status": "upgrading",
+      "featured": true,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Gemini",
+        "Visual Shot Grid"
+      ],
+      "highlights": [
+        "Instant sample film script -> shot-by-shot storyboard demo",
+        "Optional BYOK Gemini live shot breakdown"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/storyboard-ai",
+      "liveUrl": "",
+      "pos": {
+        "x": 480,
+        "y": -440
+      }
+    },
+    {
+      "id": "ai-audio-studio",
+      "wing": "creator-lab",
+      "title": "AI Audio Studio",
+      "tagline": "Gemini-powered voiceover & sound design studio",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Web Audio",
+        "Gemini TTS"
+      ],
+      "highlights": [
+        "Live waveform visualizer & instant studio voice presets",
+        "Dual-Mode demo + BYOK Gemini audio synthesis"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/ai-audio-studio",
+      "liveUrl": "https://mrluke1618.github.io/ai-audio-studio",
+      "pos": {
+        "x": 310,
+        "y": -340
+      }
+    },
+    {
+      "id": "creator-suite",
+      "wing": "creator-lab",
+      "title": "Creator Suite",
+      "tagline": "All-in-one AI production workspace for digital creators",
+      "status": "upgrading",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Gemini",
+        "Workflow Templates"
+      ],
+      "highlights": [
+        "Hook, script, thumbnail brief, and retention pacing tools",
+        "Preloaded creator scenarios + BYOK Gemini mode"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/creator-suite",
+      "liveUrl": "",
+      "pos": {
+        "x": 650,
+        "y": -340
+      }
+    },
+    {
+      "id": "mrluke1618-creators-toolbox",
+      "wing": "creator-lab",
+      "title": "Creator's Toolbox",
+      "tagline": "YouTube content creation & packaging utility suite",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "YouTube Ops",
+        "Gemini"
+      ],
+      "highlights": [
+        "Title/CTR scorer, chapter formatter, and metadata studio",
+        "Zero-setup demo mode with real YouTube workflow presets"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/mrluke1618-creators-toolbox",
+      "liveUrl": "https://mrluke1618.github.io/mrluke1818-creators-toolbox",
+      "pos": {
+        "x": 360,
+        "y": -230
+      }
+    },
+    {
+      "id": "veo3-watermark-remover",
+      "wing": "creator-lab",
+      "title": "Veo3 Watermark Remover",
+      "tagline": "Client-side canvas & media utility for Flow AI / Veo3 outputs",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React",
+        "TypeScript",
+        "HTML5 Canvas",
+        "Media Processing"
+      ],
+      "highlights": [
+        "Interactive before/after canvas cleanup preview",
+        "100% client-side privacy with sample demo clips"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/veo3-watermark-remover",
+      "liveUrl": "https://veo3-watermark-remover.vercel.app",
+      "pos": {
+        "x": 600,
+        "y": -230
+      }
+    },
+    {
+      "id": "content-compass",
+      "wing": "growth-ops",
+      "title": "Content Compass",
+      "tagline": "Marketing content strategy & SEO compass built for Avada Commerce",
+      "status": "live",
+      "featured": true,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Gemini",
+        "Marketing Ops"
+      ],
+      "highlights": [
+        "Preloaded SaaS campaign matrix + topic cluster explorer",
+        "Dual-Mode demo + BYOK Gemini brief generator"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/content-compass",
+      "liveUrl": "https://mrluke1618.github.io/content-compass",
+      "pos": {
+        "x": -480,
+        "y": 440
+      }
+    },
+    {
+      "id": "youtube-launchpad",
+      "wing": "growth-ops",
+      "title": "YouTube Launchpad",
+      "tagline": "Video launch & growth planner built for Avada Marketing",
+      "status": "upgrading",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Gemini",
+        "Video Growth"
+      ],
+      "highlights": [
+        "Hook-to-CTA launch checklist and retention planner",
+        "Instant interactive demo + BYOK Gemini mode"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/youtube-launchpad",
+      "liveUrl": "",
+      "pos": {
+        "x": -650,
+        "y": 340
+      }
+    },
+    {
+      "id": "shopify-growth-video-idea-generator-v2",
+      "wing": "growth-ops",
+      "title": "Shopify Growth Video Idea Gen",
+      "tagline": "E-commerce short-form & tutorial video generator for Shopify apps",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Shopify Growth",
+        "Gemini"
+      ],
+      "highlights": [
+        "Merchant pain-point -> high-converting video script matrix",
+        "Instant demo datasets + BYOK Gemini generation"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/shopify-growth-video-idea-generator-v2",
+      "liveUrl": "https://mrluke1618.github.io/shopify-growth-video-idea-generator-v2/",
+      "pos": {
+        "x": -310,
+        "y": 340
+      }
+    },
+    {
+      "id": "ai-proofreader",
+      "wing": "growth-ops",
+      "title": "AI Proofreader",
+      "tagline": "Customer-support tone & grammar QA assistant for Avada CS team",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Diff View",
+        "Gemini"
+      ],
+      "highlights": [
+        "Side-by-side tone diffing (Empathetic / Concise / Executive)",
+        "Instant CS ticket examples + BYOK Gemini mode"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/ai-proofreader",
+      "liveUrl": "https://mrluke1618.github.io/ai-proofreader",
+      "pos": {
+        "x": -600,
+        "y": 240
+      }
+    },
+    {
+      "id": "customer-review-summarizer",
+      "wing": "growth-ops",
+      "title": "Customer Review Summarizer",
+      "tagline": "Sentiment & insight extractor for CS x Marketing teams",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Analytics",
+        "Gemini"
+      ],
+      "highlights": [
+        "Interactive sentiment breakdown & actionable feature insights",
+        "Preloaded Shopify App Store review batch + BYOK mode"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/customer-review-summarizer",
+      "liveUrl": "https://mrluke1618.github.io/customer-review-summarizer",
+      "pos": {
+        "x": -360,
+        "y": 240
+      }
+    },
+    {
+      "id": "aero-speak-english",
+      "wing": "language-dojo",
+      "title": "Aero Speak English",
+      "tagline": "Interactive IELTS Speaking simulator with structured feedback",
+      "status": "live",
+      "featured": true,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Web Speech API",
+        "Gemini"
+      ],
+      "highlights": [
+        "Part 1/2/3 IELTS prompt simulator with band-score breakdown",
+        "Instant sample audio/transcripts + BYOK live scoring"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/aero-speak-english",
+      "liveUrl": "https://aero-speak-english.vercel.app",
+      "pos": {
+        "x": 480,
+        "y": 440
+      }
+    },
+    {
+      "id": "ielts-practice-app",
+      "wing": "language-dojo",
+      "title": "IELTS Practice App",
+      "tagline": "Focused IELTS prep drills & band-8 rubric coach",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "EdTech",
+        "Gemini"
+      ],
+      "highlights": [
+        "Timed Writing & Speaking drills with annotated band-8 models",
+        "Dual-Mode demo + BYOK Gemini examiner"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/ielts-practice-app",
+      "liveUrl": "https://mrluke1618.github.io/ielts-practice-app",
+      "pos": {
+        "x": 310,
+        "y": 330
+      }
+    },
+    {
+      "id": "english-learning-newbie",
+      "wing": "language-dojo",
+      "title": "English Learning Newbie",
+      "tagline": "Warm, accessible beginner English app built for Mom",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Speech Synthesis",
+        "Gamified Drills"
+      ],
+      "highlights": [
+        "Zero-friction daily phrases with slow/clear voice playback",
+        "Interactive flashcards, streaks, and gentle audio cues"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/english-learning-newbie",
+      "liveUrl": "https://english-learning-newbie.vercel.app",
+      "pos": {
+        "x": 650,
+        "y": 330
+      }
+    },
+    {
+      "id": "Kokoro-English-Guide",
+      "wing": "language-dojo",
+      "title": "Kokoro English Guide",
+      "tagline": "Curated conversational English guide & phrase companion",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React 19",
+        "TypeScript",
+        "Audio Cards",
+        "Gemini"
+      ],
+      "highlights": [
+        "Scenario-based travel & daily conversation cards",
+        "Upgraded to clean React 19 interactive guide"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618/Kokoro-English-Guide",
+      "liveUrl": "https://mrluke1618.github.io/Kokoro-English-Guide/preloader.html",
+      "pos": {
+        "x": 480,
+        "y": 240
+      }
+    },
+    {
+      "id": "ielts-sniper-simulator",
+      "wing": "language-dojo",
+      "title": "IELTS Sniper Simulator",
+      "tagline": "Gamified AI IELTS prep app supporting ADHD learners",
+      "status": "live",
+      "featured": true,
+      "tech": [
+        "React",
+        "Cloud Run",
+        "Gemini AI",
+        "Gamified Prep"
+      ],
+      "highlights": [
+        "Gamified IELTS speaking & exam drills built for ADHD focus"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618",
+      "liveUrl": "https://ielts-sniper-simulator-111129719916.asia-southeast1.run.app",
+      "pos": {
+        "x": 400,
+        "y": 380
+      }
+    },
+    {
+      "id": "khangs-learning-universe",
+      "wing": "language-dojo",
+      "title": "Khang's Learning Universe",
+      "tagline": "Gamified personalized English learning adventure",
+      "status": "live",
+      "featured": false,
+      "tech": [
+        "React",
+        "Remix",
+        "Cloud Run",
+        "Gamified EdTech"
+      ],
+      "highlights": [
+        "Personalized English learning gameplay paths"
+      ],
+      "githubUrl": "https://github.com/MrLuke1618",
+      "liveUrl": "https://remix-khang-s-learning-universe-111129719916.asia-southeast1.run.app",
+      "pos": {
+        "x": 560,
+        "y": 380
+      }
+    }
+  ]
+}

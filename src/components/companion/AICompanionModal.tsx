@@ -8,7 +8,8 @@ import {
   isBYOApiKeyActive 
 } from '../../utils/gemini';
 import { sound } from '../../constants/soundEffects';
-import { Send, X, Loader2, Bot, Key, Check, Trash2 } from 'lucide-react';
+import { voiceNarrator } from '../../utils/voiceNarrator';
+import { Send, X, Loader2, Bot, Key, Check, Trash2, Volume2, VolumeX, ChevronLeft, ChevronRight, AudioLines } from 'lucide-react';
 
 interface AICompanionModalProps {
   currentZone: GameZoneId;
@@ -50,19 +51,32 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
   const [inputKey, setInputKey] = useState(getBYOApiKey() || '');
   const [isKeyUnlocked, setIsKeyUnlocked] = useState(isBYOApiKeyActive());
   const [keySaveToast, setKeySaveToast] = useState(false);
+  const [templatePage, setTemplatePage] = useState(0);
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(voiceNarrator.isSpeaking());
+
+  useEffect(() => {
+    return voiceNarrator.subscribe(() => {
+      const speaking = voiceNarrator.isSpeaking();
+      setIsVoiceSpeaking(speaking);
+      if (!speaking) setSpeakingMsgId(null);
+    });
+  }, []);
 
   const suggestedQueries = language === 'en' ? [
-    'How does your automated video pipeline work?',
-    'Tell me about the 10-Game Retro Arcade Planet',
-    'What is the AntiGravity & Code Shipyard outpost?',
-    'How did you grow Lotus Media to 72,000 subscribers?',
-    'How can I get in touch with Hoang for a project?'
+    'Tell me about Midnight Express & Football: Fantastic FCs',
+    'How were the 2.5D zero-image dioramas & 16:9 Bento UI built?',
+    'What are the 16 upgraded 2026 GitHub AI apps?',
+    'How does your Python + Hyperframes + Concat pipeline work?',
+    'What are Hoang’s verified credentials (DCU, IELTS, Lotus 72k)?',
+    'How can I contact Hoang for AI or video projects?'
   ] : [
-    'Quy trình tự động hóa sản xuất video hoạt động như thế nào?',
-    'Giới thiệu về Hành Tinh 10 Game Retro Arcade',
-    'Trạm Vũ Trụ AntiGravity & Code Shipyard là gì?',
-    'Bạn đã phát triển Lotus Media lên 72.000 người đăng ký thế nào?',
-    'Làm thế nào để liên hệ và hợp tác với Hoàng?'
+    'Giới thiệu game Midnight Express & Football: Fantastic FCs',
+    'Hệ thống 2.5D không dùng ảnh & giao diện 16:9 Bento hoạt động sao?',
+    '16 ứng dụng AI GitHub nâng cấp 2026 gồm những gì?',
+    'Quy trình dựng video Python + Hyperframes + Concat ra sao?',
+    'Các chứng chỉ (DCU, IELTS, TOEIC) & thành tích 72k Lotus Media?',
+    'Làm thế nào để liên hệ hợp tác với Hoàng?'
   ];
 
   // Initialize greeting on first load or language switch
@@ -182,27 +196,40 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="AI Assistant Drawer"
-          className="fixed inset-x-2 bottom-2 sm:inset-auto sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-[420px] h-[82vh] sm:h-[580px] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#131B2E] border border-[#1E293B] shadow-2xl overflow-hidden animate-fadeIn"
+          className="fixed inset-x-2 bottom-2 sm:inset-auto sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-1rem)] sm:w-[440px] h-[82vh] sm:h-[600px] max-h-[92vh] flex flex-col rounded-2xl sm:rounded-3xl bg-[#0B101D]/96 border border-[#8B5CF6]/40 shadow-[0_0_50px_rgba(139,92,246,0.22)] backdrop-blur-2xl overflow-hidden animate-fadeIn"
         >
+          <style>{`
+            .chat-no-scrollbar {
+              scrollbar-width: none;
+              -ms-overflow-style: none;
+            }
+            .chat-no-scrollbar::-webkit-scrollbar {
+              display: none;
+            }
+          `}</style>
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-[#1E293B] bg-[#090D16]">
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#1E293B] bg-[#070B14]/90 shrink-0">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/30 flex items-center justify-center text-[#8B5CF6]">
+              <div className="w-8 h-8 rounded-xl bg-[#8B5CF6]/15 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6]">
                 <Bot className="w-4 h-4" />
               </div>
               <div>
                 <h3 className="text-sm font-bold text-[#F8FAFC] flex items-center gap-1.5">
                   <span>{language === 'en' ? 'AI Companion' : 'Trợ lý AI'}</span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-mono bg-[#8B5CF6]/20 border border-[#8B5CF6]/40 text-[#C4B5FD]">
+                    <AudioLines className="w-2.5 h-2.5" />
+                    {language === 'en' ? 'Brian Neural' : 'NamMinh'}
+                  </span>
                   {isKeyUnlocked && (
-                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono bg-[#8B5CF6] text-white">
-                      UNLOCKED
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono bg-[#8B5CF6] text-white">
+                      BYOK
                     </span>
                   )}
                 </h3>
                 <p className="text-[11px] text-[#94A3B8]">
                   {isKeyUnlocked
                     ? (language === 'en' ? 'Universal Gemini Assistant' : 'Trợ lý Gemini Toàn Năng')
-                    : (language === 'en' ? 'Portfolio Context Mode' : 'Dữ liệu Danh mục Hoàng')}
+                    : (language === 'en' ? 'Portfolio Context · 2026 Upgraded' : 'Dữ liệu Danh mục · Chuẩn 2026')}
                 </p>
               </div>
             </div>
@@ -285,33 +312,69 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
             </div>
           )}
 
-          {/* Messages Body */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs">
+          {/* Messages Body (Zero Visible Scrollbar) */}
+          <div className="chat-no-scrollbar flex-1 overflow-y-auto p-4 space-y-3 text-xs">
             {messages.map((msg) => (
               <div
                 key={msg.id}
                 className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl p-3.5 leading-relaxed ${
+                  className={`max-w-[86%] rounded-2xl p-3.5 leading-relaxed ${
                     msg.sender === 'user'
-                      ? 'bg-[#8B5CF6] text-white rounded-br-xs'
+                      ? 'bg-gradient-to-br from-[#8B5CF6] to-[#6D28D9] text-white rounded-br-xs shadow-lg shadow-[#8B5CF6]/20'
                       : msg.sender === 'system'
                       ? 'bg-rose-950/40 border border-rose-900/60 text-rose-200'
-                      : 'bg-[#090D16] border border-[#1E293B] text-[#F8FAFC] rounded-bl-xs'
+                      : 'bg-[#111829] border border-[#1E293B] text-[#F8FAFC] rounded-bl-xs'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.text}</p>
-                  <span className="block text-[9px] opacity-60 mt-1.5 text-right font-mono">
-                    {msg.timestamp}
-                  </span>
+                  <div className="mt-2 flex items-center justify-between gap-2">
+                    {msg.sender === 'npc' ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isVoiceSpeaking && speakingMsgId === msg.id) {
+                            voiceNarrator.stop();
+                            setSpeakingMsgId(null);
+                          } else {
+                            setSpeakingMsgId(msg.id);
+                            voiceNarrator.playChatReply(msg.text, language);
+                          }
+                        }}
+                        className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-semibold transition ${
+                          isVoiceSpeaking && speakingMsgId === msg.id
+                            ? 'border-emerald-400/50 bg-emerald-500/15 text-[#34D399]'
+                            : 'border-[#1E293B] bg-[#0B101D] text-[#A78BFA] hover:border-[#8B5CF6] hover:text-white'
+                        }`}
+                        title={language === 'en' ? 'Listen with Edge TTS' : 'Nghe giọng đọc Edge TTS'}
+                      >
+                        {isVoiceSpeaking && speakingMsgId === msg.id ? (
+                          <>
+                            <VolumeX className="h-2.5 w-2.5" />
+                            <span>{language === 'en' ? 'Stop' : 'Dừng'}</span>
+                          </>
+                        ) : (
+                          <>
+                            <Volume2 className="h-2.5 w-2.5" />
+                            <span>{language === 'en' ? 'Listen' : 'Nghe'}</span>
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <span />
+                    )}
+                    <span className="font-mono text-[9px] opacity-60">
+                      {msg.timestamp}
+                    </span>
+                  </div>
                 </div>
               </div>
             ))}
 
             {isLoading && (
               <div className="flex justify-start">
-                <div className="flex items-center gap-2 p-3 rounded-2xl bg-[#090D16] border border-[#1E293B] text-[#94A3B8]">
+                <div className="flex items-center gap-2 p-3 rounded-2xl bg-[#111829] border border-[#1E293B] text-[#94A3B8]">
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8B5CF6]" />
                   <span>{language === 'en' ? 'Synthesizing response...' : 'Đang xử lý câu trả lời...'}</span>
                 </div>
@@ -320,14 +383,41 @@ export const AICompanionModal: React.FC<AICompanionModalProps> = ({
             <div ref={chatBottomRef} />
           </div>
 
-          {/* Quick Query Chips */}
-          <div className="px-4 py-2 border-t border-[#1E293B] bg-[#090D16]/50">
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
-              {suggestedQueries.slice(0, 3).map((query, idx) => (
+          {/* Prepared Template Questions Carousel (Zero Scrollbar) */}
+          <div className="shrink-0 px-3.5 py-2 border-t border-[#1E293B] bg-[#070B14]/80 overflow-hidden">
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[#94A3B8]">
+                {language === 'en' ? 'Prepared Templates' : 'Câu hỏi gợi ý'}
+              </span>
+              <div className="flex items-center gap-1">
                 <button
-                  key={idx}
+                  type="button"
+                  onClick={() => setTemplatePage((p) => (p === 0 ? 1 : 0))}
+                  aria-label="Previous templates"
+                  className="rounded border border-[#1E293B] bg-[#111829] p-0.5 text-[#94A3B8] hover:text-white"
+                >
+                  <ChevronLeft className="h-3 w-3" />
+                </button>
+                <span className="font-mono text-[9px] text-[#CBD5E1] px-1">
+                  {templatePage + 1} / 2
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setTemplatePage((p) => (p === 0 ? 1 : 0))}
+                  aria-label="Next templates"
+                  className="rounded border border-[#1E293B] bg-[#111829] p-0.5 text-[#94A3B8] hover:text-white"
+                >
+                  <ChevronRight className="h-3 w-3" />
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-1 overflow-hidden">
+              {suggestedQueries.slice(templatePage * 3, templatePage * 3 + 3).map((query, idx) => (
+                <button
+                  key={`${templatePage}-${idx}`}
+                  type="button"
                   onClick={() => handleSendMessage(query)}
-                  className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-[#131B2E] border border-[#1E293B] hover:border-[#8B5CF6] text-[#94A3B8] hover:text-[#F8FAFC] text-[11px] transition-colors"
+                  className="truncate px-2.5 py-1 rounded-lg bg-[#111829] border border-[#1E293B] hover:border-[#8B5CF6] text-[#CBD5E1] hover:text-white text-[10px] transition-colors text-left"
                 >
                   {query}
                 </button>

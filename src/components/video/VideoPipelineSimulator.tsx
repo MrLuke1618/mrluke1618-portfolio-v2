@@ -172,421 +172,240 @@ export const VideoPipelineSimulator: React.FC<VideoPipelineSimulatorProps> = ({
   };
 
   return (
-    <div className="rounded-3xl bg-[#131B2E] border border-[#1E293B] p-5 sm:p-7 shadow-2xl space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#1E293B] pb-5">
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-mono text-[#8B5CF6] mb-1">
-            <Video className="w-3.5 h-3.5" />
-            <span>
-              {language === 'en'
-                ? 'INTERACTIVE POST-PRODUCTION SIMULATOR & TIMELINE'
-                : 'TRÌNH GIẢ LẬP HẬU KỲ & DÒNG THỜI GIAN TƯƠNG TÁC'}
-            </span>
-          </div>
-          <h3 className="text-xl font-bold text-[#F8FAFC]">
-            {language === 'en'
-              ? 'Multi-Track Video Post-Production & Automation Engine'
-              : 'Trình Giả Lập Hậu Kỳ & Tự Động Hóa Dựng Phim Đa Luồng'}
+    <div className="flex h-full min-h-0 flex-col gap-2.5 overflow-hidden rounded-2xl border border-[#1E293B] bg-[#131B2E] p-3.5">
+      {/* Top Single-Row Control Bar */}
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-[#1E293B] pb-2">
+        <div className="flex items-center gap-2">
+          <Video className="h-4 w-4 text-[#8B5CF6]" />
+          <h3 className="text-sm font-bold text-[#F8FAFC]">
+            {language === 'en' ? 'Post-Production Simulator' : 'Trình Giả Lập Hậu Kỳ'}
           </h3>
-          <p className="text-xs text-[#94A3B8] mt-1 max-w-xl">
-            {language === 'en'
-              ? 'Preview real-time audio sync, color grading LUTs, and programmatic frame rendering in a 9:16 vertical monitor.'
-              : 'Mô phỏng đồng bộ âm thanh, bảng màu LUTs điện ảnh và ghép nối phân cảnh tự động trên màn hình dọc 9:16.'}
-          </p>
         </div>
 
-        {/* Master Play / Pause Buttons */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            onClick={handleToggleRun}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-lg ${
-              isRunning
-                ? 'bg-[#090D16] border border-[#8B5CF6] text-[#8B5CF6]'
-                : 'bg-[#8B5CF6] hover:bg-[#7C3AED] text-white shadow-violet-500/25'
-            }`}
-          >
-            {isRunning ? (
-              <>
-                <Pause className="w-3.5 h-3.5 fill-current" />
-                <span>{language === 'en' ? 'Pause Simulator' : 'Tạm Dừng'}</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>{language === 'en' ? 'Run Pipeline Simulation' : 'Chạy Giả Lập Pipeline'}</span>
-              </>
-            )}
-          </button>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Palette className="h-3.5 w-3.5 text-[#8B5CF6]" />
+          {[
+            { id: 'cyber_neon', label: 'Cyber Neon' },
+            { id: 'teal_orange', label: 'Teal & Orange' },
+            { id: 'moody_noir', label: 'Moody Noir' },
+            { id: 'clean_neutral', label: 'Rec.709' },
+          ].map((lut) => (
+            <button
+              key={lut.id}
+              type="button"
+              onClick={() => {
+                setColorGrade(lut.id as ColorGradePreset);
+                sound.playBip(700, 0.04);
+              }}
+              className={`rounded-lg px-2 py-1 font-mono text-[10px] transition ${
+                colorGrade === lut.id ? 'bg-[#8B5CF6] font-bold text-white' : 'bg-[#090D16] text-[#94A3B8] hover:text-white'
+              }`}
+            >
+              {lut.label}
+            </button>
+          ))}
 
           <button
-            onClick={handleReset}
-            className="p-2.5 rounded-xl bg-[#090D16] border border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#8B5CF6] transition-colors"
-            title={language === 'en' ? 'Reset Simulation' : 'Đặt lại giả lập'}
-            aria-label="Reset Simulation"
-          >
-            <RotateCcw className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-
-      {/* Color Grading LUT Switcher & FX Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#090D16] border border-[#1E293B] text-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 text-[#8B5CF6]">
-            <Palette className="w-4 h-4 shrink-0" />
-            <span className="font-mono text-[11px] text-[#94A3B8]">
-              {language === 'en' ? 'COLOR GRADE LUT:' : 'BẢNG MÀU LUT:'}
-            </span>
-          </div>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {[
-              { id: 'cyber_neon', labelEn: 'Cyber Neon', labelVi: 'Cyber Neon' },
-              { id: 'teal_orange', labelEn: 'Teal & Orange', labelVi: 'Xanh Cam Điện Ảnh' },
-              { id: 'moody_noir', labelEn: 'Moody Noir', labelVi: 'Đen Trắng Noir' },
-              { id: 'clean_neutral', labelEn: 'Clean Rec.709', labelVi: 'Tự Nhiên Rec.709' }
-            ].map((lut) => (
-              <button
-                key={lut.id}
-                onClick={() => {
-                  setColorGrade(lut.id as ColorGradePreset);
-                  sound.playBip(700, 0.04);
-                }}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-mono transition-all active:scale-95 ${
-                  colorGrade === lut.id
-                    ? 'bg-[#8B5CF6] text-white font-semibold'
-                    : 'bg-[#131B2E] text-[#94A3B8] hover:text-[#F8FAFC]'
-                }`}
-              >
-                {language === 'en' ? lut.labelEn : lut.labelVi}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* FX Toggles */}
-        <div className="flex flex-wrap items-center gap-2 font-mono text-[11px]">
-          <button
+            type="button"
             onClick={() => setEnableFilmGrain(!enableFilmGrain)}
-            className={`px-2.5 py-1 rounded-lg border transition-colors active:scale-95 ${
-              enableFilmGrain
-                ? 'bg-[#8B5CF6]/20 border-[#8B5CF6] text-[#8B5CF6]'
-                : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
+            className={`rounded-lg border px-2 py-1 font-mono text-[10px] ${
+              enableFilmGrain ? 'border-[#8B5CF6] bg-[#8B5CF6]/20 text-[#A78BFA]' : 'border-[#1E293B] bg-[#090D16] text-[#94A3B8]'
             }`}
           >
-            {language === 'en' ? '35mm Grain: ' : 'Hạt 35mm: '}{enableFilmGrain ? (language === 'en' ? 'ON' : 'BẬT') : (language === 'en' ? 'OFF' : 'TẮT')}
+            Grain: {enableFilmGrain ? 'ON' : 'OFF'}
           </button>
           <button
+            type="button"
             onClick={() => setEnableVignette(!enableVignette)}
-            className={`px-2.5 py-1 rounded-lg border transition-colors active:scale-95 ${
-              enableVignette
-                ? 'bg-[#8B5CF6]/20 border-[#8B5CF6] text-[#8B5CF6]'
-                : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8]'
+            className={`rounded-lg border px-2 py-1 font-mono text-[10px] ${
+              enableVignette ? 'border-[#8B5CF6] bg-[#8B5CF6]/20 text-[#A78BFA]' : 'border-[#1E293B] bg-[#090D16] text-[#94A3B8]'
             }`}
           >
-            {language === 'en' ? 'Vignette: ' : 'Tối góc: '}{enableVignette ? (language === 'en' ? 'ON' : 'BẬT') : (language === 'en' ? 'OFF' : 'TẮT')}
+            Vignette: {enableVignette ? 'ON' : 'OFF'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleToggleRun}
+            className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[11px] font-bold transition ${
+              isRunning
+                ? 'border border-[#8B5CF6] bg-[#090D16] text-[#8B5CF6]'
+                : 'bg-[#8B5CF6] text-white hover:bg-[#7C3AED]'
+            }`}
+          >
+            {isRunning ? <Pause className="h-3 w-3 fill-current" /> : <Play className="h-3 w-3 fill-current" />}
+            <span>{isRunning ? (language === 'en' ? 'Pause' : 'Dừng') : (language === 'en' ? 'Run Simulation' : 'Chạy Giả Lập')}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleReset}
+            aria-label="Reset Simulation"
+            className="rounded-xl border border-[#1E293B] bg-[#090D16] p-1.5 text-[#94A3B8] hover:border-[#8B5CF6] hover:text-white"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Stepper Milestone Navigator */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+      {/* Middle 5-Step Horizontal Strip */}
+      <div className="grid shrink-0 grid-cols-5 gap-2">
         {PIPELINE_STEPS_DATA.map((step, idx) => {
           const isDone = completedSteps.includes(step.id);
           const isCurrent = activeStepIdx === idx;
-
           return (
             <button
               key={step.id}
+              type="button"
               onClick={() => handleStepClick(idx)}
-              className={`p-3 rounded-xl border text-left transition-all group ${
+              className={`rounded-xl border p-2 text-left transition ${
                 isCurrent
-                  ? 'bg-[#1E293B] border-[#8B5CF6] shadow-lg shadow-[#8B5CF6]/10'
-                  : isDone
-                  ? 'bg-[#090D16] border-[#1E293B] text-[#94A3B8] hover:border-[#8B5CF6]/50'
-                  : 'bg-[#090D16]/50 border-[#1E293B]/60 text-[#94A3B8]/60 hover:text-[#94A3B8]'
+                  ? 'border-[#8B5CF6] bg-[#1E293B]'
+                  : 'border-[#1E293B] bg-[#090D16]/70 hover:border-[#8B5CF6]/50'
               }`}
             >
-              <div className="flex items-center justify-between mb-1.5">
-                <span className={`text-[10px] font-mono font-bold ${isCurrent ? 'text-[#8B5CF6]' : 'text-[#94A3B8]'}`}>
-                  {language === 'en' ? 'STEP' : 'BƯỚC'} {step.stepNumber}
+              <div className="flex items-center justify-between font-mono text-[9px]">
+                <span className={isCurrent ? 'font-bold text-[#8B5CF6]' : 'text-[#94A3B8]'}>
+                  STEP {step.stepNumber}
                 </span>
-                {isDone && <CheckCircle2 className="w-3.5 h-3.5 text-[#8B5CF6]" />}
+                {isDone && <CheckCircle2 className="h-3 w-3 text-[#8B5CF6]" />}
               </div>
-              <div className={`text-xs font-semibold truncate ${isCurrent ? 'text-[#F8FAFC]' : 'text-[#94A3B8] group-hover:text-[#F8FAFC]'}`}>
+              <div className="mt-0.5 truncate text-[11px] font-semibold text-[#F8FAFC]">
                 {language === 'en' ? step.titleEn : step.titleVi}
-              </div>
-              <div className="text-[10px] text-[#94A3B8] mt-0.5 truncate">
-                {step.tool}
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Main Simulation Layout: Timeline & Live 9:16 Monitor */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Left Column (7 cols): Multi-Track Timeline & Terminal Log */}
-        <div className="lg:col-span-7 flex flex-col justify-between space-y-5">
-          {/* Multi-Track Interactive Timeline Box */}
-          <div className="rounded-2xl bg-[#090D16] border border-[#1E293B] p-4 sm:p-5 space-y-4">
-            <div className="flex items-center justify-between text-xs text-[#94A3B8] font-mono">
-              <span className="text-[#8B5CF6] font-bold flex items-center gap-1.5">
-                <FastForward className="w-3.5 h-3.5" />
-                <span>
-                  {language === 'en'
-                    ? 'MULTI-TRACK TIMELINE WITH AUDIO-SYNC BEAT MARKERS'
-                    : 'DÒNG THỜI GIAN ĐA LUỒNG ĐỒNG BỘ ĐIỂM NHỊP'}
-                </span>
+      {/* Bottom 12-Col Bento Split: Timeline + Terminal (8 cols) | 9:16 Vertical Monitor (4 cols) */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-3 overflow-hidden lg:grid-cols-12">
+        <div className="flex min-h-0 flex-col justify-between gap-2 overflow-hidden lg:col-span-8">
+          {/* Multi-Track Timeline */}
+          <div className="shrink-0 space-y-2 rounded-xl border border-[#1E293B] bg-[#090D16] p-3">
+            <div className="flex items-center justify-between font-mono text-[10px] text-[#94A3B8]">
+              <span className="flex items-center gap-1.5 font-bold text-[#8B5CF6]">
+                <FastForward className="h-3 w-3" />
+                <span>{language === 'en' ? 'MULTI-TRACK BEAT TIMELINE' : 'DÒNG THỜI GIAN ĐA LUỒNG'}</span>
               </span>
               <span>1080x1920 · 60 FPS</span>
             </div>
 
-            {/* Timeline Tracks */}
-            <div className="space-y-3 relative pt-3">
-              {/* Playhead Line */}
+            <div className="relative space-y-2 pt-2">
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-[#8B5CF6] shadow-[0_0_8px_#8B5CF6] z-20 pointer-events-none transition-all duration-75"
+                className="pointer-events-none absolute bottom-0 top-0 z-20 w-0.5 bg-[#8B5CF6] shadow-[0_0_8px_#8B5CF6]"
                 style={{ left: `${progressPercent}%` }}
-              >
-                <div className="w-2.5 h-2.5 -ml-1 -top-1 absolute bg-[#8B5CF6] rounded-full" />
+              />
+
+              <div className="flex h-7 items-center gap-0.5 overflow-hidden rounded-lg border border-[#1E293B] bg-[#131B2E] p-1">
+                {Array.from({ length: 48 }).map((_, i) => {
+                  const waveHeight = Math.sin(i * 0.45) * 8 + 11;
+                  const isPlayed = (i / 48) * 100 <= progressPercent;
+                  return (
+                    <span
+                      key={i}
+                      className={`flex-1 rounded-sm ${isPlayed ? 'bg-[#8B5CF6]' : 'bg-[#1E293B]'}`}
+                      style={{ height: `${waveHeight}px` }}
+                    />
+                  );
+                })}
               </div>
 
-              {/* Audio Beat Markers (2.5s, 5.0s, 7.5s, 10.0s, 12.5s) */}
-              {[16.6, 33.3, 50.0, 66.6, 83.3].map((pos, pIdx) => (
-                <div
-                  key={pIdx}
-                  className="absolute top-0 bottom-0 w-px border-l border-dashed border-[#8B5CF6]/30 z-10 pointer-events-none"
-                  style={{ left: `${pos}%` }}
-                >
-                  <span className="text-[9px] font-mono text-[#8B5CF6]/60 -ml-2 -top-3 absolute">
-                    BEAT
-                  </span>
-                </div>
-              ))}
-
-              {/* Track 1: Audio Narration & Waveform */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>{language === 'en' ? 'TRK 1: VOICE MASTER (48kHz)' : 'LUỒNG 1: GIỌNG ĐỌC CHUẨN (48kHz)'}</span>
-                  <span className="text-[#8B5CF6]">-14.1 LUFS</span>
-                </div>
-                <div className="h-8 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex items-center gap-0.5 overflow-hidden">
-                  {Array.from({ length: 48 }).map((_, i) => {
-                    const waveHeight = Math.sin(i * 0.45) * 12 + 14;
-                    const isPlayed = (i / 48) * 100 <= progressPercent;
-                    return (
-                      <span
-                        key={i}
-                        className={`flex-1 rounded-sm transition-colors duration-100 ${
-                          isPlayed ? 'bg-[#8B5CF6]' : 'bg-[#1E293B]'
-                        }`}
-                        style={{ height: `${waveHeight}px` }}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Track 2: Video Footage / Hyperframes B-Roll */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>{language === 'en' ? 'TRK 2: HYPERFRAMES CANVAS SEGMENTS' : 'LUỒNG 2: PHÂN CẢNH CANVA HYPERFRAMES'}</span>
-                  <span>{language === 'en' ? '4 CLIPS' : '4 PHÂN ĐOẠN'}</span>
-                </div>
-                <div className="h-7 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex gap-1">
-                  {['CLIP 01: INTRO', 'CLIP 02: PROBLEM', 'CLIP 03: CODE', 'CLIP 04: OUTRO'].map(
-                    (clip, cIdx) => (
-                      <div
-                        key={cIdx}
-                        className={`flex-1 rounded text-[9px] font-mono flex items-center justify-center transition-colors truncate px-1 ${
-                          activeStepIdx >= cIdx + 1
-                            ? 'bg-[#8B5CF6]/30 text-[#F8FAFC] border border-[#8B5CF6]/50'
-                            : 'bg-[#090D16] text-[#94A3B8] border border-[#1E293B]'
-                        }`}
-                      >
-                        {clip}
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Track 3: Kinetic Typography Subtitles */}
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-[11px] text-[#94A3B8] font-mono">
-                  <span>{language === 'en' ? 'TRK 3: KINETIC SUBTITLE BURN-IN' : 'LUỒNG 3: PHỤ ĐỀ KINETIC CHUYỂN ĐỘNG'}</span>
-                  <span className="text-violet-300">{language === 'en' ? 'AUTO-SYNCED' : 'TỰ ĐỘNG ĐỒNG BỘ'}</span>
-                </div>
-                <div className="h-7 rounded-lg bg-[#131B2E] border border-[#1E293B] p-1 flex gap-1">
-                  {Array.from({ length: 6 }).map((_, wIdx) => {
-                    const isPassed = (wIdx / 6) * 100 <= progressPercent;
-                    return (
-                      <div
-                        key={wIdx}
-                        className={`flex-1 rounded text-[9px] font-mono flex items-center justify-center transition-all ${
-                          isPassed
-                            ? 'bg-[#8B5CF6] text-white font-bold'
-                            : 'bg-[#090D16] text-[#94A3B8] border border-[#1E293B]'
-                        }`}
-                      >
-                        TEXT {wIdx + 1}
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="flex h-6 gap-1 rounded-lg border border-[#1E293B] bg-[#131B2E] p-1">
+                {['CLIP 01: INTRO', 'CLIP 02: PROBLEM', 'CLIP 03: CODE', 'CLIP 04: OUTRO'].map((clip, cIdx) => (
+                  <div
+                    key={cIdx}
+                    className={`flex flex-1 items-center justify-center truncate rounded px-1 font-mono text-[9px] ${
+                      activeStepIdx >= cIdx + 1
+                        ? 'border border-[#8B5CF6]/50 bg-[#8B5CF6]/30 text-white'
+                        : 'border border-[#1E293B] bg-[#090D16] text-[#94A3B8]'
+                    }`}
+                  >
+                    {clip}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Automation Terminal Log Box */}
-          <div className="rounded-2xl bg-[#090D16] border border-[#1E293B] p-4 flex flex-col justify-between space-y-2 flex-1 min-h-[140px]">
-            <div className="flex items-center justify-between text-[11px] font-mono text-[#94A3B8] border-b border-[#1E293B] pb-2">
-              <span className="flex items-center gap-2 text-[#8B5CF6]">
-                <Terminal className="w-3.5 h-3.5" />
-                <span>{language === 'en' ? 'AUTOMATION TERMINAL LOG' : 'NHẬT KÝ LỆNH TỰ ĐỘNG HÓA'}</span>
+          {/* Compact Terminal Log */}
+          <div className="flex min-h-0 flex-1 flex-col justify-between overflow-hidden rounded-xl border border-[#1E293B] bg-[#090D16] p-3">
+            <div className="flex shrink-0 items-center justify-between border-b border-[#1E293B] pb-1.5 font-mono text-[10px] text-[#94A3B8]">
+              <span className="flex items-center gap-1.5 text-[#8B5CF6]">
+                <Terminal className="h-3 w-3" />
+                <span>{language === 'en' ? 'AUTOMATION LOG' : 'NHẬT KÝ LỆNH'}</span>
               </span>
-              <span>PYTHON 3.12 · CLI RUNNER</span>
+              {onOpenEasterEgg && (
+                <button
+                  type="button"
+                  onClick={() => onOpenEasterEgg('python-hyperframes')}
+                  className="flex items-center gap-1 font-semibold text-[#8B5CF6] hover:underline"
+                >
+                  <Cpu className="h-3 w-3" />
+                  <span>hyperframes.py →</span>
+                </button>
+              )}
             </div>
 
-            <div
-              ref={terminalLogRef}
-              className="h-28 overflow-y-auto space-y-1 font-mono text-[11px] text-[#94A3B8] pr-2 scrollbar-thin"
-            >
-              {logFeed.map((line, idx) => (
-                <div key={idx} className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] select-none">{'>'}</span>
-                  <span className={line.includes('[export]') ? 'text-violet-300 font-bold' : 'text-[#F8FAFC]'}>
+            <div ref={terminalLogRef} className="mt-1.5 min-h-0 flex-1 space-y-1 overflow-hidden font-mono text-[10px] text-[#94A3B8]">
+              {logFeed.slice(-5).map((line, idx) => (
+                <div key={idx} className="flex items-start gap-1.5 truncate">
+                  <span className="select-none text-[#8B5CF6]">{'>'}</span>
+                  <span className={line.includes('[export]') ? 'font-bold text-violet-300' : 'text-[#F8FAFC]'}>
                     {line}
                   </span>
                 </div>
               ))}
             </div>
-
-            {onOpenEasterEgg && (
-              <div className="pt-2 border-t border-[#1E293B] flex items-center justify-between">
-                <span className="text-[11px] text-[#94A3B8]">
-                  {language === 'en' ? 'Want to inspect the real Python code?' : 'Xem mã nguồn Python thực tế?'}
-                </span>
-                <button
-                  onClick={() => onOpenEasterEgg('python-hyperframes')}
-                  className="text-[11px] font-mono text-[#8B5CF6] hover:underline flex items-center gap-1 font-semibold"
-                >
-                  <Cpu className="w-3 h-3" />
-                  <span>hyperframes.py →</span>
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Right Column (5 cols): Simulated 9:16 Vertical Video Monitor with Real-Time LUTs */}
-        <div className="lg:col-span-5 flex flex-col items-center justify-center">
-          <div className="w-full max-w-[240px] sm:max-w-[260px] aspect-[9/16] rounded-3xl bg-[#090D16] border-2 border-[#1E293B] p-2.5 shadow-2xl relative flex flex-col justify-between overflow-hidden group">
-            {/* Camera / Speaker Notch */}
-            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-3 bg-[#131B2E] rounded-full z-30" />
-
-            {/* Video Canvas Simulation Screen with Active LUT Filter */}
+        {/* Right Column (4 cols): 9:16 Vertical Monitor Sized to Fit */}
+        <div className="flex min-h-0 items-center justify-center overflow-hidden lg:col-span-4">
+          <div className="relative flex aspect-[9/16] h-full max-h-full flex-col justify-between overflow-hidden rounded-2xl border-2 border-[#1E293B] bg-[#090D16] p-2 shadow-2xl">
             <div
               style={{ filter: getColorGradeFilter() }}
-              className="relative w-full h-full rounded-2xl bg-gradient-to-b from-[#131B2E] via-[#090D16] to-[#131B2E] border border-[#1E293B] overflow-hidden flex flex-col justify-between p-4 z-10 transition-all duration-300"
+              className="relative z-10 flex h-full w-full flex-col justify-between overflow-hidden rounded-xl border border-[#1E293B] bg-gradient-to-b from-[#131B2E] via-[#090D16] to-[#131B2E] p-3"
             >
-              {/* Dynamic Animated Motion Graphic Elements */}
-              <div className="flex items-center justify-between text-[9px] font-mono text-[#8B5CF6] z-20">
-                <span className="px-1.5 py-0.5 rounded bg-[#090D16]/80 border border-[#1E293B]">
-                  9:16 LIVE · {colorGrade.toUpperCase()}
+              <div className="z-20 flex items-center justify-between font-mono text-[9px] text-[#8B5CF6]">
+                <span className="rounded border border-[#1E293B] bg-[#090D16]/80 px-1.5 py-0.5">
+                  9:16 · {colorGrade.toUpperCase()}
                 </span>
                 <span className="tabular-nums">{timecode}</span>
               </div>
 
-              {/* Center Screen: Visual Frame Render Simulation */}
-              <div className="space-y-3 text-center my-auto z-20">
-                <div className="w-12 h-12 mx-auto rounded-2xl bg-[#8B5CF6]/10 border border-[#8B5CF6]/40 flex items-center justify-center text-[#8B5CF6] animate-pulse">
-                  <Video className="w-6 h-6" />
+              <div className="z-20 my-auto space-y-2 text-center">
+                <div className="mx-auto flex h-10 w-10 animate-pulse items-center justify-center rounded-xl border border-[#8B5CF6]/40 bg-[#8B5CF6]/10 text-[#8B5CF6]">
+                  <Video className="h-5 w-5" />
                 </div>
-
-                <div className="space-y-1">
-                  <div className="text-[10px] font-mono text-[#8B5CF6] tracking-wider uppercase">
-                    {language === 'en' ? getSceneLabel().en : getSceneLabel().vi}
-                  </div>
-                  <div className="text-xs font-bold text-[#F8FAFC] leading-snug">
-                    {language === 'en' ? (
-                      Number(seconds) < 2
-                        ? 'Automate Your Video Editing'
-                        : Number(seconds) < 6
-                        ? 'No More Repetitive Timeline Cuts'
-                        : Number(seconds) < 11
-                        ? 'Python + Hyperframes Stitcher'
-                        : 'Hoang Cao Minh · Video Editor'
-                    ) : (
-                      Number(seconds) < 2
-                        ? 'Tự động hóa Biên tập Video'
-                        : Number(seconds) < 6
-                        ? 'Không còn cắt ghép thủ công'
-                        : Number(seconds) < 11
-                        ? 'Ghép nối Python + Hyperframes'
-                        : 'Cao Minh Hoàng · Biên tập Video'
-                    )}
-                  </div>
+                <div className="font-mono text-[9px] uppercase tracking-wider text-[#8B5CF6]">
+                  {language === 'en' ? getSceneLabel().en : getSceneLabel().vi}
                 </div>
-
-                {/* Simulated Audio Beats Pulsing in Frame */}
-                <div className="flex items-center justify-center gap-1 h-4">
-                  {Array.from({ length: 9 }).map((_, i) => (
-                    <span
-                      key={i}
-                      className={`w-1 rounded-full bg-[#8B5CF6] transition-all duration-150 ${
-                        isRunning ? 'animate-pulse' : 'h-1'
-                      }`}
-                      style={{
-                        height: isRunning ? `${Math.sin(currentTimeMs * 0.008 + i) * 8 + 10}px` : '4px'
-                      }}
-                    />
-                  ))}
+                <div className="text-xs font-bold leading-snug text-[#F8FAFC]">
+                  {language === 'en'
+                    ? Number(seconds) < 6
+                      ? 'Automate Video Editing'
+                      : 'Python + Hyperframes'
+                    : Number(seconds) < 6
+                      ? 'Tự động hóa Video'
+                      : 'Python + Hyperframes'}
                 </div>
               </div>
 
-              {/* Lower Screen: Kinetic Subtitle Burn-In */}
-              <div className="space-y-2 z-20">
-                <div className="p-2 rounded-xl bg-[#090D16]/90 border border-[#1E293B] text-center">
-                  <span className="text-[11px] font-extrabold text-[#F8FAFC] tracking-wide">
-                    {language === 'en' ? (
-                      Number(seconds) < 2
-                        ? 'STOP EDITING BY HAND.'
-                        : Number(seconds) < 6
-                        ? 'GENERATE WITH CODE.'
-                        : Number(seconds) < 11
-                        ? '60 FPS PROGRAMMATIC RENDER'
-                        : 'BUILD THE FUTURE OF MEDIA.'
-                    ) : (
-                      Number(seconds) < 2
-                        ? 'DỪNG DỰNG PHIM THỦ CÔNG.'
-                        : Number(seconds) < 6
-                        ? 'TẠO NỘI DUNG BẰNG CODE.'
-                        : Number(seconds) < 11
-                        ? 'KẾT XUẤT LẬP TRÌNH 60 FPS'
-                        : 'KIẾN TẠO TƯƠNG LAI TRUYỀN THÔNG.'
-                    )}
-                  </span>
+              <div className="z-20 space-y-1.5">
+                <div className="rounded-lg border border-[#1E293B] bg-[#090D16]/90 p-1.5 text-center text-[10px] font-extrabold text-[#F8FAFC]">
+                  {language === 'en' ? '60 FPS PROGRAMMATIC RENDER' : 'KẾT XUẤT LẬP TRÌNH 60 FPS'}
                 </div>
-
-                {/* Progress bar inside simulated video */}
-                <div className="h-1 rounded-full bg-[#1E293B] overflow-hidden">
-                  <div
-                    className="h-full bg-[#8B5CF6] rounded-full transition-all duration-75"
-                    style={{ width: `${progressPercent}%` }}
-                  />
+                <div className="h-1 overflow-hidden rounded-full bg-[#1E293B]">
+                  <div className="h-full rounded-full bg-[#8B5CF6]" style={{ width: `${progressPercent}%` }} />
                 </div>
               </div>
 
-              {/* Film Grain Simulation Overlay */}
               {enableFilmGrain && (
-                <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:4px_4px] opacity-5 pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] opacity-5 [background-size:4px_4px]" />
               )}
-
-              {/* Lens Vignette Simulation Overlay */}
               {enableVignette && (
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.7)_100%)] pointer-events-none" />
+                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.7)_100%)]" />
               )}
             </div>
           </div>

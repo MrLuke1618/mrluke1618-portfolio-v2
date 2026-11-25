@@ -3,6 +3,7 @@ import { PerformanceTier, GameZoneId, TradingCardItem, EasterEggSnippet } from '
 import { GAME_ZONES } from './constants/gameData';
 import { EASTER_EGGS } from './constants/easterEggs';
 import { sound } from './constants/soundEffects';
+import { voiceNarrator } from './utils/voiceNarrator';
 
 // Canvas & Ambient Components
 import { LayeredAmbientBackground } from './components/canvas/LayeredAmbientBackground';
@@ -11,44 +12,48 @@ import { GameCanvas2D } from './components/canvas/GameCanvas2D';
 // HUD Components
 import { TopNavBar } from './components/hud/TopNavBar';
 import { FastTravelDock } from './components/hud/FastTravelDock';
+import { ZoneOverlayModal } from './components/hud/ZoneOverlayModal';
 import { InteractiveCardModal } from './components/hud/InteractiveCardModal';
 import { EasterEggModal } from './components/hud/EasterEggModal';
 import { BottomAudioDock } from './components/hud/BottomAudioDock';
-
-// Clean Reader View
-import { CleanReaderView } from './components/reader/CleanReaderView';
 
 // AI Assistant Drawer
 import { AICompanionModal } from './components/companion/AICompanionModal';
 
 // Zone Views
 import { VideoVaultZone } from './components/zones/VideoVaultZone';
-import { ArcadeProjectZone } from './components/zones/ArcadeProjectZone';
+import { PlaygroundGamesZone } from './components/zones/PlaygroundGamesZone';
+import { AIProjectsLabZone } from './components/zones/AIProjectsLabZone';
 import { AcademyTowerZone } from './components/zones/AcademyTowerZone';
 import { LoFiLoungeZone } from './components/zones/LoFiLoungeZone';
 import { AntiGravityShipyardZone } from './components/zones/AntiGravityShipyardZone';
 
-import { ArrowUp } from 'lucide-react';
-
 export const App: React.FC = () => {
-  // Default view: Clean Reader Mode
-  const [viewMode, setViewMode] = useState<'reader' | 'game'>('reader');
   const [language, setLanguage] = useState<'en' | 'vi'>('en');
-  const [activeZone, setActiveZone] = useState<GameZoneId>('vault');
+  const [activeZone, setActiveZone] = useState<GameZoneId>('arcade');
+  const [openBuildingZone, setOpenBuildingZone] = useState<GameZoneId | null>(null);
   const [performanceTier, setPerformanceTier] = useState<PerformanceTier>('ultra');
   const [isMuted, setIsMuted] = useState<boolean>(false);
+  const [isVoiceEnabled, setIsVoiceEnabled] = useState<boolean>(voiceNarrator.isEnabled());
+  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState<boolean>(voiceNarrator.isSpeaking());
   const [isAIDrawerOpen, setIsAIDrawerOpen] = useState<boolean>(false);
   const [activeModalCard, setActiveModalCard] = useState<TradingCardItem | null>(null);
   const [activeEasterEgg, setActiveEasterEgg] = useState<EasterEggSnippet | null>(null);
-  const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
-  const [showMapHub, setShowMapHub] = useState<boolean>(true);
+
+  useEffect(() => {
+    return voiceNarrator.subscribe(() => {
+      setIsVoiceEnabled(voiceNarrator.isEnabled());
+      setIsVoiceSpeaking(voiceNarrator.isSpeaking());
+    });
+  }, []);
 
   // Dynamic Performance Tier Auto-Detection on Mount
   useEffect(() => {
     try {
       const isMobile = window.innerWidth < 768;
-      const isLowMemory = (navigator as unknown as { deviceMemory?: number }).deviceMemory !== undefined &&
-                          (navigator as unknown as { deviceMemory?: number }).deviceMemory! <= 4;
+      const isLowMemory =
+        (navigator as unknown as { deviceMemory?: number }).deviceMemory !== undefined &&
+        (navigator as unknown as { deviceMemory?: number }).deviceMemory! <= 4;
       const isLowCpu = navigator.hardwareConcurrency !== undefined && navigator.hardwareConcurrency <= 4;
 
       if (isMobile || isLowMemory || isLowCpu) {
@@ -61,33 +66,44 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  // Back to top scroll listener
+  // Escape closes open building overlay
   useEffect(() => {
-    const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 400);
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (activeModalCard) setActiveModalCard(null);
+        else if (activeEasterEgg) setActiveEasterEgg(null);
+        else if (openBuildingZone) {
+          setOpenBuildingZone(null);
+          voiceNarrator.stop();
+        }
+      }
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const [highlightZone, setHighlightZone] = useState<boolean>(false);
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [activeModalCard, activeEasterEgg, openBuildingZone]);
 
   const handleToggleMute = () => {
     const newMuteState = sound.toggleMute();
     setIsMuted(newMuteState);
   };
 
-  const handleSelectZone = (zoneId: GameZoneId, shouldScroll = false) => {
+  const handleToggleVoice = () => {
+    const next = !isVoiceEnabled;
+    voiceNarrator.setEnabled(next);
+    setIsVoiceEnabled(next);
+    if (next) {
+      voiceNarrator.playClip(openBuildingZone || 'intro', language);
+    }
+    sound.playBip(700, 0.04);
+  };
+
+  const handleSelectZone = (zoneId: GameZoneId, shouldEnter = false) => {
     setActiveZone(zoneId);
-    if (shouldScroll) {
-      setHighlightZone(true);
-      setTimeout(() => {
-        const el = document.getElementById('active-zone-view');
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 60);
-      setTimeout(() => setHighlightZone(false), 2400);
+    if (shouldEnter) {
+      setOpenBuildingZone(zoneId);
+      if (isVoiceEnabled) {
+        voiceNarrator.playClip(zoneId, language);
+      }
     }
   };
 
@@ -97,154 +113,112 @@ export const App: React.FC = () => {
   };
 
   const handleOpenEasterEgg = (snippetId: string) => {
-    const found = EASTER_EGGS.find(e => e.id === snippetId);
+    const found = EASTER_EGGS.find((e) => e.id === snippetId);
     if (found) {
       setActiveEasterEgg(found);
       sound.playLevelUp();
     }
   };
 
-  const activeZoneConfig = GAME_ZONES.find(z => z.id === activeZone) || GAME_ZONES[0];
+  const activeZoneConfig = GAME_ZONES.find((z) => z.id === activeZone) || GAME_ZONES[0];
 
   return (
-    <div className="relative min-h-screen bg-[#090D16] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#8B5CF6] selection:text-white antialiased">
-      {/* Living 2.5D Layered Ambient Background (Zero heavy 3D meshes, 60fps locked) */}
+    <div className="relative h-screen w-screen overflow-hidden bg-[#090D16] text-[#F8FAFC] flex flex-col font-sans selection:bg-[#8B5CF6] selection:text-white antialiased">
+      {/* Living 2.5D Layered Ambient Background */}
       <LayeredAmbientBackground tier={performanceTier} activeZoneColor={activeZoneConfig.glowColor} />
 
-      {/* Top Navigation Bar adhering to 3-zone contract */}
+      {/* Top Navigation Bar */}
       <TopNavBar
-        viewMode={viewMode}
-        onSetViewMode={setViewMode}
         performanceTier={performanceTier}
         onSetTier={setPerformanceTier}
         language={language}
         onSetLanguage={setLanguage}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
+        isVoiceEnabled={isVoiceEnabled}
+        isVoiceSpeaking={isVoiceSpeaking}
+        onToggleVoice={handleToggleVoice}
         activeZone={activeZone}
-        onSelectZone={handleSelectZone}
+        onSelectZone={(z) => handleSelectZone(z, true)}
         onOpenAIDrawer={() => setIsAIDrawerOpen(true)}
       />
 
-      {/* Main Content Container */}
-      <main className="relative z-10 flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-36">
-        {/* VIEW MODE 1: Clean Editorial Reader Mode (Default View) */}
-        {viewMode === 'reader' && (
-          <CleanReaderView
-            language={language}
-            onOpenCard={handleOpenCard}
-            onOpenEasterEgg={handleOpenEasterEgg}
-            onSwitchToGameMode={() => {
-              setViewMode('game');
-              sound.playTeleport();
-            }}
-          />
-        )}
-
-        {/* VIEW MODE 2: 2.5D Interactive Game Mode */}
-        {viewMode === 'game' && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* 2.5D World Map Hub */}
-            <section aria-label="2.5D World Map Navigator" className="rounded-2xl border border-[#1E293B] bg-[#131B2E] p-4 sm:p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-bold text-[#F8FAFC] uppercase tracking-wider font-mono">
-                    {language === 'en' ? 'Living 2.5D Layered Isometric Map' : 'Bản Đồ Không Gian 2.5D'}
-                  </h2>
-                  <p className="text-xs text-[#94A3B8] mt-0.5">
-                    {language === 'en'
-                      ? 'Pilot your nano-drone across the isometric studio grid or click stations to travel'
-                      : 'Điều khiển nano-drone trên lưới không gian 2.5D hoặc nhấp trạm để di chuyển'}
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    setShowMapHub(!showMapHub);
-                    sound.playTerminalClick();
-                  }}
-                  className="text-xs font-mono text-[#94A3B8] hover:text-[#F8FAFC] px-3 py-1.5 rounded-lg bg-[#090D16] border border-[#1E293B] transition-colors"
-                >
-                  {showMapHub
-                    ? (language === 'en' ? 'Collapse Map [-]' : 'Thu nhỏ [-]')
-                    : (language === 'en' ? 'Expand Map [+]' : 'Mở rộng [+]')}
-                </button>
-              </div>
-
-              {showMapHub && (
-                <div className="rounded-xl overflow-hidden border border-[#1E293B]">
-                  <GameCanvas2D
-                    activeZone={activeZone}
-                    onSelectZone={handleSelectZone}
-                    onOpenEasterEgg={handleOpenEasterEgg}
-                    language={language}
-                  />
-                </div>
-              )}
-            </section>
-
-            {/* Active Exploration Zone View */}
-            <section
-              id="active-zone-view"
-              aria-label="Active Exploration Zone"
-              className={`scroll-mt-24 transition-all duration-500 rounded-3xl ${
-                highlightZone ? 'ring-4 ring-[#8B5CF6]/80 shadow-[0_0_40px_rgba(139,92,246,0.35)] p-1' : ''
-              }`}
-            >
-              {activeZone === 'vault' && (
-                <VideoVaultZone
-                  onOpenCard={handleOpenCard}
-                  onOpenEasterEgg={handleOpenEasterEgg}
-                  language={language}
-                />
-              )}
-              {activeZone === 'arcade' && (
-                <ArcadeProjectZone
-                  onOpenCard={handleOpenCard}
-                  language={language}
-                />
-              )}
-              {activeZone === 'academy' && (
-                <AcademyTowerZone
-                  onOpenCard={handleOpenCard}
-                  language={language}
-                />
-              )}
-              {activeZone === 'lounge' && (
-                <LoFiLoungeZone
-                  language={language}
-                />
-              )}
-              {activeZone === 'shipyard' && (
-                <AntiGravityShipyardZone
-                  language={language}
-                  onOpenEasterEgg={handleOpenEasterEgg}
-                />
-              )}
-            </section>
-          </div>
-        )}
-      </main>
-
-      {/* Persistent Bottom Lo-Fi Audio Player Dock */}
-      <BottomAudioDock language={language} />
-
-      {/* Fast Travel Dock (Available in Game Mode) */}
-      {viewMode === 'game' && (
-        <FastTravelDock
+      {/* Unified Full-Screen 2.5D RPG Overworld */}
+      <main className="relative flex-1 w-full overflow-hidden z-10">
+        <GameCanvas2D
           activeZone={activeZone}
           onSelectZone={handleSelectZone}
+          onOpenEasterEgg={handleOpenEasterEgg}
+          language={language}
+        />
+      </main>
+
+      {/* Building Interior Overlay Modal */}
+      <ZoneOverlayModal
+        zoneId={openBuildingZone}
+        language={language}
+        isVoiceSpeaking={isVoiceSpeaking}
+        onPlayZoneVoice={() => {
+          if (openBuildingZone) {
+            voiceNarrator.setEnabled(true);
+            voiceNarrator.playClip(openBuildingZone, language);
+          }
+        }}
+        onStopZoneVoice={() => voiceNarrator.stop()}
+        onClose={() => {
+          setOpenBuildingZone(null);
+          voiceNarrator.stop();
+        }}
+        onSwitchZone={(z) => {
+          setActiveZone(z);
+          setOpenBuildingZone(z);
+          if (isVoiceEnabled) {
+            voiceNarrator.playClip(z, language);
+          }
+        }}
+      >
+        {openBuildingZone === 'arcade' && (
+          <PlaygroundGamesZone onOpenCard={handleOpenCard} language={language} />
+        )}
+        {openBuildingZone === 'projects' && <AIProjectsLabZone language={language} />}
+        {openBuildingZone === 'vault' && (
+          <VideoVaultZone
+            onOpenCard={handleOpenCard}
+            onOpenEasterEgg={handleOpenEasterEgg}
+            language={language}
+          />
+        )}
+        {openBuildingZone === 'academy' && (
+          <AcademyTowerZone onOpenCard={handleOpenCard} language={language} />
+        )}
+        {openBuildingZone === 'shipyard' && (
+          <AntiGravityShipyardZone language={language} onOpenEasterEgg={handleOpenEasterEgg} />
+        )}
+        {openBuildingZone === 'lounge' && <LoFiLoungeZone language={language} />}
+      </ZoneOverlayModal>
+
+      {/* Persistent Bottom Lo-Fi Audio Player Dock (hidden when 16:9 focus console is open) */}
+      {!openBuildingZone && <BottomAudioDock language={language} />}
+
+      {/* Fast Travel Dock (hidden while inside a building modal) */}
+      {!openBuildingZone && (
+        <FastTravelDock
+          activeZone={activeZone}
+          onSelectZone={(z) => handleSelectZone(z, true)}
           language={language}
         />
       )}
 
       {/* AI Assistant Drawer ("Ask AI about Hoang") */}
-      <AICompanionModal
-        currentZone={activeZone}
-        language={language}
-        isOpen={isAIDrawerOpen}
-        onClose={() => setIsAIDrawerOpen(false)}
-        onOpen={() => setIsAIDrawerOpen(true)}
-      />
+      {!openBuildingZone && (
+        <AICompanionModal
+          currentZone={activeZone}
+          language={language}
+          isOpen={isAIDrawerOpen}
+          onClose={() => setIsAIDrawerOpen(false)}
+          onOpen={() => setIsAIDrawerOpen(true)}
+        />
+      )}
 
       {/* Modal 1: Interactive Project / Work Card Preview */}
       {activeModalCard && (
@@ -263,39 +237,6 @@ export const App: React.FC = () => {
           language={language}
         />
       )}
-
-      {/* Back to Top Smooth Scroll */}
-      {showScrollTop && (
-        <button
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            sound.playBip(900, 0.05);
-          }}
-          className="fixed bottom-32 sm:bottom-24 right-4 sm:right-6 z-30 p-2.5 rounded-full bg-[#131B2E] border border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] hover:border-[#8B5CF6] shadow-xl transition-all active:scale-95"
-          title="Scroll to Top"
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="w-4 h-4" />
-        </button>
-      )}
-
-      {/* Editorial Clean Footer */}
-      <footer className="relative z-10 py-8 border-t border-[#1E293B] bg-[#090D16] text-xs text-[#94A3B8]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            © {new Date().getFullYear()} Hoang Cao Minh. Video Editor · News Editor · AI Content Creator.
-          </div>
-          <div className="flex items-center gap-2 text-[11px]">
-            <span>Hanoi, Vietnam</span>
-            <span aria-hidden="true">·</span>
-            <a href="mailto:hoangcaominh27@gmail.com" className="hover:text-[#F8FAFC] transition-colors">
-              hoangcaominh27@gmail.com
-            </a>
-            <span aria-hidden="true">·</span>
-            <span className="text-[#8B5CF6]">Deployed on Vercel</span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -1,30 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { PerformanceTier, GameZoneId } from '../../types/game';
 import { GAME_ZONES } from '../../constants/gameData';
 import { sound } from '../../constants/soundEffects';
-import { Volume2, VolumeX, BookOpen, Gamepad2, Sparkles, Menu, X } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles, Menu, X, AudioLines } from 'lucide-react';
 
 interface TopNavBarProps {
-  viewMode: 'reader' | 'game';
-  onSetViewMode: (mode: 'reader' | 'game') => void;
   performanceTier: PerformanceTier;
   onSetTier: (tier: PerformanceTier) => void;
   language: 'en' | 'vi';
   onSetLanguage: (lang: 'en' | 'vi') => void;
   isMuted: boolean;
   onToggleMute: () => void;
+  isVoiceEnabled?: boolean;
+  isVoiceSpeaking?: boolean;
+  onToggleVoice?: () => void;
   activeZone: GameZoneId;
-  onSelectZone?: (zone: GameZoneId) => void;
+  onSelectZone?: (zone: GameZoneId, shouldOpen?: boolean) => void;
   onOpenAIDrawer?: () => void;
 }
 
 export const TopNavBar: React.FC<TopNavBarProps> = ({
-  viewMode,
-  onSetViewMode,
   language,
   onSetLanguage,
   isMuted,
   onToggleMute,
+  isVoiceEnabled = true,
+  isVoiceSpeaking = false,
+  onToggleVoice,
   activeZone,
   onSelectZone,
   onOpenAIDrawer
@@ -36,44 +38,57 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
     id: string;
     labelEn: string;
     labelVi: string;
-    zoneId?: GameZoneId;
+    zoneId: GameZoneId;
   }[] = [
-    { id: 'about', labelEn: 'About', labelVi: 'Giới thiệu' },
-    { id: 'featured-works', labelEn: 'Featured Works', labelVi: 'Dự án nổi bật', zoneId: 'vault' },
-    { id: 'experience', labelEn: 'Career & Milestones', labelVi: 'Sự nghiệp & Cột mốc', zoneId: 'academy' },
-    { id: 'superpowers', labelEn: 'Technical Superpowers', labelVi: 'Năng lực cốt lõi', zoneId: 'arcade' },
-    { id: 'contact', labelEn: 'Contact', labelVi: 'Liên hệ', zoneId: 'lounge' }
+    { id: 'arcade', labelEn: 'AI Games', labelVi: 'Game AI', zoneId: 'arcade' },
+    { id: 'projects', labelEn: 'AI Projects', labelVi: 'Dự án AI', zoneId: 'projects' },
+    { id: 'vault', labelEn: 'YouTube Cinema', labelVi: 'Rạp YouTube', zoneId: 'vault' },
+    { id: 'academy', labelEn: 'Career & Certs', labelVi: 'Sự nghiệp & Chứng chỉ', zoneId: 'academy' },
+    { id: 'shipyard', labelEn: 'AI Workflows', labelVi: 'Quy Trình AI', zoneId: 'shipyard' },
+    { id: 'lounge', labelEn: 'Lo-Fi & Contact', labelVi: 'Lo-Fi & Liên hệ', zoneId: 'lounge' }
   ];
+
+  const [cycleIdx, setCycleIdx] = useState<number>(() => {
+    const idx = navItems.findIndex((item) => item.zoneId === activeZone);
+    return idx >= 0 ? idx : 0;
+  });
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [isNavHovered, setIsNavHovered] = useState<boolean>(false);
+  const [underlineStyle, setUnderlineStyle] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  useEffect(() => {
+    const idx = navItems.findIndex((item) => item.zoneId === activeZone);
+    if (idx >= 0) setCycleIdx(idx);
+  }, [activeZone]);
+
+  useEffect(() => {
+    if (isNavHovered) return;
+    const timer = setInterval(() => {
+      setCycleIdx((prev) => (prev + 1) % navItems.length);
+    }, 2600);
+    return () => clearInterval(timer);
+  }, [isNavHovered, navItems.length]);
+
+  const displayIdx = hoveredIdx !== null ? hoveredIdx : cycleIdx;
+
+  useEffect(() => {
+    const updateUnderline = () => {
+      const btn = buttonRefs.current[displayIdx];
+      if (btn) {
+        setUnderlineStyle({ left: btn.offsetLeft, width: btn.offsetWidth });
+      }
+    };
+    updateUnderline();
+    window.addEventListener('resize', updateUnderline);
+    return () => window.removeEventListener('resize', updateUnderline);
+  }, [displayIdx, language]);
 
   const handleNavClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
     e.preventDefault();
     sound.playBip(740, 0.04);
     setMobileMenuOpen(false);
-
-    if (viewMode === 'game') {
-      if (item.zoneId) {
-        onSelectZone?.(item.zoneId);
-        setTimeout(() => {
-          const zoneEl = document.getElementById('active-zone-view');
-          if (zoneEl) {
-            zoneEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 80);
-      } else {
-        onSetViewMode('reader');
-        setTimeout(() => {
-          const el = document.getElementById('about');
-          if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 120);
-      }
-    } else {
-      const el = document.getElementById(item.id);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
+    onSelectZone?.(item.zoneId, true);
   };
 
   return (
@@ -92,71 +107,70 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
             {language === 'vi' ? 'CAO MINH HOÀNG' : 'HOANG CAO MINH'}
           </a>
 
-          {viewMode === 'game' && (
-            <span className="hidden xl:inline text-xs font-mono text-[#94A3B8] border-l border-[#1E293B] pl-3">
-              {language === 'en' ? currentZoneConfig.titleEn : currentZoneConfig.titleVi}
-            </span>
-          )}
+          <span className="hidden xl:inline text-xs font-mono text-[#94A3B8] border-l border-[#1E293B] pl-3">
+            {language === 'en' ? currentZoneConfig.titleEn : currentZoneConfig.titleVi}
+          </span>
         </div>
 
-        {/* Zone 2: Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-5 xl:gap-6 text-xs font-medium text-[#94A3B8]">
-          {navItems.map((item) => {
-            const isCurrent = viewMode === 'game' && item.zoneId === activeZone;
+        {/* Zone 2: Navigation Links (Desktop) with Sliding White Auto-Cycle Underline */}
+        <nav
+          onMouseEnter={() => setIsNavHovered(true)}
+          onMouseLeave={() => {
+            setIsNavHovered(false);
+            setHoveredIdx(null);
+          }}
+          className="relative hidden lg:flex items-center gap-4 xl:gap-5 text-xs font-medium text-[#94A3B8]"
+        >
+          {navItems.map((item, idx) => {
+            const isHighlighted = idx === displayIdx;
 
             return (
               <button
                 key={item.id}
+                ref={(el) => {
+                  buttonRefs.current[idx] = el;
+                }}
+                onMouseEnter={() => setHoveredIdx(idx)}
                 onClick={(e) => handleNavClick(e, item)}
-                className={`transition-colors whitespace-nowrap py-1 relative cursor-pointer ${
-                  isCurrent
-                    ? 'text-[#8B5CF6] font-semibold'
+                className={`relative whitespace-nowrap py-1.5 cursor-pointer transition-colors duration-300 ${
+                  isHighlighted
+                    ? 'text-white font-semibold'
                     : 'text-[#94A3B8] hover:text-[#F8FAFC]'
                 }`}
               >
                 <span>{language === 'en' ? item.labelEn : item.labelVi}</span>
-                {isCurrent && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#8B5CF6] rounded-full" />
-                )}
               </button>
             );
           })}
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute bottom-0 h-[2px] rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.85)] transition-all duration-500 ease-out"
+            style={{ left: underlineStyle.left, width: underlineStyle.width }}
+          />
         </nav>
 
-        {/* Zone 3: Mode Switcher & Primary Actions */}
+        {/* Zone 3: Primary Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-          {/* Reader vs 2.5D Game Mode Toggle */}
-          <div className="flex items-center bg-[#131B2E] border border-[#1E293B] rounded-xl p-0.5 sm:p-1">
-            <button
-              onClick={() => {
-                onSetViewMode('reader');
-                sound.playBip(700, 0.04);
-              }}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
-                viewMode === 'reader'
-                  ? 'bg-[#8B5CF6] text-white shadow-sm font-semibold'
-                  : 'text-[#94A3B8] hover:text-[#F8FAFC]'
-              }`}
-            >
-              <BookOpen className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span className="whitespace-nowrap">{language === 'en' ? 'Reader' : 'Bài đọc'}</span>
-            </button>
 
+          {/* Edge TTS Voice Guide Button */}
+          {onToggleVoice && (
             <button
-              onClick={() => {
-                onSetViewMode('game');
-                sound.playTeleport();
-              }}
-              className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
-                viewMode === 'game'
-                  ? 'bg-[#8B5CF6] text-white shadow-sm font-semibold'
-                  : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+              type="button"
+              onClick={onToggleVoice}
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1 sm:py-1.5 rounded-xl border text-xs font-medium transition-colors ${
+                isVoiceEnabled
+                  ? 'bg-[#8B5CF6]/15 border-[#8B5CF6]/50 text-[#F8FAFC] hover:bg-[#8B5CF6]/25'
+                  : 'bg-[#131B2E] border-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC]'
               }`}
+              title={language === 'en' ? 'Edge TTS Neural Voice Guide' : 'Thuyết minh giọng nói Edge TTS'}
             >
-              <Gamepad2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span className="whitespace-nowrap">{language === 'en' ? '2.5D Game' : 'Chơi Game'}</span>
+              <AudioLines className={`w-3.5 h-3.5 ${isVoiceSpeaking ? 'text-[#34D399] animate-pulse' : isVoiceEnabled ? 'text-[#8B5CF6]' : 'text-[#94A3B8]'}`} />
+              <span className="whitespace-nowrap">
+                {language === 'en' ? (isVoiceSpeaking ? 'Speaking' : 'Voice') : (isVoiceSpeaking ? 'Đang đọc' : 'Giọng đọc')}
+              </span>
             </button>
-          </div>
+          )}
 
           {/* Ask AI Button (Desktop / Tablet) */}
           {onOpenAIDrawer && (
@@ -233,7 +247,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
 
           <div className="grid grid-cols-1 gap-1">
             {navItems.map((item) => {
-              const isCurrent = viewMode === 'game' && item.zoneId === activeZone;
+              const isCurrent = item.zoneId === activeZone;
 
               return (
                 <button
@@ -247,9 +261,7 @@ export const TopNavBar: React.FC<TopNavBarProps> = ({
                 >
                   <span>{language === 'en' ? item.labelEn : item.labelVi}</span>
                   <span className="text-[10px] opacity-70">
-                    {viewMode === 'game'
-                      ? (language === 'en' ? 'GOTO STATION ›' : 'ĐẾN TRẠM ›')
-                      : (language === 'en' ? 'SECTION ›' : 'MỤC ›')}
+                    {language === 'en' ? 'ENTER BUILDING ›' : 'VÀO TRẠM ›'}
                   </span>
                 </button>
               );

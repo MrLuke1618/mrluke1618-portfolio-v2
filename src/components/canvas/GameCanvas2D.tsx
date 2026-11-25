@@ -3,7 +3,17 @@ import { GameZoneId } from '../../types/game';
 import { GAME_ZONES } from '../../constants/gameData';
 import { sound } from '../../constants/soundEffects';
 import { lofiAudioEngine } from '../../utils/lofiAudioEngine';
-import { Video, Gamepad2, GraduationCap, Headphones, Crosshair, Orbit, Zap } from 'lucide-react';
+import { Crosshair, Zap, Sparkles } from 'lucide-react';
+import { drawStickman, drawSpeechBubble, drawZoneMonument } from '../../engine/stickmanRenderer';
+
+const SKILL_ORBS: { id: string; labelEn: string; labelVi: string; wx: number; wy: number; color: string }[] = [
+  { id: 'ai-games', labelEn: 'AI Game Direction', labelVi: 'Đạo diễn Game AI', wx: -72, wy: -57, color: '#F59E0B' },
+  { id: 'gemini', labelEn: 'Gemini Multimodal AI', labelVi: 'Gemini Đa Phương Thức', wx: 72, wy: -57, color: '#14B8A6' },
+  { id: 'hyperframes', labelEn: 'Hyperframes Video Pipeline', labelVi: 'Pipeline Video Hyperframes', wx: -98, wy: 15, color: '#F43F5E' },
+  { id: 'react-ts', labelEn: 'React 19 & TypeScript', labelVi: 'React 19 & TypeScript', wx: 98, wy: 15, color: '#10B981' },
+  { id: 'cloudflare', labelEn: 'Cloudflare CI/CD', labelVi: 'Triển khai Cloudflare', wx: -57, wy: 87, color: '#38BDF8' },
+  { id: 'webgl-canvas', labelEn: 'WebGL & Procedural Audio', labelVi: 'WebGL & Âm Thanh Số', wx: 57, wy: 87, color: '#A855F7' },
+];
 
 interface GameCanvas2DProps {
   activeZone: GameZoneId;
@@ -32,13 +42,14 @@ interface StarParticle {
   alpha: number;
 }
 
-// Star System Coordinates: Core Sector + Distant Orbital Planets Alpha & Beta
+// Hexagonal 6-Building Living World Coordinates around NEXUS CORE (0, 0)
 const ZONE_WORLD_COORDS: Record<GameZoneId, { wx: number; wy: number }> = {
-  vault: { wx: -60, wy: -40 },     // Core Sector NW: Motion & Video Suite
-  arcade: { wx: 165, wy: 0 },      // Distant Planet Beta: 10-Game Retro Arcade Planet
-  academy: { wx: -60, wy: 50 },    // Core Sector SW: Career & Education Tower
-  lounge: { wx: 50, wy: 50 },      // Core Sector SE: Lo-Fi Lounge & Contact Hub
-  shipyard: { wx: 0, wy: -175 }    // Distant Planet Alpha: AntiGravity Orbital Shipyard
+  arcade: { wx: -120, wy: -95 },   // NW: AI Games Arena
+  projects: { wx: 120, wy: -95 },  // NE: AI Projects Lab
+  vault: { wx: -165, wy: 25 },     // W: YouTube Cinema & Video Vault
+  academy: { wx: 165, wy: 25 },    // E: Career & Certificates Tower
+  shipyard: { wx: -95, wy: 145 },  // SW: AntiGravity & Code Shipyard
+  lounge: { wx: 95, wy: 145 }      // SE: Lo-Fi Lounge & Contact Cafe
 };
 
 export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
@@ -50,10 +61,10 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const joystickBaseRef = useRef<HTMLDivElement>(null);
 
-  // Avatar physics state in World Coordinates
+  // Avatar physics state in World Coordinates (spawn in Central Nexus Plaza)
   const playerRef = useRef<{ wx: number; wy: number; vx: number; vy: number; angle: number }>({
-    wx: -60,
-    wy: -60,
+    wx: 0,
+    wy: 14,
     vx: 0,
     vy: 0,
     angle: 0
@@ -62,8 +73,8 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   const targetRef = useRef<WorldPoint | null>(null);
   const trailRef = useRef<TrailPoint[]>([]);
   const cameraRef = useRef<{ cx: number; cy: number; zoom: number; targetZoom: number }>({
-    cx: -60,
-    cy: -60,
+    cx: 0,
+    cy: 14,
     zoom: 1.0,
     targetZoom: 1.0
   });
@@ -76,7 +87,11 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   });
 
   const keysPressed = useRef<{ [key: string]: boolean }>({});
-  const [nearZone, setNearZone] = useState<GameZoneId | null>('vault');
+  const walkPhaseRef = useRef<number>(0);
+  const [collectedOrbs, setCollectedOrbs] = useState<string[]>([]);
+  const collectedOrbsRef = useRef<string[]>([]);
+  collectedOrbsRef.current = collectedOrbs;
+  const [nearZone, setNearZone] = useState<GameZoneId | null>(null);
   const [travelMessage, setTravelMessage] = useState<string>('');
   const [isWarpingUi, setIsWarpingUi] = useState<boolean>(false);
 
@@ -145,8 +160,14 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
     }
   }, [language]);
 
-  // Sync when activeZone is selected from external docks
+  const hasMountedRef = useRef<boolean>(false);
+
+  // Sync when activeZone is selected from external docks (skip initial mount so Explorer spawns at NEXUS CORE)
   useEffect(() => {
+    if (!hasMountedRef.current) {
+      hasMountedRef.current = true;
+      return;
+    }
     const coords = ZONE_WORLD_COORDS[activeZone];
     if (coords) {
       triggerWarpJump(coords.wx, coords.wy, activeZone);
@@ -293,9 +314,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
     const world = unprojectIso(isoOffsetX, isoOffsetY);
 
-    // Clamp to map bounds (covers deep space northern & eastern sectors)
-    const clampedWx = Math.max(-140, Math.min(210, world.wx));
-    const clampedWy = Math.max(-220, Math.min(140, world.wy));
+    // Clamp to spacious 6-building overworld bounds
+    const clampedWx = Math.max(-225, Math.min(225, world.wx));
+    const clampedWy = Math.max(-155, Math.min(200, world.wy));
 
     // Check if clicked close to a station footprint
     let targetZone: GameZoneId | null = null;
@@ -458,20 +479,38 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         player.vy *= Math.pow(0.005, dt);
       }
 
-      // Update Player World Position with EXPANDED star system boundary
-      player.wx = Math.max(-140, Math.min(210, player.wx + player.vx * dt));
-      player.wy = Math.max(-220, Math.min(140, player.wy + player.vy * dt));
+      // Update Player World Position within 6-building overworld
+      player.wx = Math.max(-225, Math.min(225, player.wx + player.vx * dt));
+      player.wy = Math.max(-155, Math.min(200, player.wy + player.vy * dt));
 
       const isMoving = Math.hypot(player.vx, player.vy) > 1.0;
 
       if (isMoving) {
         player.angle = Math.atan2(player.vy, player.vx);
+        walkPhaseRef.current += dt * (Math.hypot(player.vx, player.vy) / 7.5);
         // Add trail point
         trailRef.current.push({
           wx: player.wx,
           wy: player.wy,
           time: currentTime
         });
+      }
+
+      // Check Skill Orb collection
+      for (const orb of SKILL_ORBS) {
+        if (collectedOrbsRef.current.includes(orb.id)) continue;
+        if (Math.hypot(player.wx - orb.wx, player.wy - orb.wy) <= 16) {
+          const next = [...collectedOrbsRef.current, orb.id];
+          collectedOrbsRef.current = next;
+          setCollectedOrbs(next);
+          sound.playLevelUp();
+          setTravelMessage(
+            language === 'en'
+              ? `+100 XP • Discovered: ${orb.labelEn}`
+              : `+100 XP • Đã khám phá: ${orb.labelVi}`
+          );
+          window.setTimeout(() => setTravelMessage(''), 2400);
+        }
       }
 
       // Exact 1.0-Second Dash Decay: Filter points older than 1000ms
@@ -658,89 +697,45 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       ctx.restore();
 
       // ------------------------------------------------------------------------
-      // RENDER PASS 4: Glowing Flight Corridors to Distant Planets Alpha & Beta
+      // RENDER PASS 4 & 5: 6 Radial Energy Conduits & Live Data Packets
       // ------------------------------------------------------------------------
-      ctx.save();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(139, 92, 246, 0.35)';
-      ctx.setLineDash([8, 8]);
-
-      // Hyperlane 1: Nexus to Distant Planet Alpha (Shipyard at 0, -175)
       const nexusScreen = toScreen(0, 0);
-      ctx.beginPath();
-      ctx.moveTo(nexusScreen.x, nexusScreen.y);
-      ctx.lineTo(shipyardScreen.x, shipyardScreen.y);
-      ctx.stroke();
-
-      // Hyperlane 2: Nexus to Distant Planet Beta (Arcade at 165, 0)
-      const arcadeCoords = ZONE_WORLD_COORDS.arcade;
-      const arcadeScreen = toScreen(arcadeCoords.wx, arcadeCoords.wy);
-      ctx.beginPath();
-      ctx.moveTo(nexusScreen.x, nexusScreen.y);
-      ctx.lineTo(arcadeScreen.x, arcadeScreen.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // Flight corridor beacon markers along Planet Alpha highway
-      for (let t = 0.25; t <= 0.75; t += 0.25) {
-        const beaconWx = 0 * (1 - t) + shipyardCoords.wx * t;
-        const beaconWy = 0 * (1 - t) + shipyardCoords.wy * t;
-        const bScreen = toScreen(beaconWx, beaconWy);
-        ctx.beginPath();
-        ctx.arc(bScreen.x, bScreen.y, 3 * camera.zoom, 0, Math.PI * 2);
-        ctx.fillStyle = '#8B5CF6';
-        ctx.shadowColor = '#8B5CF6';
-        ctx.shadowBlur = 6;
-        ctx.fill();
-      }
-
-      // Flight corridor beacon markers along Planet Beta highway
-      for (let t = 0.25; t <= 0.75; t += 0.25) {
-        const beaconWx = 0 * (1 - t) + arcadeCoords.wx * t;
-        const beaconWy = 0 * (1 - t) + arcadeCoords.wy * t;
-        const bScreen = toScreen(beaconWx, beaconWy);
-        ctx.beginPath();
-        ctx.arc(bScreen.x, bScreen.y, 3 * camera.zoom, 0, Math.PI * 2);
-        ctx.fillStyle = '#8B5CF6';
-        ctx.shadowColor = '#8B5CF6';
-        ctx.shadowBlur = 6;
-        ctx.fill();
-      }
-      ctx.restore();
-
-      // ------------------------------------------------------------------------
-      // RENDER PASS 5: Core Sector Circuit Triangle Connections
-      // ------------------------------------------------------------------------
       ctx.save();
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(139, 92, 246, 0.25)';
-      ctx.setLineDash([6, 6]);
+      for (let zi = 0; zi < GAME_ZONES.length; zi++) {
+        const z = GAME_ZONES[zi];
+        const coords = ZONE_WORLD_COORDS[z.id];
+        const zScreen = toScreen(coords.wx, coords.wy);
+        const accent = z.glowColor || '#8B5CF6';
 
-      const connections: [GameZoneId, GameZoneId][] = [
-        ['vault', 'academy'],
-        ['academy', 'lounge'],
-        ['lounge', 'vault']
-      ];
-
-      for (const [z1, z2] of connections) {
-        const c1 = ZONE_WORLD_COORDS[z1];
-        const c2 = ZONE_WORLD_COORDS[z2];
-        const s1 = toScreen(c1.wx, c1.wy);
-        const s2 = toScreen(c2.wx, c2.wy);
-
+        ctx.strokeStyle = `${accent}44`;
+        ctx.lineWidth = 1.6;
+        ctx.setLineDash([7, 7]);
         ctx.beginPath();
-        ctx.moveTo(s1.x, s1.y);
-        ctx.lineTo(s2.x, s2.y);
+        ctx.moveTo(nexusScreen.x, nexusScreen.y);
+        ctx.lineTo(zScreen.x, zScreen.y);
         ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Animated glowing data packet traveling along each conduit
+        const pulseT = ((currentTime * 0.00038 + zi * 0.17) % 1);
+        const px = coords.wx * pulseT;
+        const py = coords.wy * pulseT;
+        const pScreen = toScreen(px, py, 3);
+        ctx.fillStyle = accent;
+        ctx.shadowColor = accent;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(pScreen.x, pScreen.y, 3.2 * camera.zoom, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
       }
-      ctx.setLineDash([]);
       ctx.restore();
 
       // Central Nexus Core
-      drawIsoDiamond(0, 0, 16, 0, 'rgba(139, 92, 246, 0.08)', '#8B5CF6', 1.5);
+      drawIsoDiamond(0, 0, 18, 0, 'rgba(229, 169, 60, 0.09)', '#E5A93C', 1.6);
       ctx.save();
-      ctx.font = '9px monospace';
-      ctx.fillStyle = '#94A3B8';
+      ctx.font = 'bold 10px monospace';
+      ctx.fillStyle = '#E5A93C';
       ctx.textAlign = 'center';
       ctx.fillText('NEXUS CORE', nexusScreen.x, nexusScreen.y + 4);
       ctx.restore();
@@ -750,6 +745,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       // ------------------------------------------------------------------------
       for (const zone of GAME_ZONES) {
         const coords = ZONE_WORLD_COORDS[zone.id];
+        const accent = zone.glowColor || '#8B5CF6';
         const isHovered = nearZone === zone.id;
         const isPlanetAlpha = zone.id === 'shipyard';
         const isPlanetBeta = zone.id === 'arcade';
@@ -767,21 +763,13 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           baseRadius - 1,
           4,
           'rgba(19, 27, 46, 0.9)',
-          'rgba(30, 41, 59, 0.8)',
+          `${accent}55`,
           1
         );
 
         // Raised Glassmorphic Tier
-        const plinthFill = isHovered
-          ? 'rgba(139, 92, 246, 0.24)'
-          : isDistantPlanet
-          ? 'rgba(19, 27, 46, 0.95)'
-          : 'rgba(19, 27, 46, 0.85)';
-        const plinthBorder = isHovered
-          ? '#8B5CF6'
-          : isDistantPlanet
-          ? 'rgba(139, 92, 246, 0.65)'
-          : 'rgba(139, 92, 246, 0.4)';
+        const plinthFill = isHovered ? `${accent}40` : `${accent}18`;
+        const plinthBorder = isHovered ? accent : `${accent}88`;
 
         drawIsoDiamond(coords.wx, coords.wy, baseRadius - 3, 10, plinthFill, plinthBorder, isHovered ? 2 : 1);
 
@@ -790,7 +778,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         ctx.save();
         ctx.beginPath();
         ctx.arc(topScreen.x, topScreen.y, (isDistantPlanet ? 22 : 16) * camera.zoom * pulse, 0, Math.PI * 2);
-        ctx.strokeStyle = isHovered ? 'rgba(139, 92, 246, 0.85)' : 'rgba(139, 92, 246, 0.3)';
+        ctx.strokeStyle = isHovered ? `${accent}DD` : `${accent}55`;
         ctx.lineWidth = isHovered ? 2 : 1;
         ctx.stroke();
 
@@ -799,7 +787,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           const orbitAngle = currentTime * 0.002;
           ctx.beginPath();
           ctx.ellipse(topScreen.x, topScreen.y, 34 * camera.zoom, 14 * camera.zoom, orbitAngle, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(139, 92, 246, 0.5)';
+          ctx.strokeStyle = `${accent}88`;
           ctx.lineWidth = 1;
           ctx.stroke();
         }
@@ -809,7 +797,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           const orbitAngle = -currentTime * 0.0018;
           ctx.beginPath();
           ctx.ellipse(topScreen.x, topScreen.y, 36 * camera.zoom, 15 * camera.zoom, orbitAngle, 0, Math.PI * 2);
-          ctx.strokeStyle = 'rgba(139, 92, 246, 0.6)';
+          ctx.strokeStyle = `${accent}99`;
           ctx.lineWidth = 1.5;
           ctx.setLineDash([4, 4]);
           ctx.stroke();
@@ -818,7 +806,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
         // Corner HUD Brackets
         const bracketSize = (isDistantPlanet ? 18 : 14) * camera.zoom;
-        ctx.strokeStyle = isHovered ? '#8B5CF6' : '#94A3B8';
+        ctx.strokeStyle = isHovered ? accent : `${accent}AA`;
         ctx.lineWidth = 1.5;
 
         // Top-left
@@ -851,7 +839,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
         // Station Typography Label
         ctx.font = isHovered ? 'bold 12px sans-serif' : '11px sans-serif';
-        ctx.fillStyle = isHovered ? '#F8FAFC' : '#94A3B8';
+        ctx.fillStyle = isHovered ? '#F8FAFC' : '#CBD5E1';
         ctx.textAlign = 'center';
         ctx.fillText(
           language === 'en' ? zone.titleEn : zone.titleVi,
@@ -863,9 +851,9 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
         if (isHovered) {
           ctx.save();
           const badgeY = topScreen.y - 36 * camera.zoom;
-          ctx.fillStyle = '#8B5CF6';
+          ctx.fillStyle = accent;
           ctx.font = 'bold 10px monospace';
-          ctx.shadowColor = '#8B5CF6';
+          ctx.shadowColor = accent;
           ctx.shadowBlur = 8;
           ctx.fillText(
             language === 'en' ? '▶ PRESS [E] OR CLICK TO DOCK' : '▶ NHẤN [E] HOẶC CLICK ĐỂ CẬP BẾN',
@@ -911,71 +899,72 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
       }
 
       // ------------------------------------------------------------------------
-      // RENDER PASS 8: Cyberpunk Nano-Drone Avatar
+      // RENDER PASS 7.5: Collectible Skill Orbs & 5 Animated NPC Zone Guides
       // ------------------------------------------------------------------------
-      const bobbing = Math.sin(currentTime * 0.006) * 3;
-      const droneScreen = toScreen(player.wx, player.wy, 14 + bobbing);
-      const shadowScreen = toScreen(player.wx, player.wy, 0);
-
-      ctx.save();
-      // Drop Shadow on Floor Grid
-      ctx.beginPath();
-      ctx.ellipse(
-        shadowScreen.x,
-        shadowScreen.y,
-        12 * camera.zoom,
-        6 * camera.zoom,
-        0,
-        0,
-        Math.PI * 2
-      );
-      ctx.fillStyle = 'rgba(9, 13, 22, 0.65)';
-      ctx.fill();
-
-      // Drone Sprite (Vector Illustration)
-      ctx.translate(droneScreen.x, droneScreen.y);
-
-      // Thruster Exhaust Flare (Electric Violet)
-      if (isMoving || isWarping) {
+      const tSec = currentTime * 0.001;
+      for (const orb of SKILL_ORBS) {
+        if (collectedOrbsRef.current.includes(orb.id)) continue;
+        const bob = Math.sin(tSec * 3.5 + orb.wx * 0.1) * 3;
+        const orbPos = toScreen(orb.wx, orb.wy, 10 + bob);
+        ctx.save();
+        ctx.fillStyle = orb.color;
+        ctx.shadowColor = orb.color;
+        ctx.shadowBlur = 12;
         ctx.beginPath();
-        ctx.arc(0, 8, (isWarping ? 10 : 4) + Math.random() * 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#8B5CF6';
-        ctx.shadowColor = '#8B5CF6';
-        ctx.shadowBlur = isWarping ? 20 : 12;
+        ctx.arc(orbPos.x, orbPos.y, 6.5 * camera.zoom, 0, Math.PI * 2);
         ctx.fill();
+        ctx.strokeStyle = '#F8FAFC';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+        ctx.font = '600 10px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#E2E8F0';
+        ctx.textAlign = 'center';
+        ctx.fillText(language === 'en' ? orb.labelEn : orb.labelVi, orbPos.x, orbPos.y + 15 * camera.zoom);
+        ctx.restore();
       }
 
-      // Drone Outer Ring / Hexagon Shell
-      ctx.beginPath();
-      const droneRadius = 11 * camera.zoom;
-      for (let i = 0; i < 6; i++) {
-        const a = (i * Math.PI) / 3;
-        const x = Math.cos(a) * droneRadius;
-        const y = Math.sin(a) * (droneRadius * 0.7);
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      for (const zone of GAME_ZONES) {
+        const coords = ZONE_WORLD_COORDS[zone.id];
+        const monumentPos = toScreen(coords.wx, coords.wy, 10);
+        drawZoneMonument(ctx, {
+          x: monumentPos.x,
+          y: monumentPos.y,
+          zoneId: zone.id,
+          accent: zone.glowColor || '#8B5CF6',
+          scale: Math.max(0.8, camera.zoom * 0.95),
+          time: tSec,
+        });
+        if (nearZone === zone.id) {
+          drawSpeechBubble(
+            ctx,
+            monumentPos.x,
+            monumentPos.y,
+            language === 'en' ? zone.subtitleEn : zone.subtitleVi,
+            zone.glowColor || '#8B5CF6'
+          );
+        }
       }
-      ctx.closePath();
-      ctx.fillStyle = '#131B2E';
-      ctx.fill();
-      ctx.strokeStyle = '#8B5CF6';
-      ctx.lineWidth = 2;
-      ctx.stroke();
 
-      // Inner Luminous Core
-      ctx.beginPath();
-      ctx.arc(0, 0, 4 * camera.zoom, 0, Math.PI * 2);
-      ctx.fillStyle = '#F8FAFC';
-      ctx.shadowColor = '#8B5CF6';
-      ctx.shadowBlur = 10;
-      ctx.fill();
+      // ------------------------------------------------------------------------
+      // RENDER PASS 8: Animated Stickman Explorer Avatar
+      // ------------------------------------------------------------------------
+      const playerScreen = toScreen(player.wx, player.wy, 0);
+      const speedVal = Math.hypot(player.vx, player.vy);
+      const playerSpeedRatio = isWarping ? 1 : Math.min(1, speedVal / 140);
+      const playerFacing = Math.cos(player.angle) >= 0 ? 1 : -1;
 
-      // Thruster Wing Fins
-      ctx.fillStyle = '#94A3B8';
-      ctx.fillRect(-droneRadius - 2, -2, 3, 4);
-      ctx.fillRect(droneRadius - 1, -2, 3, 4);
-
-      ctx.restore();
+      drawStickman(ctx, {
+        x: playerScreen.x,
+        y: playerScreen.y,
+        facing: playerFacing,
+        walkPhase: walkPhaseRef.current,
+        speedRatio: playerSpeedRatio,
+        accent: '#E5A93C',
+        scale: Math.max(0.85, camera.zoom * 0.95),
+        label: language === 'en' ? 'Explorer (You)' : 'Bạn',
+        time: tSec,
+      });
 
       animId = requestAnimationFrame(loop);
     };
@@ -991,7 +980,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[360px] sm:h-[460px] md:h-[540px] lg:h-[620px] rounded-2xl overflow-hidden border border-[#1E293B] bg-[#090D16] select-none touch-none"
+      className="relative w-full h-[calc(100vh-56px)] bg-[#090D16] select-none touch-none overflow-hidden"
     >
       {/* Interactive 2.5D Star System Canvas */}
       <canvas
@@ -1004,15 +993,16 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
       {/* Top HUD Overlay: Controls & Warp Status */}
       <div className="absolute top-2 sm:top-4 left-2 right-2 sm:left-4 sm:right-4 flex flex-wrap items-center justify-between pointer-events-none gap-2 z-30">
-        <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-[11px] sm:text-xs font-mono text-[#F8FAFC]">
-          <Crosshair className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
-          {controlMode === 'touch' ? (
-            <span>
-              {language === 'en'
-                ? 'TOUCH FLIGHT: DRAG JOYSTICK TO FLY'
-                : 'ĐIỀU KHIỂN CHẠM: KÉO CẦN ĐỂ BAY'}
-            </span>
-          ) : (
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#1E293B] backdrop-blur text-[11px] sm:text-xs font-mono text-[#F8FAFC]">
+            <Crosshair className="w-3.5 h-3.5 text-[#8B5CF6] shrink-0" />
+            {controlMode === 'touch' ? (
+              <span>
+                {language === 'en'
+                  ? 'TOUCH FLIGHT: DRAG JOYSTICK TO FLY'
+                  : 'ĐIỀU KHIỂN CHẠM: KÉO CẦN ĐỂ BAY'}
+              </span>
+            ) : (
             <span className="hidden sm:inline">
               {language === 'en'
                 ? 'BROWSER MODE: WASD / ARROWS TO FLY · [E] ENTER'
@@ -1024,6 +1014,15 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
               {language === 'en' ? 'WASD / ARROWS' : 'PHÍM WASD'}
             </span>
           )}
+          </div>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 sm:py-1.5 rounded-lg bg-[#131B2E]/90 border border-[#E5A93C]/40 backdrop-blur text-[11px] sm:text-xs font-mono text-[#E5A93C]">
+            <Sparkles className="w-3.5 h-3.5 shrink-0" />
+            <span>
+              {language === 'en'
+                ? `Skills ${collectedOrbs.length}/${SKILL_ORBS.length} · ${collectedOrbs.length * 100} XP`
+                : `Kỹ năng ${collectedOrbs.length}/${SKILL_ORBS.length} · ${collectedOrbs.length * 100} XP`}
+            </span>
+          </div>
         </div>
 
         {/* Controls Switcher Badge (Auto-Detected with Manual Override) */}
@@ -1085,7 +1084,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
 
       {/* MOBILE / TABLET TOUCH CONTROL DECK (Virtual Analog Joystick + Action Button) */}
       {controlMode === 'touch' && (
-        <div className="absolute inset-x-0 bottom-14 sm:bottom-16 px-4 flex items-end justify-between pointer-events-none z-20">
+        <div className="absolute bottom-20 sm:bottom-6 left-1/2 sm:left-[56%] xl:left-1/2 -translate-x-1/2 z-30 flex items-center justify-center gap-14 sm:gap-20 pointer-events-none">
           {/* Left Virtual Analog Joystick */}
           <div
             ref={joystickBaseRef}
@@ -1094,7 +1093,7 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
             onTouchEnd={handleJoystickTouchEnd}
             onTouchCancel={handleJoystickTouchEnd}
             onMouseDown={handleJoystickMouseDown}
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#8B5CF6]/60 bg-[#131B2E]/85 backdrop-blur-md relative flex items-center justify-center shadow-2xl shadow-violet-500/25 pointer-events-auto touch-none select-none active:border-[#8B5CF6]"
+            className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-[#8B5CF6]/60 bg-[#131B2E]/85 backdrop-blur-md flex items-center justify-center shadow-2xl shadow-violet-500/25 pointer-events-auto touch-none select-none active:border-[#8B5CF6]"
             aria-label="Flight Joystick"
           >
             {/* Crosshair guide lines */}
@@ -1141,42 +1140,6 @@ export const GameCanvas2D: React.FC<GameCanvas2DProps> = ({
           </button>
         </div>
       )}
-
-      {/* Bottom Fast-Travel Star System Bar */}
-      <div className="absolute bottom-2 sm:bottom-3 left-2 right-2 sm:left-4 sm:right-4 flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto scrollbar-none pointer-events-auto py-1 z-10">
-        {GAME_ZONES.map((zone) => {
-          const isCurrent = activeZone === zone.id;
-          const isClose = nearZone === zone.id;
-          const isShipyard = zone.id === 'shipyard';
-
-          return (
-            <button
-              key={zone.id}
-              onClick={() => {
-                const coords = ZONE_WORLD_COORDS[zone.id];
-                triggerWarpJump(coords.wx, coords.wy, zone.id);
-                onSelectZone(zone.id, true);
-              }}
-              className={`shrink-0 flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl text-[11px] sm:text-xs font-medium transition-all ${
-                isCurrent || isClose
-                  ? 'bg-[#8B5CF6] text-white shadow-lg shadow-violet-500/20 border border-violet-400'
-                  : isShipyard
-                  ? 'bg-[#090D16]/90 text-[#8B5CF6] hover:bg-[#1E293B] border border-[#8B5CF6]/40'
-                  : 'bg-[#131B2E]/90 text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B] border border-[#1E293B]'
-              }`}
-            >
-              {zone.id === 'vault' && <Video className="w-3.5 h-3.5" />}
-              {zone.id === 'arcade' && <Gamepad2 className="w-3.5 h-3.5" />}
-              {zone.id === 'academy' && <GraduationCap className="w-3.5 h-3.5" />}
-              {zone.id === 'lounge' && <Headphones className="w-3.5 h-3.5" />}
-              {zone.id === 'shipyard' && <Orbit className="w-3.5 h-3.5 text-violet-300" />}
-              <span className="whitespace-nowrap">
-                {language === 'en' ? zone.titleEn : zone.titleVi}
-              </span>
-            </button>
-          );
-        })}
-      </div>
     </div>
   );
 };

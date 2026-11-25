@@ -1,0 +1,68 @@
+[
+  {
+    "id": "dcu-msc",
+    "titleEn": "MSc / Master's Degree (Honours — Grade 1)",
+    "titleVi": "Bằng Thạc sĩ Loại Giỏi (Honours — Grade 1)",
+    "issuer": "Dublin City University (DCU)",
+    "date": "2023",
+    "category": "Academic",
+    "highlightEn": "Graduated with First-Class Honours; Visual Design Module & WebGL interactive narrative thesis.",
+    "highlightVi": "Tốt nghiệp Loại Giỏi; Modul Thiết kế Thị giác & Luận văn WebGL tương tác.",
+    "verifyUrl": "https://drive.google.com/drive/folders/1ongFDTY1WamiKPnmdiLkW2Q-zz_6jQuv"
+  },
+  {
+    "id": "ielts-academic",
+    "titleEn": "IELTS 7.5 Official Certificate",
+    "titleVi": "Chứng chỉ IELTS 7.5 Chính Thức",
+    "issuer": "British Council / IDP",
+    "date": "Verified",
+    "category": "Language",
+    "highlightEn": "Official IELTS 7.5 certification supporting bilingual production and IELTS EdTech apps.",
+    "highlightVi": "Chứng chỉ IELTS 7.5 chính thức hỗ trợ sản xuất song ngữ và các ứng dụng luyện thi IELTS.",
+    "verifyUrl": "https://drive.google.com/file/d/11RWK0L2g-zs440j-dh8ig5RMIpG0KIWY/view?usp=sharing"
+  },
+  {
+    "id": "toeic-960",
+    "titleEn": "TOEIC 960 Official Certificate",
+    "titleVi": "Chứng chỉ TOEIC 960 Chính Thức",
+    "issuer": "ETS / IIG Vietnam",
+    "date": "Verified",
+    "category": "Language",
+    "highlightEn": "Near-native 960/990 TOEIC score verified on Google Drive.",
+    "highlightVi": "Điểm TOEIC 960/990 được xác thực trực tiếp trên Google Drive.",
+    "verifyUrl": "https://drive.google.com/file/d/1vT5oUbCPYPcBTH50dfzlVG-sl9FPvUcV/view?usp=sharing"
+  },
+  {
+    "id": "work-portfolio-doc",
+    "titleEn": "Master Work Portfolio Document",
+    "titleVi": "Hồ Sơ Năng Lực Chính Thức (Google Docs)",
+    "issuer": "Hoàng Cao Minh",
+    "date": "2026",
+    "category": "Portfolio",
+    "highlightEn": "Full editorial, multimedia, and AI systems portfolio dossier on Google Docs.",
+    "highlightVi": "Tổng hợp hồ sơ biên tập, sản xuất truyền thông và hệ thống AI trên Google Docs.",
+    "verifyUrl": "https://docs.google.com/document/d/1ZO9BMG0B3p7g_aXBwxDnV92xEyVCbmjk_HJZeSpGKYk/edit?usp=sharing"
+  },
+  {
+    "id": "video-showcase-drive",
+    "titleEn": "Video Production Showcase Reel",
+    "titleVi": "Video Showcase Tổng Hợp (Google Drive)",
+    "issuer": "Lotus Media · 72K+ Subs",
+    "date": "2025",
+    "category": "Growth & Media",
+    "highlightEn": "Selected editorial, motion graphics, and AI-assisted video production reel.",
+    "highlightVi": "Tuyển tập sản phẩm dựng phim, motion graphics và video ứng dụng AI.",
+    "verifyUrl": "https://drive.google.com/file/d/1MKrJ9lNwt3Y0gzC2UYbodEIYDmIc0iVa/view?usp=drive_link"
+  },
+  {
+    "id": "chuyen-ai-media",
+    "titleEn": "Chuyên Education Multimedia Archive",
+    "titleVi": "Kho Tài Nguyên Đa Thương Hiệu Chuyên Education",
+    "issuer": "Chuyên Education Center",
+    "date": "2026",
+    "category": "AI Systems",
+    "highlightEn": "Multi-brand AI video pipelines (Kling, Veo3, Flow AI, ElevenLabs) & Google Drive deliverables.",
+    "highlightVi": "Quy trình video AI đa thương hiệu & kho tài nguyên bàn giao trên Google Drive.",
+    "verifyUrl": "https://drive.google.com/drive/folders/1JLeemFDS4cda0RMqv8Wd-ko_uD3Y57_N"
+  }
+]
